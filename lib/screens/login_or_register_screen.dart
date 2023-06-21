@@ -1,5 +1,5 @@
 import 'package:chatapp/screens/login_screen.dart';
-import 'package:chatapp/screens/widgets/style.dart';
+import 'package:chatapp/screens/widgets/button.dart';
 import 'package:flutter/material.dart';
 
 class LoginOrRegister extends StatefulWidget {

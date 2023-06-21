@@ -1,4 +1,5 @@
 import 'package:chatapp/screens/login_screen.dart';
+import 'package:chatapp/screens/register_screen.dart';
 import 'package:chatapp/screens/widgets/button.dart';
 import 'package:flutter/material.dart';
 
@@ -39,7 +40,12 @@ class _LoginOrRegisterState extends State<LoginOrRegister> {
 
               ElevatedButton(
                 style: buttonStyle(),
-                onPressed: (){}, 
+                onPressed: (){
+                   Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const RegisterScreen()),
+                  );
+                }, 
                 child: const Text('Register', style: TextStyle(
                     color: Colors.black,
                     fontSize: 20, 

@@ -1,3 +1,4 @@
+import 'package:chatapp/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -64,11 +65,14 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
 
               ElevatedButton(
-                onPressed: () {
-                  
-                },
-                child: const Text("Login"),
-              ),
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const HomeScreen()),
+                  );
+                  },
+                  child: const Text("Login"),
+                ),
 
             ],
           )

@@ -46,14 +46,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     hintText: 'Enter your password',
                     suffixIcon: IconButton(
                       icon: Icon(
-                        // Based on passwordVisible state choose the icon
+                      
                         _passwordVisible
                             ? Icons.visibility
                             : Icons.visibility_off,
                         color: Theme.of(context).primaryColorDark,
                       ),
                       onPressed: () {
-                        // Update the state i.e. toggle the state of passwordVisible variable
+                     
                         setState(() {
                             _passwordVisible = !_passwordVisible;
                           }

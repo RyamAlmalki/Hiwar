@@ -1,4 +1,4 @@
-import 'package:chatapp/screens/login_or_register_screen.dart';
+import 'package:chatapp/screens/spalsh_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: LoginOrRegister(),
+      home: const SplashScreen(),
     );
   }
 }

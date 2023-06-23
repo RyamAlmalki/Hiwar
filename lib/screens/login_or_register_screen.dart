@@ -3,6 +3,8 @@ import 'package:chatapp/screens/register_screen.dart';
 import 'package:chatapp/screens/widgets/button.dart';
 import 'package:flutter/material.dart';
 
+import '../const.dart';
+
 class LoginOrRegister extends StatefulWidget {
   const LoginOrRegister({super.key});
 
@@ -20,6 +22,17 @@ class _LoginOrRegisterState extends State<LoginOrRegister> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+
+                   Hero(
+                    tag: "logo",
+                    child: SizedBox(
+                      height: 100,
+                      child: Text('Teddybud', style: TextStyle(fontSize: 50, fontWeight: FontWeight.bold, color: primaryColor, backgroundColor: Colors.transparent, ), ),
+                    )
+                  ),
+
+                const SizedBox(height: 100,),
+
                 ElevatedButton(
                 style: buttonStyle(),
                 onPressed: (){

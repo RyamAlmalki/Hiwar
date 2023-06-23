@@ -1,3 +1,4 @@
+import 'package:chatapp/const.dart';
 import 'package:chatapp/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -23,6 +24,17 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+
+               Hero(
+                    tag: "logo",
+                    child: SizedBox(
+                      height: 60,
+                      child: Text('Teddybud', style: TextStyle(fontSize: 50, fontWeight: FontWeight.bold, color: primaryColor, backgroundColor: Colors.transparent, ), ),
+                    )
+                  ),
+
+              const SizedBox(height: 300,),
+                  
               SizedBox(
                 width: 300,
                 child: TextFormField(

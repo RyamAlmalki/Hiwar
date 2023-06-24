@@ -1,4 +1,6 @@
+import 'package:chatapp/const.dart';
 import 'package:chatapp/screens/home_screen.dart';
+import 'package:chatapp/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -26,8 +28,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+
+                 Hero(
+                    tag: "logo",
+                    child: SizedBox(
+                      height: 100,
+                      child: Center(child: Text('Teddybud', style: TextStyle(decoration: TextDecoration.none, fontSize: 50, fontWeight: FontWeight.bold, color: primaryColor, backgroundColor: Colors.transparent, ), )),
+                    )
+                ),
+                
+                const SizedBox(height: 50,),
+
                 SizedBox(
-                  width: 300,
+                  width: 350,
                   child: TextFormField(
                       keyboardType: TextInputType.text,
                       controller: emailForm,
@@ -41,7 +54,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 20,),
                 
                 SizedBox(
-                  width: 300,
+                  width: 350,
                   child: TextFormField(
                       keyboardType: TextInputType.text,
                       controller: emailForm,
@@ -55,7 +68,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 20,),
 
                 SizedBox(
-                  width: 300,
+                  width: 350,
                   child: TextFormField(
                       keyboardType: TextInputType.text,
                       controller: emailForm,
@@ -69,7 +82,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 20,),
 
                 SizedBox(
-                  width: 300,
+                  width: 350,
                   child: TextFormField(
                     keyboardType: TextInputType.text,
                     controller: passwordForm,
@@ -83,7 +96,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           _passwordVisible
                               ? Icons.visibility
                               : Icons.visibility_off,
-                          color: Theme.of(context).primaryColorDark,
+                          color: primaryColor,
                         ),
                         onPressed: () {
                           // Update the state i.e. toggle the state of passwordVisible variable
@@ -97,18 +110,55 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 20,),
+                const SizedBox(height: 50,),
       
-                ElevatedButton(
-                  onPressed: () {
+                 SizedBox(
+                      width: 340,
+                      height: 50,
+                      child: DecoratedBox( 
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                          colors: [
+                            primaryColor,
+                            accentColor
+                            //add more colors
+                          ]),
+                        ),
+                        child:ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.transparent,
+                              shadowColor: Colors.transparent,
+                              //make color or elevated button transparent
+                          ),
+                          onPressed: () {
+                            Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (context) => const HomeScreen()),
+                          );
+                          },
+                          child: const Text("Register"),
+                        ),
+                    ),
+                  ),
+
+                const SizedBox(height: 10,),
+
+                TextButton(
+                  onPressed: (){
                     Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => const HomeScreen()),
-                  );
-                  },
-                  child: const Text("Register"),
-                ),
-      
+                    MaterialPageRoute(builder: (context) => const LoginOrRegister()),);
+                }, 
+                child: RichText(
+                    text: TextSpan(
+                      text: "Have an account? ",
+                      style: const TextStyle(fontSize: 15, fontWeight: FontWeight.normal, color: Colors.black, backgroundColor: Colors.transparent, ),
+                      children: <TextSpan>[
+                        TextSpan(text: 'Login', style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal, color: primaryColor, backgroundColor: Colors.transparent, ),),
+                      ],
+                    ),
+                  ),
+                )
               ],
             )
           ),

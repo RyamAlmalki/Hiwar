@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:chatapp/screens/login_or_register_screen.dart';
+import 'package:chatapp/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 import '../const.dart';
 
@@ -48,13 +48,32 @@ class _SplashScreenState extends State<SplashScreen> {
       child: AnimatedOpacity(
         opacity: _isVisible ? 1.0 : 0,
         duration: const Duration(milliseconds: 1200),
-        child: const Center(
+        child: Center(
           child: SizedBox(
-            height: 500.0,
-            width: 500.0,
-            child: Center(
-              child: null,
-            ),
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: const[
+                    Icon(Icons.circle_outlined, size: 300, color: Colors.white,),
+                    SizedBox(width: 50,),
+                    SizedBox(width: 50,),
+                  ],
+                ),
+                const SizedBox(height: 200,),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: const[
+                    SizedBox(width: 50,),
+                    SizedBox(width: 50,),
+                    Icon(Icons.circle_outlined, size: 300, color: Colors.white, ),
+                  ],
+                ),
+              ],
+            )
           ),
         ),
       ),

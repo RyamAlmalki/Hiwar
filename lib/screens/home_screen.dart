@@ -11,8 +11,9 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      backgroundColor: Colors.amber,
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(title: Text('AppBar Demo'),),
     );
   }
 }

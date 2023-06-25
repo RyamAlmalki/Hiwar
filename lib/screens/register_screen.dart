@@ -154,7 +154,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       text: "Have an account? ",
                       style: const TextStyle(fontSize: 15, fontWeight: FontWeight.normal, color: Colors.black, backgroundColor: Colors.transparent, ),
                       children: <TextSpan>[
-                        TextSpan(text: 'Login', style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal, color: primaryColor, backgroundColor: Colors.transparent, ),),
+                        TextSpan(text: ' Login', style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal, color: primaryColor, backgroundColor: Colors.transparent, ),),
                       ],
                     ),
                   ),

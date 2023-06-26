@@ -37,13 +37,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
     return Container(
       decoration: BoxDecoration(
-        gradient:  LinearGradient(
-          colors: [primaryColor, accentColor],
-          begin: Alignment.bottomLeft,
-          end: Alignment.topRight,
-          stops: const [0.0, 1.0],
-          tileMode: TileMode.clamp,
-        ),
+        color: primaryColor,
       ),
       child: AnimatedOpacity(
         opacity: _isVisible ? 1.0 : 0,
@@ -56,20 +50,18 @@ class _SplashScreenState extends State<SplashScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: const[
-                    Icon(Icons.circle_outlined, size: 300, color: Colors.white,),
-                    SizedBox(width: 50,),
-                    SizedBox(width: 50,),
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Image.asset('assets/images/top_Bubble.png'),
                   ],
                 ),
-                const SizedBox(height: 200,),
+           
+                Image.asset('assets/images/logo.png'),
+          
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: const[
-                    SizedBox(width: 50,),
-                    SizedBox(width: 50,),
-                    Icon(Icons.circle_outlined, size: 300, color: Colors.white, ),
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Image.asset('assets/images/down_Bubble.png'),
                   ],
                 ),
               ],

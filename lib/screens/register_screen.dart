@@ -33,7 +33,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     tag: "logo",
                     child: SizedBox(
                       height: 100,
-                      child: Center(child: Text('Teddybud', style: TextStyle(decoration: TextDecoration.none, fontSize: 50, fontWeight: FontWeight.bold, color: primaryColor, backgroundColor: Colors.transparent, ), )),
+                      child: Center(child: Image.asset('assets/images/logo2.png'), ),
                     )
                 ),
                 

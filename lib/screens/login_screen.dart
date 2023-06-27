@@ -55,7 +55,8 @@ class _LoginOrRegisterState extends State<LoginOrRegister> {
       
                         
                         const SizedBox(height: 50,),
-      
+
+        
                         SizedBox(
                           width:350,
                           child: TextFormField(
@@ -140,7 +141,7 @@ class _LoginOrRegisterState extends State<LoginOrRegister> {
                             text: "Have an account? ",
                             style: const TextStyle(fontSize: 15, fontWeight: FontWeight.normal, color: Colors.black, backgroundColor: Colors.transparent, ),
                             children: <TextSpan>[
-                              TextSpan(text: ' Login', style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal, color: primaryColor, backgroundColor: Colors.transparent, ),),
+                              TextSpan(text: ' Register', style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal, color: primaryColor, backgroundColor: Colors.transparent, ),),
                             ],
                           ),
                         ),

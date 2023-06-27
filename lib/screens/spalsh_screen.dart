@@ -36,34 +36,42 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
 
     return Container(
-      decoration: BoxDecoration(
-        color: primaryColor,
-      ),
+       decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topRight,
+              end: Alignment.bottomLeft,
+              colors: [
+                primaryColor,
+                accentColor,
+              ],
+            )
+          ),
       child: AnimatedOpacity(
         opacity: _isVisible ? 1.0 : 0,
         duration: const Duration(milliseconds: 1200),
         child: Center(
+          
           child: SizedBox(
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Image.asset('assets/images/top_Bubble.png'),
-                  ],
-                ),
+                // Row(
+                //   mainAxisAlignment: MainAxisAlignment.start,
+                //   children: [
+                //     Image.asset('assets/images/top_Bubble.png'),
+                //   ],
+                // ),
            
-                Image.asset('assets/images/logo.png'),
+                //Image.asset('assets/images/logo.png'),
           
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Image.asset('assets/images/down_Bubble.png'),
-                  ],
-                ),
+                // Row(
+                //   mainAxisAlignment: MainAxisAlignment.end,
+                //   children: [
+                //     Image.asset('assets/images/down_Bubble.png'),
+                //   ],
+                // ),
               ],
             )
           ),

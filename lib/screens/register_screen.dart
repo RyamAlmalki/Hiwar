@@ -1,6 +1,7 @@
 import 'package:chatapp/const.dart';
 import 'package:chatapp/screens/home_screen.dart';
 import 'package:chatapp/screens/login_screen.dart';
+import 'package:chatapp/screens/widgets/background.dart';
 import 'package:flutter/material.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -23,79 +24,89 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: background,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: SizedBox(
+        height: MediaQuery.of(context).size.height,
+        child: Stack(  
           children: [
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Image.asset('assets/images/tint1.png'),
-              ],
-            ),
-
-
-
-            Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-
-                     Hero(
-                        tag: "logo",
-                        child: SizedBox(
-                          height: 100,
-                          child: Center(child: Padding(
-                            padding: const EdgeInsets.only(left: 30),
-                            child: Image.asset('assets/images/logo2.png'),
-                          ), ),
-                        )
-                    ),
+            const LineBackground(),
+            
+            Positioned(
+            top: MediaQuery.of(context).size.height / 5,
+            left: MediaQuery.of(context).size.width / 10,
+              child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
                     
-                    const SizedBox(height: 50,),
-
+                  
+                  Hero(
+                    tag: "logo",
+                      child: SizedBox(
+                        height: 100,
+                        child: Center(child: Image.asset('assets/images/logo3.png'),),
+                    )
+                  ),
+                    
+                    const SizedBox(height: 20,),
+            
+                    
                     SizedBox(
-                      width: 350,
+                      width:350,
                       child: TextFormField(
                           keyboardType: TextInputType.text,
                           controller: emailForm,
-                          decoration: const InputDecoration(
+                          decoration: InputDecoration(
+                            filled: true,
+                            fillColor: accentColor,
+                            enabledBorder:  OutlineInputBorder(
+                              borderSide: BorderSide(color: textColor, width: 0),
+                            ),
+                            labelStyle: TextStyle(color: textColor),
                             labelText: 'First Name',
-                            hintText: 'Enter your first name',
-                          ),
-                        ),
-                    ),
-                    
-                    const SizedBox(height: 20,),
-                    
-                    SizedBox(
-                      width: 350,
-                      child: TextFormField(
-                          keyboardType: TextInputType.text,
-                          controller: emailForm,
-                          decoration: const InputDecoration(
-                            labelText: 'Last Name',
-                            hintText: 'Enter your last name',
-                          ),
-                        ),
-                    ),
-                    
-                    const SizedBox(height: 20,),
-
-                    SizedBox(
-                      width: 350,
-                      child: TextFormField(
-                          keyboardType: TextInputType.text,
-                          controller: emailForm,
-                          decoration: const InputDecoration(
-                            labelText: 'Email',
                             hintText: 'Enter your Email',
                           ),
                         ),
                     ),
 
+                    const SizedBox(height: 20,),
+                    SizedBox(
+                      width:350,
+                      child: TextFormField(
+                          keyboardType: TextInputType.text,
+                          controller: emailForm,
+                          decoration: InputDecoration(
+                            filled: true,
+                            fillColor: accentColor,
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: textColor, width: 0),
+                            ),
+                            labelStyle: TextStyle(color: textColor),
+                            labelText: 'Last Name',
+                            hintText: 'Enter your Email',
+                          ),
+                        ),
+                    ),
+                    const SizedBox(height: 20,),
+                    
+                    SizedBox(
+                      width:350,
+                      child: TextFormField(
+                          style: TextStyle(color: Colors.white),
+                          keyboardType: TextInputType.text,
+                          controller: emailForm,
+                          decoration:  InputDecoration(
+                            filled: true,
+                            fillColor: accentColor,
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: textColor, width: 0),
+                            ),
+                            labelStyle: TextStyle(color: textColor),
+                            labelText: 'Email',
+                            hintText: 'Enter your Email',
+                          ),
+                        ),
+                    ),
                     const SizedBox(height: 20,),
 
                     SizedBox(
@@ -105,18 +116,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         controller: passwordForm,
                         obscureText: !_passwordVisible,
                         decoration: InputDecoration(
+                          filled: true,
+                          fillColor: accentColor,
+                          enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: textColor, width: 0),
+                            ),
+                          labelStyle: TextStyle(color: textColor),
                           labelText: 'Password',
                           hintText: 'Enter your password',
                           suffixIcon: IconButton(
                             icon: Icon(
-                              // Based on passwordVisible state choose the icon
                               _passwordVisible
                                   ? Icons.visibility
                                   : Icons.visibility_off,
-                              color: primaryColor,
+                              color: textColor,
                             ),
                             onPressed: () {
-                              // Update the state i.e. toggle the state of passwordVisible variable
+                          
                               setState(() {
                                   _passwordVisible = !_passwordVisible;
                                 }
@@ -126,71 +142,54 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                       ),
                     ),
-
-                    const SizedBox(height: 50,),
-      
-                     SizedBox(
-                          width: 340,
-                          height: 50,
-                          child: DecoratedBox( 
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                              colors: [
-                                primaryColor,
-                                accentColor
-                                //add more colors
-                              ]),
-                            ),
-                            child:ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.transparent,
-                                  shadowColor: Colors.transparent,
-                                  //make color or elevated button transparent
-                              ),
-                              onPressed: () {
-                                Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(builder: (context) => const HomeScreen()),
-                              );
-                              },
-                              child: const Text("Register"),
-                            ),
-                        ),
+                  
+                  const SizedBox(height: 50,),
+                  
+                  SizedBox(
+                    width: 300,
+                    height: 50,       
+                    child:ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(29))),
+                          backgroundColor: primaryColor,
+                          foregroundColor: Colors.white
                       ),
-
-                    const SizedBox(height: 10,),
-
-                    TextButton(
-                      onPressed: (){
+                      onPressed: () {
                         Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(builder: (context) => const LoginOrRegister()),);
-                    }, 
-                    child: RichText(
-                        text: TextSpan(
-                          text: "Have an account? ",
-                          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.normal, color: Colors.black, backgroundColor: Colors.transparent, ),
-                          children: <TextSpan>[
-                            TextSpan(text: ' Login', style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal, color: primaryColor, backgroundColor: Colors.transparent, ),),
-                          ],
-                        ),
+                        MaterialPageRoute(builder: (context) => const HomeScreen()),
+                      );
+                      },
+                      child: const Text("Register"),
+                    ),
+                ),
+                  
+                   
+                  const SizedBox(height: 100,),
+                  
+                  TextButton(
+                    onPressed: (){
+                       Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => const LoginOrRegister()),);
+                  }, 
+                  child: RichText(
+                  text: const TextSpan(
+                        text: "Have an account?",
+                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal, color: Colors.white, backgroundColor: Colors.transparent, ),
+                        children: <TextSpan>[
+                          TextSpan(text: ' Login', style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal, color: Colors.white, backgroundColor: Colors.transparent, ),),
+                        ],
                       ),
-                    )
-                  ],
+                    ),
+                  ),
+              ],
                 )
               ),
-
-              Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Image.asset('assets/images/tint2.png'),
-              ],
-            ),
-
+            )
           ],
         ),
-
-          
       ),
     );
   }

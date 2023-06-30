@@ -38,7 +38,7 @@ class _SplashScreenState extends State<SplashScreen> {
         opacity: _isVisible ? 1.0 : 0,
         duration: const Duration(milliseconds: 1200),
         child: Center(
-          child: Image.asset('assets/images/logo3.png'),
+          child: Image.asset('assets/images/logo.png'),
         ),
       ),
     );

@@ -21,6 +21,7 @@ class _LoginOrRegisterState extends State<LoginOrRegister> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: background,
+      resizeToAvoidBottomInset: false,
       body: SizedBox(
         height: MediaQuery.of(context).size.height,
         child: Stack(  
@@ -42,27 +43,55 @@ class _LoginOrRegisterState extends State<LoginOrRegister> {
                   tag: "logo",
                     child: SizedBox(
                       height: 100,
-                      child: Center(child: Image.asset('assets/images/logo3.png'),),
+                      child: Center(child: Image.asset('assets/images/logo.png'),),
                         )
                     ),
                     
-                    const SizedBox(height: 20,),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children:  const [
+                         SizedBox(
+                          width: 150,
+                          child: Divider(
+                            color: Colors.white,
+                          ),
+                        ),
+
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(5,0,5,0),
+                          child: Text('Login', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
+                        ),
+
+                         SizedBox(
+                          width: 150,
+                          child: Divider(
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+
+
+                    const SizedBox(height: 10,),
             
                     
                     SizedBox(
                       width:350,
                       child: TextFormField(
+                        style: TextStyle(color: Colors.white),
                           keyboardType: TextInputType.text,
                           controller: emailForm,
                           decoration: InputDecoration(
                             filled: true,
                             fillColor: accentColor,
+                            
                             enabledBorder:  OutlineInputBorder(
                               borderSide: BorderSide(color: textColor, width: 0),
                             ),
                             labelStyle: TextStyle(color: textColor),
-                            labelText: 'First Name',
+                            labelText: 'Enter Email',
                             hintText: 'Enter your Email',
+                            prefixIcon: Icon(Icons.email, color: textColor,)
                           ),
                         ),
                     ),
@@ -84,6 +113,7 @@ class _LoginOrRegisterState extends State<LoginOrRegister> {
                           labelText: 'Password',
                           labelStyle: TextStyle(color: textColor),
                           hintText: 'Enter your password',
+                          prefixIcon: Icon(Icons.lock, color: textColor,),
                           suffixIcon: IconButton(
                             icon: Icon(
                               _passwordVisible
@@ -125,7 +155,7 @@ class _LoginOrRegisterState extends State<LoginOrRegister> {
                     ),
                 ),
                    
-                  const SizedBox(height: 200,),
+                  const SizedBox(height: 250,),
                   
                   TextButton(
                     onPressed: (){
@@ -134,9 +164,9 @@ class _LoginOrRegisterState extends State<LoginOrRegister> {
                       MaterialPageRoute(builder: (context) => const RegisterScreen()),);
                   }, 
                   child: RichText(
-                  text: const TextSpan(
+                  text:  TextSpan(
                         text: "Have an account?",
-                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal, color: Colors.white, backgroundColor: Colors.transparent, ),
+                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal, color: textColor, backgroundColor: Colors.transparent, ),
                         children: <TextSpan>[
                           TextSpan(text: ' Register', style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal, color: Colors.white, backgroundColor: Colors.transparent, ),),
                         ],

@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "113195666098",
+    "project_id": "ryamworkspace",
+    "storage_bucket": "ryamworkspace.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:113195666098:android:78e5d7d14e0f15d9fed7ab",
+        "android_client_info": {
+          "package_name": "com.example.chatapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDOBSRlnkcZMZs8kncnjHV21TLFEJ0_aVQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:113195666098:android:775fc717fcbc8319fed7ab",
+        "android_client_info": {
+          "package_name": "com.ryam.chat_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDOBSRlnkcZMZs8kncnjHV21TLFEJ0_aVQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

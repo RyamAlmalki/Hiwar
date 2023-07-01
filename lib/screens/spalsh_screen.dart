@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:chatapp/screens/login_screen.dart';
+import 'package:chatapp/auth.dart';
 import 'package:flutter/material.dart';
 import '../const.dart';
 
@@ -17,7 +17,7 @@ class _SplashScreenState extends State<SplashScreen> {
     Timer(const Duration(milliseconds: 2000), (){
       setState(() {
         Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => const LoginOrRegister()), (route) => false);
+        MaterialPageRoute(builder: (context) => const Auth()), (route) => false);
       });
     });
 

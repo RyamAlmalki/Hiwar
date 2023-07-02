@@ -1,7 +1,11 @@
 import 'package:chatapp/firebase_options.dart';
+import 'package:chatapp/screens/home_screen.dart';
+import 'package:chatapp/screens/login_screen.dart';
+import 'package:chatapp/screens/register_screen.dart';
 import 'package:chatapp/screens/spalsh_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'auth.dart';
 
 
 Future<void> main() async{
@@ -26,7 +30,13 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const SplashScreen(),
+      routes: {
+        '/': (context) => const SplashScreen(),
+        'auth': (context) => const Auth(),
+        'homeScreen':(context) => const HomeScreen(),
+        'registerScreen':(context) => const RegisterScreen(),
+        'loginScreen':(context) => const LoginOrRegister(),
+      },
     );
   }
 }

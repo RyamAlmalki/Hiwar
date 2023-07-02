@@ -122,9 +122,7 @@ class _LoginOrRegisterState extends State<LoginOrRegister> {
                     
                     TextButton(
                       onPressed: (){
-                         Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => const RegisterScreen()),);
+                         Navigator.of(context).pushReplacementNamed('registerScreen');
                     }, 
                     child: RichText(
                     text:  TextSpan(

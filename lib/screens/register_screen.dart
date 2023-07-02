@@ -115,19 +115,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     height: 50,       
                     child: RoundedButton(
                       onPressed: () async {
-                        // add to firebase 
-                        
-                        try{
-                          final newUser = await _auth.createUserWithEmailAndPassword(email: emailForm.text, password: passwordForm.text);
-                          if(newUser != null){
-                            Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(builder: (context) => const HomeScreen()),
-                            );
-                          }
-                        } catch(e){
-                          print(e);
-                        }
+                         Navigator.of(context).pushReplacementNamed('loginScreen');
                       }, 
                       
                       title: 'Register',

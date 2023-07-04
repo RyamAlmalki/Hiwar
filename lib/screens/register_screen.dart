@@ -1,5 +1,4 @@
 import 'package:chatapp/const.dart';
-import 'package:chatapp/screens/home_screen.dart';
 import 'package:chatapp/screens/login_screen.dart';
 import 'package:chatapp/screens/widgets/background.dart';
 import 'package:chatapp/screens/widgets/line_title.dart';
@@ -23,6 +22,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
   TextEditingController passwordForm = TextEditingController();
   TextEditingController fullNameForm = TextEditingController();
 
+   Future signUp() async{
+    await FirebaseAuth.instance.createUserWithEmailAndPassword(email: emailForm.text.trim(), password: passwordForm.text.trim());
+    Navigator.of(context).pushReplacementNamed('auth');
+  }
+
+
+  @override
+  void dispose() {
+    emailForm.dispose();
+    passwordForm.dispose();
+    super.dispose();
+  }
 
 
   @override
@@ -115,7 +126,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     height: 50,       
                     child: RoundedButton(
                       onPressed: () async {
-                         Navigator.of(context).pushReplacementNamed('loginScreen');
+                         signUp();
                       }, 
                       
                       title: 'Register',
@@ -127,9 +138,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   
                   TextButton(
                     onPressed: (){
-                       Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => const LoginOrRegister()),);
+                     Navigator.of(context).pushReplacementNamed('loginScreen');
                   }, 
                   child: RichText(
                   text:  TextSpan(

@@ -1,6 +1,7 @@
 import 'package:chatapp/firebase_options.dart';
 import 'package:chatapp/screens/home_screen.dart';
 import 'package:chatapp/screens/login_screen.dart';
+import 'package:chatapp/screens/message_screen.dart';
 import 'package:chatapp/screens/register_screen.dart';
 import 'package:chatapp/screens/spalsh_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -36,6 +37,7 @@ class MyApp extends StatelessWidget {
         'homeScreen':(context) => const HomeScreen(),
         'registerScreen':(context) => const RegisterScreen(),
         'loginScreen':(context) => const LoginOrRegister(),
+        'messageScreen':(context) => const MessageScreen(),
       },
     );
   }

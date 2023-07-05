@@ -17,7 +17,30 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: background,
-      appBar: AppBar(title: const Text('Chats', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),), centerTitle: false, backgroundColor:background, elevation: 0,),
+      appBar: AppBar(
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text('Chats', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),),
+            IconButton(
+              icon: const Icon(
+                Icons.exit_to_app_outlined,
+                color: Colors.white,
+              ),
+              onPressed: () {
+                setState(() {
+                    FirebaseAuth.instance.signOut();
+                    Navigator.of(context).pushReplacementNamed('loginScreen');
+                  }
+                );
+              },
+            ),
+          ],
+        ), 
+        centerTitle: false, 
+        backgroundColor:background, 
+        elevation: 0,
+      ),
       body: Center(
         child: SafeArea(
           child: Column(
@@ -44,12 +67,3 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 
-
-// Text('${user.email}' ,style: const TextStyle(color: Colors.white),),
-//             MaterialButton(
-//               color: primaryColor,
-//               child: Text('Sign Out'),
-//               onPressed: (() {
-//                 FirebaseAuth.instance.signOut();
-//               }
-//             ))

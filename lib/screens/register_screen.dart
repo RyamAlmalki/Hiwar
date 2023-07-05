@@ -23,7 +23,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
   TextEditingController fullNameForm = TextEditingController();
 
    Future signUp() async{
+     // loading circle 
+    showDialog(
+      context: context, 
+       builder: (context){
+        return Center(child: CircularProgressIndicator(color: primaryColor,));
+       }
+    );
+
     await FirebaseAuth.instance.createUserWithEmailAndPassword(email: emailForm.text.trim(), password: passwordForm.text.trim());
+    
+    // pop the loading circle 
+    // ignore: use_build_context_synchronously
+    Navigator.of(context).pop();
+    // ignore: use_build_context_synchronously
     Navigator.of(context).pushReplacementNamed('auth');
   }
 

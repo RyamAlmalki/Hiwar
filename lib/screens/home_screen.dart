@@ -11,8 +11,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final user = FirebaseAuth.instance.currentUser!;
-
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(

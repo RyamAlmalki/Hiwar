@@ -23,8 +23,13 @@ class SearchBar extends StatelessWidget {
               borderSide:
                   BorderSide(width: 0, color: background), //<-- SEE HERE
               borderRadius: BorderRadius.circular(50.0),
+              
             ),
+            
           ),
+          onChanged: (value) {
+            
+          },
         ),
       ),
     );

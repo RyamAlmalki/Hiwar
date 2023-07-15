@@ -21,19 +21,20 @@ class _MessageScreentState extends State<MessageScreen> {
 
   @override
   void initState() {
-    messageStream();
+
     super.initState();
   }
 
-  void messageStream() async {
-    await for( var snapshot in FirebaseFirestore.instance
-    .collection('messages')
-    .snapshots()){
-      for(var message in snapshot.docs){
-        print(message.data());
-      }
-    }
-  }
+  // flutter is being notified of anychages vie the stream of data snapshot 
+  // void messageStream() async {
+  //   await for( var snapshot in FirebaseFirestore.instance
+  //   .collection('messages')
+  //   .snapshots()){
+  //     for(var message in snapshot.docs){
+  //       print(message.data());
+  //     }
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +44,41 @@ class _MessageScreentState extends State<MessageScreen> {
       child: Column(
         children: [
             const UserMessageTile(),
-            Expanded(child: ListView(scrollDirection: Axis.horizontal,)),
+
+            
+            StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+              .collection('messages')
+              .snapshots(),
+              builder: (context, snapshot){
+                List<MessageBubble> messageBubbles = [];
+                if(!snapshot.hasData){
+                  return const CircularProgressIndicator();
+                }
+                  List<QueryDocumentSnapshot<Object?>>? messages = snapshot.data?.docs;
+                  
+                  for(var message in messages!){
+                    final messageText = message.get('text');
+                    final messageSender = message.get('sender');
+
+                    final messageBubble = MessageBubble(sender: messageSender, text: messageText,);
+                    messageBubbles.add(messageBubble);
+                  }
+                
+                 return Expanded(
+                   child: ListView.builder(
+                    scrollDirection: Axis.vertical,
+                    itemCount: messageBubbles.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        title: messageBubbles[index],
+                        );
+                      },
+                    ),
+                 );
+              }
+            ),
+            
             
             Row(
               children: [
@@ -53,6 +88,7 @@ class _MessageScreentState extends State<MessageScreen> {
                     width: MediaQuery.of(context).size.width / 1.2,
                     height: 40,
                     child: TextField(
+                      
                       style: TextStyle(color:textColor), 
                       decoration: InputDecoration(
                         hintText: ForBool ? null : "Search...",
@@ -110,3 +146,32 @@ class _MessageScreentState extends State<MessageScreen> {
   }
 }
 
+class MessageBubble extends StatelessWidget {
+  const MessageBubble({super.key, this.sender, this.text});
+  final String? sender;
+  final String? text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('$sender', style: TextStyle(color: textColor, fontSize: 12),),
+          Material(
+            elevation: 5,
+            borderRadius: BorderRadius.circular(30.0),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+              child: Text(
+              '$text', 
+              style:  const TextStyle(color: Colors.black, fontSize: 15),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

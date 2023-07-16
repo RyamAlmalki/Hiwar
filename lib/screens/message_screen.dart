@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../const.dart';
 
+final user = FirebaseAuth.instance.currentUser!;
+final messages = FirebaseFirestore.instance.collection('messages');
+
 
 class MessageScreen extends StatefulWidget {
   const MessageScreen({super.key});
@@ -13,28 +16,10 @@ class MessageScreen extends StatefulWidget {
 }
 
 class _MessageScreentState extends State<MessageScreen> {
-  CollectionReference messages = FirebaseFirestore.instance.collection('messages');
-  final user = FirebaseAuth.instance.currentUser!;
   
+  final messageTextConroller = TextEditingController();
   String? messageText;
   bool ForBool = false;
-
-  @override
-  void initState() {
-
-    super.initState();
-  }
-
-  // flutter is being notified of anychages vie the stream of data snapshot 
-  // void messageStream() async {
-  //   await for( var snapshot in FirebaseFirestore.instance
-  //   .collection('messages')
-  //   .snapshots()){
-  //     for(var message in snapshot.docs){
-  //       print(message.data());
-  //     }
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -45,40 +30,7 @@ class _MessageScreentState extends State<MessageScreen> {
         children: [
             const UserMessageTile(),
 
-            
-            StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance
-              .collection('messages')
-              .snapshots(),
-              builder: (context, snapshot){
-                List<MessageBubble> messageBubbles = [];
-                if(!snapshot.hasData){
-                  return const CircularProgressIndicator();
-                }
-                  List<QueryDocumentSnapshot<Object?>>? messages = snapshot.data?.docs;
-                  
-                  for(var message in messages!){
-                    final messageText = message.get('text');
-                    final messageSender = message.get('sender');
-
-                    final messageBubble = MessageBubble(sender: messageSender, text: messageText,);
-                    messageBubbles.add(messageBubble);
-                  }
-                
-                 return Expanded(
-                   child: ListView.builder(
-                    scrollDirection: Axis.vertical,
-                    itemCount: messageBubbles.length,
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        title: messageBubbles[index],
-                        );
-                      },
-                    ),
-                 );
-              }
-            ),
-            
+            MessageStream(messageText: messageText,),
             
             Row(
               children: [
@@ -88,33 +40,16 @@ class _MessageScreentState extends State<MessageScreen> {
                     width: MediaQuery.of(context).size.width / 1.2,
                     height: 40,
                     child: TextField(
-                      
+                      controller: messageTextConroller,
                       style: TextStyle(color:textColor), 
                       decoration: InputDecoration(
-                        hintText: ForBool ? null : "Search...",
+                        border: InputBorder.none,
+                        hintText: ForBool ? null : "Type your message...",
                         hintStyle: TextStyle(color: textColor),
                         prefixIcon: Icon(Icons.search, color: textColor,),
                         filled: true,
-                        fillColor: accentColor,
-                        enabledBorder: OutlineInputBorder(
-                          borderSide:
-                              BorderSide(width: 0, color: background), //<-- SEE HERE
-                          borderRadius: BorderRadius.circular(50.0),
-                        ),      
+                        fillColor: accentColor, 
                       ),
-                      onChanged: (value) {
-                        if (value.length <= 0) {
-                          setState(() {
-                            ForBool = false;
-                          });
-                        } else {
-                          setState(() {
-                            ForBool = true;
-                          });
-                        }
-                        
-                          messageText = value;
-                      },
                     ),
                   ),
                 ),
@@ -125,14 +60,17 @@ class _MessageScreentState extends State<MessageScreen> {
                   ),
                   onPressed: () {
                     setState(() {
+                        messageText = messageTextConroller.text;
                         // text + sender mail 
                        messages
                         .add({
                           'text': messageText, // John Doe
                           'sender': user.email, // Stokes and Sons
+                          'date': DateTime.now()
                         })
                         .then((value) => print("message Added"))
                         .catchError((error) => print("Failed to add message: $error"));
+                        messageTextConroller.clear();
                       }
                     );
                   },
@@ -146,27 +84,82 @@ class _MessageScreentState extends State<MessageScreen> {
   }
 }
 
+
+class MessageStream extends StatelessWidget {
+  MessageStream({super.key, this.messageText});
+  final ScrollController _controller = ScrollController();
+  String? messageText;
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+      .collection('messages').orderBy('date')
+      .snapshots(),
+      builder: (context, snapshot){
+        List<MessageBubble> messageBubbles = [];
+        if(!snapshot.hasData){
+          return const CircularProgressIndicator();
+        }
+          List<QueryDocumentSnapshot<Object?>>? messages = snapshot.data?.docs.reversed.toList();
+          
+          for(var message in messages!){
+            final messageText = message.get('text');
+            final messageSender = message.get('sender');
+
+            final messageBubble = MessageBubble(
+              sender: messageSender, 
+              text: messageText,
+              isMe: user.email == messageSender,
+              );
+            messageBubbles.add(messageBubble);
+          }
+        
+          return Expanded(
+            child: ListView.builder(
+            reverse: true,
+            itemCount: messageBubbles.length,
+            itemBuilder: (context, index) {
+              return ListTile(
+                title: messageBubbles[index],
+                );
+              },
+            ),
+          );
+      }
+    );
+  }
+}
+
+
 class MessageBubble extends StatelessWidget {
-  const MessageBubble({super.key, this.sender, this.text});
+  const MessageBubble({super.key, this.sender, this.text, this.isMe});
   final String? sender;
   final String? text;
+  final bool? isMe;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: user.email == sender ? CrossAxisAlignment.end : CrossAxisAlignment.start, 
         children: [
           Text('$sender', style: TextStyle(color: textColor, fontSize: 12),),
           Material(
+            color: isMe! ? primaryColor : Colors.white,
             elevation: 5,
-            borderRadius: BorderRadius.circular(30.0),
+            borderRadius: BorderRadius.only(topLeft:  isMe! ? Radius.circular(30.0) : Radius.circular(0.0), bottomRight: Radius.circular(30.0), bottomLeft: Radius.circular(30.0), topRight:  isMe! ? Radius.circular(0.0) : Radius.circular(30.0)),
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
-              child: Text(
-              '$text', 
-              style:  const TextStyle(color: Colors.black, fontSize: 15),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                  '$text', 
+                  style:  TextStyle(color: isMe! ? Colors.white: Colors.black, fontSize: 15),
+                  ),
+                ],
               ),
             ),
           ),
@@ -175,3 +168,4 @@ class MessageBubble extends StatelessWidget {
     );
   }
 }
+

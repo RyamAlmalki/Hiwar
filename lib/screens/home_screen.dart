@@ -1,8 +1,13 @@
 import 'package:chatapp/const.dart';
 import 'package:chatapp/screens/widgets/searchbar.dart';
 import 'package:chatapp/screens/widgets/user_list.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
+
+final user = FirebaseAuth.instance.currentUser!;
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -11,7 +16,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,17 +51,14 @@ class _HomeScreenState extends State<HomeScreen> {
             children:  [
                 const SearchBar(),
                 Expanded(
-                  child: ListView.separated(
-                  scrollDirection: Axis.vertical,
-                  shrinkWrap: true,
-                  padding: const EdgeInsets.all(8),
-                  itemCount: 20,
-                  itemBuilder: (BuildContext context, int index) {
-                    return const UserTile();
+                child: ListView.builder(
+    
+                itemCount: 4,
+                itemBuilder: (context, index) {
+                  return UserTile();
                   },
-                  separatorBuilder: (BuildContext context, int index) => const Divider(),
-                              ),
                 ),
+              ),
             ],
           ),
         ),

@@ -1,8 +1,8 @@
-import 'package:chatapp/screens/widgets/user_message_tile.dart';
+import 'package:chatapp/screens/home/widgets/user_message_tile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../const.dart';
+import '../../const.dart';
 
 final user = FirebaseAuth.instance.currentUser!;
 final messages = FirebaseFirestore.instance.collection('messages');
@@ -66,6 +66,7 @@ class _MessageScreentState extends State<MessageScreen> {
                         .add({
                           'text': messageText, // John Doe
                           'sender': user.email, // Stokes and Sons
+                          'reciver': 'test@gmail.com',
                           'date': DateTime.now()
                         })
                         .then((value) => print("message Added"))

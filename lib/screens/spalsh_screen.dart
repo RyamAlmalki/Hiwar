@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:chatapp/auth.dart';
 import 'package:flutter/material.dart';
 import '../const.dart';
 

@@ -1,13 +1,12 @@
 import 'package:chatapp/firebase_options.dart';
-import 'package:chatapp/screens/home_screen.dart';
-import 'package:chatapp/screens/login_screen.dart';
-import 'package:chatapp/screens/message_screen.dart';
-import 'package:chatapp/screens/register_screen.dart';
+import 'package:chatapp/screens/home/home_screen.dart';
+import 'package:chatapp/screens/authenticate/login_screen.dart';
+import 'package:chatapp/screens/home/message_screen.dart';
+import 'package:chatapp/screens/authenticate/register_screen.dart';
 import 'package:chatapp/screens/spalsh_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'auth.dart';
-
+import 'screens/wrapper.dart';
 
 Future<void> main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,6 +17,7 @@ Future<void> main() async{
 
   runApp(const MyApp());
 }
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -32,11 +32,12 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       routes: {
+         // "/" defines which route the app should start with
         '/': (context) => const SplashScreen(),
-        'auth': (context) => const Auth(),
+        'auth': (context) => const Wrapper(),
         'homeScreen':(context) => const HomeScreen(),
         'registerScreen':(context) => const RegisterScreen(),
-        'loginScreen':(context) => const LoginOrRegister(),
+        'loginScreen':(context) => const LoginScreen(),
         'messageScreen':(context) => const MessageScreen(),
       },
     );

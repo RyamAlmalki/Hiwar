@@ -8,13 +8,16 @@ final Color textColor = HexColor("#C4C4C4");
 
 
 InputDecoration decorationStyles = InputDecoration(
+    border: InputBorder.none,
     filled: true,
     fillColor: accentColor,
+    hintStyle: TextStyle(color: textColor),
     disabledBorder: OutlineInputBorder(
-    borderSide: BorderSide(color: primaryColor, width: 1),
+      borderSide: BorderSide(color: primaryColor, width: 1),
     ),
     enabledBorder:  OutlineInputBorder(
     borderSide: BorderSide(color: textColor, width: 0),
   ),
   labelStyle: TextStyle(color: textColor),
+  
 );

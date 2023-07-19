@@ -1,8 +1,8 @@
 import 'package:chatapp/const.dart';
-import 'package:chatapp/screens/login_screen.dart';
-import 'package:chatapp/screens/widgets/background.dart';
-import 'package:chatapp/screens/widgets/line_title.dart';
-import 'package:chatapp/screens/widgets/rounded_button.dart';
+import 'package:chatapp/screens/authenticate/login_screen.dart';
+import 'package:chatapp/screens/authenticate/auth_widget/background.dart';
+import 'package:chatapp/screens/authenticate/auth_widget/line_title.dart';
+import 'package:chatapp/screens/home/widgets/rounded_button.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -58,7 +58,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         height: MediaQuery.of(context).size.height,
         child: Stack(  
           children: [
-            const LineBackground(),
+            const AuthBackground(),
             
             Positioned(
             top: MediaQuery.of(context).size.height / 5,
@@ -69,50 +69,59 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                     
-                  
-                  Hero(
-                    tag: "logo",
-                      child: SizedBox(
-                        height: 100,
-                        child: Center(child: Image.asset('assets/images/logo.png'),),
-                    )
-                  ),
+                    Hero(
+                      tag: "logo",
+                        child: SizedBox(
+                          height: 100,
+                          child: Center(child: Image.asset('assets/images/logo.png'),),
+                      )
+                    ),
+                      
+                    TitleLine(
+                      title: 'Register', 
+                      width: 130,
+                      ),
                     
-
-                  TitleLine(title: 'Register', width: 130,),
-                  
-                  const SizedBox(height: 10,),
-            
-                    
+                    const SizedBox(height: 20,),
+              
                     SizedBox(
                       width:350,
                       child: TextFormField(
+                          style: const TextStyle(color: Colors.white),
                           keyboardType: TextInputType.text,
                           controller: fullNameForm,
-                          decoration: decorationStyles.copyWith(hintText: 'Enter your Full name', labelText: 'Enter Full Name', prefixIcon: Icon(Icons.person, color: textColor,),)
-                        ),
+                          decoration: decorationStyles.copyWith(
+                            labelText: 'Enter Full Name', 
+                            prefixIcon: Icon(Icons.person, color: textColor,
+                          ),
+                        )
+                      ),
                     ),
 
                     const SizedBox(height: 20,),
+                    
                     SizedBox(
                       width:350,
                       child: TextFormField(
+                           style: const TextStyle(color: Colors.white),
                           keyboardType: TextInputType.emailAddress,
                           controller: emailForm,
-                          decoration: decorationStyles.copyWith(hintText: 'Enter your email', labelText: 'Enter Email', prefixIcon: Icon(Icons.email, color: textColor,),)
+                          decoration: decorationStyles.copyWith(
+                            labelText: 'Enter Email', 
+                            prefixIcon: Icon(Icons.email, color: textColor,),)
                         ),
                     ),
+
                     const SizedBox(height: 20,),
                     
-                    
-
                     SizedBox(
                       width: 350,
                       child: TextFormField(
+                        style: const TextStyle(color: Colors.white),
                         keyboardType: TextInputType.text,
                         controller: passwordForm,
                         obscureText: !_passwordVisible,
-                        decoration: decorationStyles.copyWith(hintText: 'Enter your password', labelText: 'Enter Password', prefixIcon: Icon(Icons.email, color: textColor,), 
+                        decoration: decorationStyles.copyWith(labelText: 'Enter Password', prefixIcon: Icon(Icons.lock, color: textColor,), 
                         suffixIcon: IconButton(
                             icon: Icon(
                               _passwordVisible

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-
-import '../../const.dart';
+import '../../../const.dart';
 
 class UserTile extends StatelessWidget {
-  const UserTile({super.key});
+  UserTile({super.key, this.userName, this.lastMessage});
+  String? lastMessage;
+  String? userName;
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +16,7 @@ class UserTile extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Morning!', style: TextStyle(color: textColor, fontWeight: FontWeight.normal, fontSize: 15),),
+              Text('$lastMessage', style: TextStyle(color: Colors.amber, fontWeight: FontWeight.normal, fontSize: 15),),
               CircleAvatar(
                 radius: 10,
                 backgroundColor: primaryColor, 
@@ -35,7 +36,7 @@ class UserTile extends StatelessWidget {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('Ryam malki', style: TextStyle(color: textColor, fontWeight: FontWeight.bold, fontSize: 18),),
+            Text('$userName', style: TextStyle(color: textColor, fontWeight: FontWeight.bold, fontSize: 18),),
             Text('Tue', style: TextStyle(color: textColor, fontWeight: FontWeight.bold, fontSize: 18),),
           ],
         ),

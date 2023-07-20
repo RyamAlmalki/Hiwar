@@ -8,9 +8,15 @@ class Wrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Listen for change
-    // Return either Home or Authenticate Widget
+
+    //Set up a stream between our flutter app and the firebase Auth Service.
+    //The firebase Auth service will emit something to us every time the user
+    //either signs in or signs out. And that something can be a Null value or a User object. 
+    //And based on the value our flutter app can determin whether they're logged in or logged out.
+    //and at that moment we want to update UI appropriately.
+
     return Scaffold(
+      // FirebaseUser 
       body: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {

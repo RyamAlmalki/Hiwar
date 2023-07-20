@@ -1,7 +1,7 @@
 import 'package:chatapp/screens/authenticate/auth_widget/background.dart';
 import 'package:chatapp/screens/authenticate/auth_widget/line_title.dart';
 import 'package:chatapp/screens/home/widgets/rounded_button.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:chatapp/services/auth.dart';
 import 'package:flutter/material.dart';
 import '../../const.dart';
 
@@ -18,6 +18,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _passwordVisible = false;
   TextEditingController emailForm = TextEditingController();
   TextEditingController passwordForm = TextEditingController();
+  final AuthService _auth = AuthService(); // instance of the AuthService class 
 
   @override
   void dispose() {
@@ -26,8 +27,8 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  Future signIn() async{
-    // loading circle 
+  Future login() async{
+    // loading CircularProgress 
     showDialog(
       context: context, 
        builder: (context){
@@ -35,13 +36,30 @@ class _LoginScreenState extends State<LoginScreen> {
        }
     );
 
-    await FirebaseAuth.instance.signInWithEmailAndPassword(
-      email: emailForm.text.trim(), 
-      password: passwordForm.text.trim());
+    dynamic result = await _auth.login(emailForm, passwordForm); // dynamic because result can be null or User
     
     // pop the loading circle 
     // ignore: use_build_context_synchronously
     Navigator.of(context).pop();
+
+    if(result == null){
+      emailForm.clear();
+      passwordForm.clear();
+      // ignore: use_build_context_synchronously
+      showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return const AlertDialog(
+          title: Text('Login failed'),
+          content: Text('please try again'),
+          );
+        }
+      );
+    }else{
+      print(result);
+      // ignore: use_build_context_synchronously
+      Navigator.of(context).pushReplacementNamed('homeScreen');
+    }
   }
 
   @override
@@ -62,7 +80,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-            
                       Hero(
                         tag: "logo",
                           child: SizedBox(
@@ -129,25 +146,26 @@ class _LoginScreenState extends State<LoginScreen> {
                       height: 50,       
                       child: RoundedButton(
                         onPressed: () async {
-                          await signIn();
-                          Navigator.of(context).pushReplacementNamed('homeScreen');
+                          await login();
                         }, 
                         title: 'Login',
                       )
                     ),
                       
-                    const SizedBox(height: 250,),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height / 4 ,
+                    ),
                     
                     TextButton(
                       onPressed: (){
-                          Navigator.of(context).pushReplacementNamed('registerScreen');
+                      Navigator.of(context).pushReplacementNamed('registerScreen');
                     }, 
                     child: RichText(
                     text:  TextSpan(
-                          text: "Have an account?",
+                          text: "Don't have an account? ",
                           style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal, color: textColor, backgroundColor: Colors.transparent, ),
-                          children: const  <TextSpan>[
-                            TextSpan(text: ' Register', style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal, color: Colors.white, backgroundColor: Colors.transparent, ),),
+                          children: <TextSpan>[
+                            TextSpan(text: ' Register', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: primaryColor, backgroundColor: Colors.transparent, ),),
                           ],
                         ),
                       ),

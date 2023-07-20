@@ -7,11 +7,16 @@ class AuthService{
   // This instance will allow us to communicat with Auth firebase in backend 
   // this will give us access to different property to the auth class 
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final User? user = FirebaseAuth.instance.currentUser;
+  final user = FirebaseAuth.instance.currentUser;
+
+
 
   // create user object based on FirebaseUser but with only specific fileds 
   ChatUser? _userFromFirebaseUser(User userAuth){
-    return userAuth != null ? ChatUser(uid: userAuth.uid) : null;
+    return userAuth != null ? ChatUser(
+      uid: userAuth.uid,
+      displayName: ''
+      ) : null;
   }
 
   /* 
@@ -27,8 +32,25 @@ class AuthService{
       );
 
       final User? user = authResult.user;
-      return _userFromFirebaseUser(user!);
+      return user;
+      
+    }catch(e){
+      // ignore: avoid_print
+      print(e.toString());
+      return null;
+    }
+  }
+ 
 
+  // register with email and password 
+  Future register(final emailForm, final passwordForm, final fullNameForm) async{
+    try{
+      final UserCredential authResult = await _auth.createUserWithEmailAndPassword(email: emailForm.text.trim(), password: passwordForm.text.trim());
+      final User? user = authResult.user;
+      user?.updateDisplayName(fullNameForm.text);
+
+      return user!;
+    
     }catch(e){
       // ignore: avoid_print
       print(e.toString());
@@ -37,14 +59,13 @@ class AuthService{
   }
 
 
-  // register with email and password 
-
-
-
-  // sing out 
-
+  // sing out
   Future signout() async {
-    _auth.signOut();
+    try{
+       _auth.signOut();
+    }catch(e){
+      print(e.toString());
+    }
   }
 
 }

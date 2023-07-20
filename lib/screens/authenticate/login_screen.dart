@@ -116,6 +116,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       SizedBox(
                         width: 350,
                         child: TextFormField(
+                          validator: (value) => value!.length < 6 ? 'Enter a password 6+ chars long' : null,
                           style: const TextStyle(color: Colors.white),
                           keyboardType: TextInputType.text,
                           controller: passwordForm,

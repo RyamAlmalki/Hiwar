@@ -6,6 +6,8 @@ import 'package:chatapp/screens/home/widgets/rounded_button.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import '../../services/auth.dart';
+
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -15,13 +17,13 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  final _auth = FirebaseAuth.instance;
   final _formKey = GlobalKey<FormState>();
   bool _passwordVisible = false;
   TextEditingController emailForm = TextEditingController();
   TextEditingController passwordForm = TextEditingController();
   TextEditingController fullNameForm = TextEditingController();
-
+  final AuthService _auth = AuthService(); // instance of the AuthService class 
+  
    Future signUp() async{
      // loading circle 
     showDialog(
@@ -31,13 +33,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
        }
     );
 
-    await FirebaseAuth.instance.createUserWithEmailAndPassword(email: emailForm.text.trim(), password: passwordForm.text.trim());
+    dynamic result = await _auth.register(emailForm, passwordForm, fullNameForm); // dynamic because result can be null or User
     
-    // pop the loading circle 
-    // ignore: use_build_context_synchronously
     Navigator.of(context).pop();
-    // ignore: use_build_context_synchronously
-    Navigator.of(context).pushReplacementNamed('auth');
+
+    if(result == null){
+      emailForm.clear();
+      passwordForm.clear();
+      // ignore: use_build_context_synchronously
+      showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return const AlertDialog(
+          title: Text('Register failed'),
+          content: Text('please supply a valid email'),
+          );
+        }
+      );
+    }else{
+      
+      // ignore: use_build_context_synchronously
+      Navigator.of(context).pushReplacementNamed('homeScreen');
+    }
   }
 
 

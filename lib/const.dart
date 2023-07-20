@@ -19,5 +19,4 @@ InputDecoration decorationStyles = InputDecoration(
     borderSide: BorderSide(color: textColor, width: 0),
   ),
   labelStyle: TextStyle(color: textColor),
-  
 );

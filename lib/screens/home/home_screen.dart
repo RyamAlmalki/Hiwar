@@ -28,21 +28,65 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text('Chats', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),),
-            IconButton(
-              icon: const Icon(
-                Icons.exit_to_app_outlined,
-                color: Colors.white,
-              ),
+            TextButton(
               onPressed: () async{
-                await singout();
+                 Navigator.of(context).pushReplacementNamed('profileScreen');
               },
+              child: const CircleAvatar(
+                radius: 19,
+                backgroundImage: AssetImage('assets/images/profile.png'),
+              ),
             ),
+              
+            const Padding(
+              padding: EdgeInsets.only(left: 30),
+              child: Text('Chat', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),),
+            ),
+            
+            
+            SizedBox(
+              width: 90,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  CircleAvatar(
+                    radius: 19,
+                    backgroundColor: accentColor, 
+                    child: IconButton(
+                    icon:  const Icon(
+                        Icons.search,
+                        color: Colors.white,
+                        size: 25,
+                      ),
+                      onPressed: () async{
+                        await singout();
+                      },
+                    ),
+                  ),
+
+                 
+                  CircleAvatar(
+                    radius: 19,
+                    backgroundColor: accentColor, 
+                    child: IconButton(
+                    icon:  const Icon(
+                        Icons.person_add_alt_sharp,
+                        color: Colors.white,
+                        size: 25,
+                      ),
+                      onPressed: () async{
+                        await singout();
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),    
           ],
         ), 
         centerTitle: false, 
         backgroundColor:background, 
-        elevation: 0,
+        elevation: 1,
       ),
       body: Center(
         child: SafeArea(
@@ -60,25 +104,16 @@ class _HomeScreenState extends State<HomeScreen> {
                     List<QueryDocumentSnapshot<Object?>>? messages = snapshot.data?.docs.reversed.toList();
                     
                     for(var message in messages!){
-                      if(message.get('reciver') == _auth.user?.email){
                         final userTile = UserTile(
                           lastMessage: message.get('text'),
                           userName: message.get('sender'),
                         );
-                         messageBubbles.add(userTile);
-                      }
-                      if(message.get('sender') == _auth.user?.email){
-                        final userTile = UserTile(
-                          lastMessage: message.get('text'),
-                          userName: message.get('reciver'),
-                        );
-                         messageBubbles.add(userTile);
-                      }
-                    }
+                        messageBubbles.add(userTile);
+                     }
                   
                     return Expanded(
                       child: ListView.builder(
-                      itemCount: messageBubbles.length,
+                      itemCount: 1,
                       itemBuilder: (context, index) {
                         return ListTile(
                           title: messageBubbles[index],

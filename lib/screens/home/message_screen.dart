@@ -24,6 +24,7 @@ class _MessageScreentState extends State<MessageScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      
       backgroundColor: background,
       body: SafeArea(
       child: Column(

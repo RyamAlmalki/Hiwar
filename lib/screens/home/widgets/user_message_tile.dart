@@ -14,6 +14,7 @@ class UserMessageTile extends StatelessWidget {
           child: Text('Online', style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold, fontSize: 14),),
         ), 
         tileColor: background,
+        
         leading: SizedBox(
           width: 110,
           child: Row(

@@ -2,7 +2,7 @@ import 'package:chatapp/screens/home/widgets/user_message_tile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../const.dart';
+import '../../shared/const.dart';
 
 final user = FirebaseAuth.instance.currentUser!;
 final messages = FirebaseFirestore.instance.collection('messages');
@@ -10,7 +10,7 @@ final messages = FirebaseFirestore.instance.collection('messages');
 
 class MessageScreen extends StatefulWidget {
   const MessageScreen({super.key});
-
+  
   @override
   State<MessageScreen> createState() => _MessageScreentState();
 }

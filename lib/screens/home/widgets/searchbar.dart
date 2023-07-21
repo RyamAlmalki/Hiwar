@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../const.dart';
+import '../../../shared/const.dart';
 
 class SearchBar extends StatelessWidget {
   const SearchBar({super.key});

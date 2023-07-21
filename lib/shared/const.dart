@@ -6,7 +6,7 @@ final Color primaryColor = HexColor("#F7931E");
 final Color background = HexColor("#1E1E27");
 final Color textColor = HexColor("#C4C4C4");
 
-
+// we can use this constant in the different form field.
 InputDecoration decorationStyles = InputDecoration(
     border: InputBorder.none,
     filled: true,

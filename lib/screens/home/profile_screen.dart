@@ -1,6 +1,6 @@
 
 
-import 'package:chatapp/const.dart';
+import 'package:chatapp/shared/const.dart';
 import 'package:flutter/material.dart';
 
 import '../../services/auth.dart';

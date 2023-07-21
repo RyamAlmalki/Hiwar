@@ -1,4 +1,4 @@
-import 'package:chatapp/const.dart';
+import 'package:chatapp/shared/const.dart';
 import 'package:chatapp/screens/authenticate/login_screen.dart';
 import 'package:chatapp/screens/authenticate/auth_widget/background.dart';
 import 'package:chatapp/screens/authenticate/auth_widget/line_title.dart';

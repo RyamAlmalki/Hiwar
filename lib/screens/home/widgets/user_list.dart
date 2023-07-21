@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../const.dart';
+import '../../../shared/const.dart';
 
 class UserTile extends StatelessWidget {
   UserTile({super.key, this.userName, this.lastMessage});

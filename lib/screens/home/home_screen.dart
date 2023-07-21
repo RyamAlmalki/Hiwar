@@ -1,4 +1,5 @@
-import 'package:chatapp/const.dart';
+import 'package:chatapp/screens/home/message_screen.dart';
+import 'package:chatapp/shared/const.dart';
 import 'package:chatapp/screens/home/widgets/user_list.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -94,33 +95,35 @@ class _HomeScreenState extends State<HomeScreen> {
             children:  [
                 StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
-                .collection('messages').orderBy('date')
+                .collection('conversations')
                 .snapshots(),
                 builder: (context, snapshot){
-                  List<UserTile> messageBubbles = [];
+                  List<UserTile> conversationsList = [];
                   if(!snapshot.hasData){
                     return const CircularProgressIndicator();
                   }
-                    List<QueryDocumentSnapshot<Object?>>? messages = snapshot.data?.docs.reversed.toList();
+                    List<QueryDocumentSnapshot<Object?>>? converstions = snapshot.data?.docs.reversed.toList();
                     
-                    for(var message in messages!){
-                        final userTile = UserTile(
-                          lastMessage: message.get('text'),
-                          userName: message.get('sender'),
+                    for(var converstion in converstions!){
+                      for(var member in converstion.get('members')){
+                        if(member == _auth.user!.uid){ // if the user is part of a conversation then 
+                          final userTile = UserTile(
+                            lastMessage: converstion.get('messages')[0]['text'],
+                            userName: 'friend'
                         );
-                        messageBubbles.add(userTile);
+                        conversationsList.add(userTile);
+                        }
+                      }
                      }
                   
                     return Expanded(
                       child: ListView.builder(
-                      itemCount: 1,
+                      itemCount: conversationsList.length,
                       itemBuilder: (context, index) {
-                        return ListTile(
-                          title: messageBubbles[index],
-                          );
-                        },
-                      ),
-                    );
+                        return conversationsList[index];
+                      },
+                    ),
+                  );
                 }
               ),
             ],

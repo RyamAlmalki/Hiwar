@@ -1,7 +1,10 @@
+import 'package:chatapp/models/user.dart';
 import 'package:chatapp/screens/home/widgets/user_message_tile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../../services/auth.dart';
+import '../../services/database.dart';
 import '../../shared/const.dart';
 
 final user = FirebaseAuth.instance.currentUser!;
@@ -9,17 +12,38 @@ final messages = FirebaseFirestore.instance.collection('messages');
 
 
 class MessageScreen extends StatefulWidget {
-  const MessageScreen({super.key});
+  ChatUser? reciver;
+  MessageScreen({super.key, required this.reciver});
   
   @override
   State<MessageScreen> createState() => _MessageScreentState();
 }
 
 class _MessageScreentState extends State<MessageScreen> {
-  
+  final DatabaseService database = DatabaseService();
   final messageTextConroller = TextEditingController();
   String? messageText;
   bool ForBool = false;
+  dynamic conversation;
+  final AuthService _auth = AuthService(); // instance of the AuthService class 
+  
+  @override
+  void initState() {
+    getConversation();
+    super.initState();
+  }
+
+  getConversation() async {
+    try{
+      dynamic result = await database.gettingConversation(widget.reciver!.uid, _auth.user!.uid);
+
+      setState(() {
+        conversation = result;
+      });
+    }catch(e){
+      print(e);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,19 +83,55 @@ class _MessageScreentState extends State<MessageScreen> {
                     Icons.send,
                     color: textColor,
                   ),
-                  onPressed: () {
+                  onPressed: () async {
+                    print(conversation);
+                    if(conversation == null){
+                        await database.createConveration(widget.reciver!.uid, _auth.user!.uid);
+                        getConversation();
+                      }
+
                     setState(() {
-                        messageText = messageTextConroller.text;
-                        // text + sender mail 
-                       messages
-                        .add({
-                          'text': messageText, // John Doe
-                          'sender': user.email, // Stokes and Sons
-                          'reciver': 'test@gmail.com',
-                          'date': DateTime.now()
-                        })
-                        .then((value) => print("message Added"))
-                        .catchError((error) => print("Failed to add message: $error"));
+                       messageText = messageTextConroller.text;
+                      // if this the first conversation between the two a new converstion collection will be created 
+                      
+                      print(conversation.get('messages')!);
+
+                      database.conversationsCollection.doc('LNXO3SEsiJ4FdcDqIbv4').update(
+                        {
+                           "messages.{}": {
+                            'text': 'hi',
+                           },
+                          }
+                  
+                      )
+                      ;
+
+
+
+
+                        // {
+                        //   messages: {
+                        //     'text': messageText, // John Doe
+                        //     'senderId': user.uid, // Stokes and Sons
+                        //     'type': 'text',
+                        //     'date': DateTime.now()
+                        //   }
+                        // },
+                        // SetOptions(merge: true));
+
+                        // if this is not the first converstion between the two then add to message 
+                        //messageText = messageTextConroller.text;
+                          // text + sender mail 
+                          // messages
+                          //   .add({
+                          //     'text': messageText, // John Doe
+                          //     'sender': user.email, // Stokes and Sons
+                          //     'reciver': 'test@gmail.com',
+                          //     'date': DateTime.now()
+                          //   })
+                          //   .then((value) => print("message Added"))
+                          //   .catchError((error) => print("Failed to add message: $error"));
+
                         messageTextConroller.clear();
                       }
                     );
@@ -92,6 +152,7 @@ class MessageStream extends StatelessWidget {
   final ScrollController _controller = ScrollController();
   String? messageText;
 
+  // here i should find the collection between the two and display the text between them 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(

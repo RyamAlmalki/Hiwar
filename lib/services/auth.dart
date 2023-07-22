@@ -62,6 +62,14 @@ class AuthService{
     }
   }
 
+  Future fetchUser(final email) async {
+    try{
+      return await _auth.fetchSignInMethodsForEmail(email);
+    }catch(e){
+      print(e);
+    }   
+  }
+
 
   // sing out
   Future signout() async {

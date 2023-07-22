@@ -1,3 +1,4 @@
+import 'package:chatapp/models/user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DatabaseService{
@@ -22,17 +23,63 @@ class DatabaseService{
   }
 
   // getting user data
-  Future gettingUserData(String email) async {
-    QuerySnapshot snapshot =
-        await userCollection.where("email", isEqualTo: email).get();
-    return snapshot;
+  Future<QueryDocumentSnapshot<Object?>?> gettingUserData(String email) async {
+    QueryDocumentSnapshot<Object?>? user;
+
+    await userCollection
+    .get()
+    .then((QuerySnapshot querySnapshot) {
+        for(var snapshot in querySnapshot.docs){
+          if(snapshot["email"] == email){
+            //user = ChatUser(uid: snapshot["uid"], displayName: snapshot["fullName"], email: snapshot["email"], profilePic: snapshot["profilePic"]);
+            user = snapshot;
+          }
+        }
+      }
+    );
+
+    return user;
   }
 
+  Future<QueryDocumentSnapshot<Object?>?> gettingConversation(String reciverUid, String uid) async{
+    QueryDocumentSnapshot<Object?>? conversation;
+    bool member1 = false ;
+    bool member2 = false;
+
+    await conversationsCollection
+    .get()
+    .then((QuerySnapshot querySnapshot) {
+        for(var snapshot in querySnapshot.docs){
+
+          for(var member in snapshot.get('members')){
+            
+            if(member == uid){ // if the user is part of a conversation then 
+              member1 = true;
+            }
+            if(member == reciverUid){
+              member2 = true;
+            }
+          }
+
+          if(member1 == true && member2 == true){
+            conversation = snapshot;
+          }
+        }
+      }
+    );
+    
+    return conversation;
+  }
+
+
   // create a conversation 
-  Future createConveration() async {
+  Future createConveration(String reciverUid, String uid) async {
     return await conversationsCollection.add(
       {
-        "members": [],
+        "members": [
+          reciverUid,
+          uid
+        ],
         "messages": [],
       }
     );

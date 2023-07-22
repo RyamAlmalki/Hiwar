@@ -4,6 +4,7 @@ import 'package:chatapp/screens/authenticate/login_screen.dart';
 import 'package:chatapp/screens/home/message_screen.dart';
 import 'package:chatapp/screens/authenticate/register_screen.dart';
 import 'package:chatapp/screens/home/profile_screen.dart';
+import 'package:chatapp/screens/home/search_screen.dart';
 import 'package:chatapp/screens/spalsh_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -39,8 +40,8 @@ class MyApp extends StatelessWidget {
         'homeScreen':(context) => const HomeScreen(),
         'registerScreen':(context) => const RegisterScreen(),
         'loginScreen':(context) => const LoginScreen(),
-        'messageScreen':(context) => const MessageScreen(),
         'profileScreen':(context) => const ProfileScreen(),
+        'searchScreen':(context) => const SearchScreen(),
       },
     );
   }

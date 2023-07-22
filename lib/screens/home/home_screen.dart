@@ -39,48 +39,23 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
               
-            const Padding(
-              padding: EdgeInsets.only(left: 30),
-              child: Text('Chat', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),),
-            ),
-            
+            const Text('Chat', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),),
             
             SizedBox(
-              width: 90,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  CircleAvatar(
-                    radius: 19,
-                    backgroundColor: accentColor, 
-                    child: IconButton(
-                    icon:  const Icon(
-                        Icons.search,
-                        color: Colors.white,
-                        size: 25,
-                      ),
-                      onPressed: () async{
-                        await singout();
-                      },
-                    ),
+              width: 60,
+              child: CircleAvatar(
+                radius: 19,
+                backgroundColor: accentColor, 
+                child: IconButton(
+                icon:  const Icon(
+                    Icons.search,
+                    color: Colors.white,
+                    size: 25,
                   ),
-
-                 
-                  CircleAvatar(
-                    radius: 19,
-                    backgroundColor: accentColor, 
-                    child: IconButton(
-                    icon:  const Icon(
-                        Icons.person_add_alt_sharp,
-                        color: Colors.white,
-                        size: 25,
-                      ),
-                      onPressed: () async{
-                        await singout();
-                      },
-                    ),
-                  ),
-                ],
+                  onPressed: () async{
+                    Navigator.of(context).pushReplacementNamed('searchScreen');
+                  },
+                ),
               ),
             ),    
           ],
@@ -108,7 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       for(var member in converstion.get('members')){
                         if(member == _auth.user!.uid){ // if the user is part of a conversation then 
                           final userTile = UserTile(
-                            lastMessage: converstion.get('messages')[0]['text'],
+                            lastMessage: 'we',
                             userName: 'friend'
                         );
                         conversationsList.add(userTile);

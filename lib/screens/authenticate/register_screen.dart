@@ -1,10 +1,8 @@
 import 'package:chatapp/shared/const.dart';
-import 'package:chatapp/screens/authenticate/login_screen.dart';
 import 'package:chatapp/screens/authenticate/auth_widget/background.dart';
 import 'package:chatapp/screens/authenticate/auth_widget/line_title.dart';
 import 'package:chatapp/screens/home/widgets/rounded_button.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../services/auth.dart';
 
@@ -24,6 +22,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   TextEditingController fullNameForm = TextEditingController();
   final AuthService _auth = AuthService(); // instance of the AuthService class 
   
+ 
    Future signUp() async{
      // loading circle 
     showDialog(
@@ -62,9 +61,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void dispose() {
     emailForm.dispose();
     passwordForm.dispose();
+    fullNameForm.dispose();
     super.dispose();
   }
-
 
   @override
   Widget build(BuildContext context) {

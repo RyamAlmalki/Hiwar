@@ -1,9 +1,10 @@
-import 'package:chatapp/screens/home/message_screen.dart';
 import 'package:chatapp/shared/const.dart';
 import 'package:chatapp/screens/home/widgets/user_list.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import '../../models/user.dart';
 import '../../services/auth.dart';
+import '../../services/database.dart';
 
 
 class HomeScreen extends StatefulWidget {
@@ -15,12 +16,22 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final AuthService _auth = AuthService(); // instance of the AuthService class 
-  
-  Future singout() async {
-    _auth.signout();
-    Navigator.of(context).pushReplacementNamed('loginScreen');
-  }
+  final DatabaseService database = DatabaseService();
+  String? reciverName;
+  ChatUser? user;
 
+
+  getName(otherMember) { // user2
+      FirebaseFirestore.instance.collection('users').doc(otherMember).get().then(
+        (snapshot) {
+          setState(() {
+          user = ChatUser(uid: snapshot["uid"], displayName: snapshot["fullName"], email: snapshot["email"], profilePic: snapshot["profilePic"]);
+          });
+        } 
+      );
+    }
+
+ 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,7 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
               },
               child: const CircleAvatar(
                 radius: 19,
-                backgroundImage: AssetImage('assets/images/profile.png'),
+                backgroundImage: AssetImage('assets/images/profile.png'), // should show the user image
               ),
             ),
               
@@ -67,30 +78,38 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Center(
         child: SafeArea(
           child: Column(
-            children:  [
+            children: [
+
+                // notify us of new action done to the conversation  
                 StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance
-                .collection('conversations')
-                .snapshots(),
-                builder: (context, snapshot){
-                  List<UserTile> conversationsList = [];
-                  if(!snapshot.hasData){
-                    return const CircularProgressIndicator();
-                  }
+                    stream: DatabaseService().conversations,
+                    builder: (context, snapshot){
+                      
+                    if(!snapshot.hasData){
+                      return const CircularProgressIndicator();
+                    }
+
                     List<QueryDocumentSnapshot<Object?>>? converstions = snapshot.data?.docs.reversed.toList();
-                    
+                    List<UserTile> conversationsList = [];
+
                     for(var converstion in converstions!){
-                      for(var member in converstion.get('members')){
-                        if(member == _auth.user!.uid){ // if the user is part of a conversation then 
-                          final userTile = UserTile(
-                            lastMessage: 'we',
-                            userName: 'friend'
-                        );
-                        conversationsList.add(userTile);
-                        }
-                      }
-                     }
-                  
+                      print(converstion);
+                      // dynamic newList = converstion.get('members'); // [user1, user2] 
+                      // newList.remove(_auth.user!.uid); // [user2] remove member if he is the current user
+
+                      // getName(newList[0]);
+                    
+          
+                      // final userTile = UserTile(
+                      //   lastMessage: '${converstion.get('messages')['1']['text']}',
+                      //   userName: 'frined',
+                      //   user: user,
+                      // );
+
+
+                      // conversationsList.add(userTile);
+                    }
+
                     return Expanded(
                       child: ListView.builder(
                       itemCount: conversationsList.length,
@@ -101,12 +120,15 @@ class _HomeScreenState extends State<HomeScreen> {
                   );
                 }
               ),
-            ],
+            ],   
           ),
         ),
       ),
     );
   }
 }
+
+
+
 
 

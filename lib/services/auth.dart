@@ -1,4 +1,3 @@
-import 'package:chatapp/models/user.dart';
 import 'package:chatapp/services/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -50,6 +49,7 @@ class AuthService{
       final UserCredential authResult = await _auth.createUserWithEmailAndPassword(email: email.text.trim(), password: password.text.trim());
       final User? user = authResult.user;
       
+      // create a new document for the user with the uid 
       if(user!=null){
         DatabaseService(uid: user.uid).updateUserData(fullName.text, email.text);
       }

@@ -1,11 +1,14 @@
+import 'package:chatapp/models/user.dart';
 import 'package:flutter/material.dart';
 import '../../../shared/const.dart';
+import 'package:chatapp/screens/home/message_screen.dart';
 
 class UserTile extends StatelessWidget {
-  UserTile({super.key, this.userName, this.lastMessage});
+  UserTile({super.key, this.userName, this.lastMessage, this.user});
   String? lastMessage;
   String? userName;
-
+  ChatUser? user;
+  
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -41,7 +44,10 @@ class UserTile extends StatelessWidget {
           ],
         ),
         onTap: (){
-          Navigator.of(context).pushReplacementNamed('messageScreen');
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) =>  MessageScreen(reciver: user,)),
+          );
         },
       ),
     );

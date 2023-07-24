@@ -1,10 +1,12 @@
 import 'package:chatapp/models/user.dart';
-import 'package:chatapp/screens/home/message_screen.dart';
+import 'package:chatapp/screens/home/widgets/search_tile.dart';
 import 'package:chatapp/services/database.dart';
 import 'package:chatapp/shared/const.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../services/auth.dart';
+
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -15,7 +17,6 @@ class SearchScreen extends StatefulWidget {
 
 class SearchScreenState extends State<SearchScreen> {
   final myController = TextEditingController();
-  
   final DatabaseService database = DatabaseService();
   final AuthService _auth = AuthService(); // instance of the AuthService class 
   ChatUser? user;
@@ -54,7 +55,6 @@ class SearchScreenState extends State<SearchScreen> {
             color: Colors.white, borderRadius: BorderRadius.circular(5)),
           child: Center(
             child: TextField(
-        
               onTap: () async {
                 // search for email in data base and get name and profile 
                 getSearch();
@@ -75,42 +75,38 @@ class SearchScreenState extends State<SearchScreen> {
           ),
         ),
       ),
-      body: user != null ? Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              itemCount: 1,
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding: const EdgeInsets.only(top: 2),
-                  child: ListTile(
-                    subtitle: Padding(
-                      padding: const EdgeInsets.only(top: 10),
-                      child: Text('${user?.email}', style: TextStyle(color: Colors.amber, fontWeight: FontWeight.normal, fontSize: 15),),
-                    ), 
-                    tileColor: background,
-                    leading: const CircleAvatar(
-                      radius: 30,
-                      backgroundImage: AssetImage('assets/images/profile.png'),
+      body: SafeArea(
+        child: Column(
+          children: [
+            StreamBuilder<List<ChatUser>?>(
+              stream: DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid).users,
+              builder: (context, snapshot) {
+                if(snapshot.hasData){
+                  List<ChatUser>? users = snapshot.data;
+                
+                  return Expanded(
+                      child: ListView.builder(
+                      itemCount: users?.length,
+                      itemBuilder: (context, index) {
+                        return SearchTile(user: users?.elementAt(index));
+                      },
                     ),
-                    title: Text('${user?.displayName}', style: TextStyle(color: textColor, fontWeight: FontWeight.bold, fontSize: 18),),
-                    onTap: (){
-                      // when this user clicks on this name he will move to the message screen 
-                      // with this users data 
-                      // if this user doesnt have any conversation with him it will show 
-                      // if he send a message a converstion will be created for them 
-                     Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) =>  MessageScreen(reciver: user,)),
-                      );
-                    },
-                  ),
-                );
+                  );
+                }else{
+                  return const CircularProgressIndicator();
+                }
               },
-            ),
-          ),
-        ],
-      ) : null
+            )
+          ],
+        )
+      )
     );
   }
 }
+
+
+
+
+
+
+

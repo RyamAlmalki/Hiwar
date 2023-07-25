@@ -1,6 +1,9 @@
+import 'package:chatapp/models/message.dart';
 import 'package:chatapp/models/user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+
+import '../models/conversation.dart';
 
 class DatabaseService{
 
@@ -24,11 +27,9 @@ class DatabaseService{
     );
   }
 
-  // conversation List from a snapshot 
-  
 
   // Search List fron snapshot 
-  List<ChatUser>? _searchListFromSnapshot(QuerySnapshot snapshot){
+  List<ChatUser>? _searchUserListFromSnapshot(QuerySnapshot snapshot){
       return snapshot.docs
       .map((doc) {
         return ChatUser(
@@ -41,72 +42,82 @@ class DatabaseService{
     ).toList();
   }
 
+
   // get users from a stream
-  Stream<List<ChatUser>?> get users{
-    return userCollection.snapshots()
-    .map((snapshot){
-      return _searchListFromSnapshot(snapshot);
-    });
+  Stream<List<ChatUser>?>? users(search){
+    if(search == null){
+      return userCollection
+      .snapshots()
+      .map((snapshot){
+        return _searchUserListFromSnapshot(snapshot);
+      });
+    }
+
+    if(search != null){
+      return userCollection
+      .where('email', whereIn: [search])
+      .snapshots()
+      .map((snapshot){
+        return _searchUserListFromSnapshot(snapshot);
+      });
+    }
+  }
+  
+
+  // Search List fron snapshot 
+  List<Conversation>? _searchConversationListFromSnapshot(QuerySnapshot snapshot){
+      return snapshot.docs
+      .map((doc) {
+        return Conversation(
+          id: doc['conversationId'] ?? '',
+          fullName: doc['fullName'] ?? '', 
+          lastMessage: doc['lastMessage'] ?? '', 
+          profilePic: doc['profilePic'] ?? '',
+          numberOfUnseenMessages: doc['numberOfUnseenMessages']
+        );
+      }
+    ).toList();
   }
 
 
-  // get conversation from a stream
-  Stream<QuerySnapshot> get conversations{
-    return conversationsCollection.snapshots();
+  // get conversations from a strea,
+  Stream<List<Conversation>?>? get conversations{
+    return userCollection
+    .doc('WjVIq9S6Z8hrvPws5ViFfuH1KAj2')
+    .collection('converstions')
+    .snapshots()
+    .map(_searchConversationListFromSnapshot);
   }
 
-  // getting user data
-  Future<QueryDocumentSnapshot<Object?>?> gettingUserData(String email) async {
-    QueryDocumentSnapshot<Object?>? user;
 
-    await userCollection
-    .get()
-    .then((QuerySnapshot querySnapshot) {
-        for(var snapshot in querySnapshot.docs){
-          if(snapshot["email"] == email){
-            //user = ChatUser(uid: snapshot["uid"], displayName: snapshot["fullName"], email: snapshot["email"], profilePic: snapshot["profilePic"]);
-            user = snapshot;
+  // get conversations from a stream
+  Stream<DocumentSnapshot<Object?>> messages(conversationId){
+    return conversationsCollection
+    .doc(conversationId)
+    .snapshots();
+  }
+
+
+
+  // addMessage 
+  addMessage(conversationId, textMessage, numberOfMessages){
+    conversationsCollection
+    .doc(conversationId)
+    .set(
+      {
+        'messages': {
+          '${numberOfMessages++}' : {
+            'text': textMessage,
+            'senderId': uid,
           }
         }
-      }
+      }, SetOptions(merge: true),
     );
-
-    return user;
   }
 
-  Future<QueryDocumentSnapshot<Object?>?> gettingConversation(String reciverUid, String uid) async{
-    QueryDocumentSnapshot<Object?>? conversation;
-    bool member1 = false ;
-    bool member2 = false;
-
-    await conversationsCollection
-    .get()
-    .then((QuerySnapshot querySnapshot) {
-        for(var snapshot in querySnapshot.docs){
-
-          for(var member in snapshot.get('members')){
-            
-            if(member == uid){ // if the user is part of a conversation then 
-              member1 = true;
-            }
-            if(member == reciverUid){
-              member2 = true;
-            }
-          }
-
-          if(member1 == true && member2 == true){
-            conversation = snapshot;
-          }
-        }
-      }
-    );
-    
-    return conversation;
-  }
-
-
+  
   // create a conversation 
-  Future createConveration(String reciverUid, String uid) async {
+  Future<String> createConveration(String reciverUid) async {
     return await conversationsCollection.add(
       {
         "members": [
@@ -116,19 +127,15 @@ class DatabaseService{
         "messages": [],
       }
     ).then((DocumentReference doc ) {
-
         conversationsCollection.doc(doc.id).set(
           {
             'id': doc.id,
           }, SetOptions(merge: true)
         );
+
+        return doc.id;
       } 
     );
-  }
-
-  // add a message to conversation 
-  sendMessage() async {
-    
   }
 
 }

@@ -5,8 +5,6 @@ import 'package:chatapp/shared/const.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../../services/auth.dart';
-
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -16,23 +14,13 @@ class SearchScreen extends StatefulWidget {
 }
 
 class SearchScreenState extends State<SearchScreen> {
-  final myController = TextEditingController();
-  final DatabaseService database = DatabaseService();
-  final AuthService _auth = AuthService(); // instance of the AuthService class 
-  ChatUser? user;
+  final searchController = TextEditingController();
+  String? searchResult;
 
-  Future getSearch() async {
-    dynamic snapshot= await database.gettingUserData(myController.text);
-    
-    try{
-      if(snapshot != null){
-        setState(() {
-          user = ChatUser(uid: snapshot["uid"], displayName: snapshot["fullName"], email: snapshot["email"], profilePic: snapshot["profilePic"]);
-        });
-      }
-    }catch(e){
-      print(e);
-    }
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
   }
 
   @override
@@ -55,17 +43,18 @@ class SearchScreenState extends State<SearchScreen> {
             color: Colors.white, borderRadius: BorderRadius.circular(5)),
           child: Center(
             child: TextField(
-              onTap: () async {
-                // search for email in data base and get name and profile 
-                getSearch();
+              onChanged: (value) {
+                setState(() {
+                  searchResult = value;
+                });
               },
-              controller: myController,
+              controller: searchController,
               decoration: InputDecoration(
                 prefixIcon: const Icon(Icons.search),
                 suffixIcon: IconButton(
                   icon: const Icon(Icons.clear),
                   onPressed: () {
-                    myController.clear();
+                    searchController.clear();
                   },
                 ),
                 hintText: 'Search',
@@ -79,16 +68,17 @@ class SearchScreenState extends State<SearchScreen> {
         child: Column(
           children: [
             StreamBuilder<List<ChatUser>?>(
-              stream: DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid).users,
+              stream: DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid).users(searchResult),
               builder: (context, snapshot) {
                 if(snapshot.hasData){
                   List<ChatUser>? users = snapshot.data;
-                
+
                   return Expanded(
                       child: ListView.builder(
                       itemCount: users?.length,
                       itemBuilder: (context, index) {
-                        return SearchTile(user: users?.elementAt(index));
+                        ChatUser user = users!.elementAt(index);
+                        return SearchTile(user: user);
                       },
                     ),
                   );

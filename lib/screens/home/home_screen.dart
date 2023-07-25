@@ -1,9 +1,8 @@
+import 'package:chatapp/models/conversation.dart';
 import 'package:chatapp/shared/const.dart';
-import 'package:chatapp/screens/home/widgets/user_list.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:chatapp/screens/home/widgets/conversation_tile.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import '../../models/user.dart';
-import '../../services/auth.dart';
 import '../../services/database.dart';
 
 
@@ -15,21 +14,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final AuthService _auth = AuthService(); // instance of the AuthService class 
-  final DatabaseService database = DatabaseService();
-  String? reciverName;
-  ChatUser? user;
-
-
-  getName(otherMember) { // user2
-      FirebaseFirestore.instance.collection('users').doc(otherMember).get().then(
-        (snapshot) {
-          setState(() {
-          user = ChatUser(uid: snapshot["uid"], displayName: snapshot["fullName"], email: snapshot["email"], profilePic: snapshot["profilePic"]);
-          });
-        } 
-      );
-    }
 
  
   @override
@@ -79,45 +63,26 @@ class _HomeScreenState extends State<HomeScreen> {
         child: SafeArea(
           child: Column(
             children: [
-
-                // notify us of new action done to the conversation  
-                StreamBuilder<QuerySnapshot>(
-                    stream: DatabaseService().conversations,
-                    builder: (context, snapshot){
-                      
-                    if(!snapshot.hasData){
-                      return const CircularProgressIndicator();
-                    }
-
-                    List<QueryDocumentSnapshot<Object?>>? converstions = snapshot.data?.docs.reversed.toList();
-                    List<UserTile> conversationsList = [];
-
-                    for(var converstion in converstions!){
-                      print(converstion);
-                      // dynamic newList = converstion.get('members'); // [user1, user2] 
-                      // newList.remove(_auth.user!.uid); // [user2] remove member if he is the current user
-
-                      // getName(newList[0]);
-                    
-          
-                      // final userTile = UserTile(
-                      //   lastMessage: '${converstion.get('messages')['1']['text']}',
-                      //   userName: 'frined',
-                      //   user: user,
-                      // );
-
-
-                      // conversationsList.add(userTile);
-                    }
+                  // Here we will retrive all the users conversations
+                  StreamBuilder<List<Conversation>?>(
+                  stream: DatabaseService(uid: FirebaseAuth.instance.currentUser?.uid).conversations,
+                  builder: (context, snapshot){
+                    print(snapshot);
+                    if(snapshot.hasData){
+                    List<Conversation>? conversations = snapshot.data;
 
                     return Expanded(
-                      child: ListView.builder(
-                      itemCount: conversationsList.length,
-                      itemBuilder: (context, index) {
-                        return conversationsList[index];
-                      },
-                    ),
-                  );
+                        child: ListView.builder(
+                        itemCount: conversations?.length,
+                        itemBuilder: (context, index) {
+                          Conversation conversation = conversations!.elementAt(index);
+                          return ConversationTile(conversation: conversation);
+                        },
+                      ),
+                    );
+                  }else{
+                    return const Text('No Frineds :(', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),);
+                  }
                 }
               ),
             ],   

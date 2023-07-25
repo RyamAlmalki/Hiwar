@@ -24,10 +24,11 @@ class SearchTile extends StatelessWidget {
         onTap: (){
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) =>  MessageScreen(reciver: user,)),
+            MaterialPageRoute(builder: (context) =>  MessageScreen(user: user,)),
           );
         },
       ),
     );
   }
 }
+

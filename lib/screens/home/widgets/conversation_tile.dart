@@ -1,13 +1,11 @@
-import 'package:chatapp/models/user.dart';
+import 'package:chatapp/models/conversation.dart';
 import 'package:flutter/material.dart';
 import '../../../shared/const.dart';
 import 'package:chatapp/screens/home/message_screen.dart';
 
-class UserTile extends StatelessWidget {
-  UserTile({super.key, this.userName, this.lastMessage, this.user});
-  String? lastMessage;
-  String? userName;
-  ChatUser? user;
+class ConversationTile extends StatelessWidget {
+  ConversationTile({super.key, this.conversation});
+  Conversation? conversation;
   
   @override
   Widget build(BuildContext context) {
@@ -19,7 +17,7 @@ class UserTile extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('$lastMessage', style: TextStyle(color: Colors.amber, fontWeight: FontWeight.normal, fontSize: 15),),
+              Text(conversation!.lastMessage, style: const TextStyle(color: Colors.amber, fontWeight: FontWeight.normal, fontSize: 15),),
               CircleAvatar(
                 radius: 10,
                 backgroundColor: primaryColor, 
@@ -39,14 +37,14 @@ class UserTile extends StatelessWidget {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('$userName', style: TextStyle(color: textColor, fontWeight: FontWeight.bold, fontSize: 18),),
+            Text('${conversation!.fullName}', style: TextStyle(color: textColor, fontWeight: FontWeight.bold, fontSize: 18),),
             Text('Tue', style: TextStyle(color: textColor, fontWeight: FontWeight.bold, fontSize: 18),),
           ],
         ),
         onTap: (){
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) =>  MessageScreen(reciver: user,)),
+            MaterialPageRoute(builder: (context) =>  MessageScreen(chatId: conversation?.id,)),
           );
         },
       ),

@@ -1,5 +1,3 @@
-
-
 import 'package:chatapp/shared/const.dart';
 import 'package:flutter/material.dart';
 
@@ -102,7 +100,7 @@ class _ProlfieScreenState extends State<ProfileScreen> {
                    onPressed: () async{
                     await singout();
                   },
-                  child: Text('Logout'),
+                  child: const Text('Logout'),
                 ),
               )
             ]
@@ -112,3 +110,4 @@ class _ProlfieScreenState extends State<ProfileScreen> {
     );
   }
 }
+

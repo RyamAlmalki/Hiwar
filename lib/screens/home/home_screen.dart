@@ -1,4 +1,5 @@
 import 'package:chatapp/models/conversation.dart';
+import 'package:chatapp/models/user.dart';
 import 'package:chatapp/shared/const.dart';
 import 'package:chatapp/screens/home/widgets/conversation_tile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -14,8 +15,23 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  ChatUser? conversationUser;
 
- 
+  void getUser(userId) async{
+    ChatUser? user = await DatabaseService().getConversationUser(userId); 
+    if (this.mounted) {
+       setState(() {
+       conversationUser = user;
+      });
+    }
+  }
+
+  
+  @override
+  void deactivate() {
+    super.deactivate();
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -66,17 +82,21 @@ class _HomeScreenState extends State<HomeScreen> {
                   // Here we will retrive all the users conversations
                   StreamBuilder<List<Conversation>?>(
                   stream: DatabaseService(uid: FirebaseAuth.instance.currentUser?.uid).conversations,
-                  builder: (context, snapshot){
-                    print(snapshot);
+                  builder: (context, snapshot) {
+                    
                     if(snapshot.hasData){
                     List<Conversation>? conversations = snapshot.data;
 
+            
                     return Expanded(
                         child: ListView.builder(
                         itemCount: conversations?.length,
                         itemBuilder: (context, index) {
                           Conversation conversation = conversations!.elementAt(index);
-                          return ConversationTile(conversation: conversation);
+
+                         getUser(conversation.userId);
+
+                          return ConversationTile(conversation: conversation, user: conversationUser,);
                         },
                       ),
                     );

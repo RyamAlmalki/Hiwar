@@ -1,12 +1,14 @@
 import 'package:chatapp/models/conversation.dart';
+import 'package:chatapp/models/user.dart';
 import 'package:flutter/material.dart';
 import '../../../shared/const.dart';
 import 'package:chatapp/screens/home/message_screen.dart';
 
 class ConversationTile extends StatelessWidget {
-  ConversationTile({super.key, this.conversation});
+  ConversationTile({super.key, this.conversation, this.user});
   Conversation? conversation;
-  
+  ChatUser? user;
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -44,7 +46,7 @@ class ConversationTile extends StatelessWidget {
         onTap: (){
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) =>  MessageScreen(chatId: conversation?.id,)),
+            MaterialPageRoute(builder: (context) =>  MessageScreen(chatId: conversation?.id, user: user,)),
           );
         },
       ),

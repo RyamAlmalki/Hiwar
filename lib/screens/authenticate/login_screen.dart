@@ -1,6 +1,6 @@
 import 'package:chatapp/screens/authenticate/auth_widget/background.dart';
 import 'package:chatapp/screens/authenticate/auth_widget/line_title.dart';
-import 'package:chatapp/screens/home/widgets/rounded_button.dart';
+import 'package:chatapp/screens/authenticate/auth_widget/rounded_button.dart';
 import 'package:chatapp/services/auth.dart';
 import 'package:flutter/material.dart';
 import '../../shared/const.dart';

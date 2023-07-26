@@ -17,6 +17,9 @@ class DatabaseService{
 
   // updating the userdata 
   Future updateUserData(String fullName, String email) async{
+    FirebaseAuth.instance.currentUser!.updateDisplayName(fullName);
+    FirebaseAuth.instance.currentUser!.updatePhotoURL("");
+    
     await userCollection.doc(uid).set(
       {
         "fullName": fullName,
@@ -36,10 +39,24 @@ class DatabaseService{
           uid: doc['uid'] ?? '',
           displayName: doc['fullName'] ?? '', 
           email: doc['email'] ?? '', 
-          profilePic: doc['profilePic'] ?? '',
+          photoURL: doc['profilePic'] ?? '',
         );
       }
     ).toList();
+  }
+
+  // get conversation user 
+  Future<ChatUser?> getConversationUser(userId) async {
+    ChatUser? user;
+    
+    await userCollection
+    .doc(userId)
+    .get()
+    .then((DocumentSnapshot documentSnapshot) {
+      user = ChatUser(uid: documentSnapshot.get('uid'), displayName: documentSnapshot.get('fullName'), email: documentSnapshot.get('email'), photoURL: documentSnapshot.get('profilePic'));
+    });
+
+    return user;
   }
 
 
@@ -47,6 +64,7 @@ class DatabaseService{
   Stream<List<ChatUser>?>? users(search){
     if(search == null){
       return userCollection
+      .where('email', isNotEqualTo: FirebaseAuth.instance.currentUser!.email)
       .snapshots()
       .map((snapshot){
         return _searchUserListFromSnapshot(snapshot);
@@ -69,6 +87,7 @@ class DatabaseService{
       return snapshot.docs
       .map((doc) {
         return Conversation(
+          userId: doc['userId'],
           id: doc['conversationId'] ?? '',
           fullName: doc['fullName'] ?? '', 
           lastMessage: doc['lastMessage'] ?? '', 
@@ -83,10 +102,33 @@ class DatabaseService{
   // get conversations from a strea,
   Stream<List<Conversation>?>? get conversations{
     return userCollection
-    .doc('WjVIq9S6Z8hrvPws5ViFfuH1KAj2')
+    .doc(uid)
     .collection('converstions')
     .snapshots()
     .map(_searchConversationListFromSnapshot);
+  }
+
+  // Search List fron snapshot 
+  List<Message>? _searchMessagesListFromSnapshot(QuerySnapshot snapshot){
+      return snapshot.docs
+      .map((doc) {
+        return Message(
+          message: doc['text'],
+          senderId: doc['senderId'],
+          senderName: doc['senderName']
+        );
+      }
+    ).toList();
+  }
+
+  // get messages from a strea,
+  Stream<List<Message>?>? messages2(conversationId){
+    return conversationsCollection
+    .doc('F9NCKhnCQjACP8sVloWv')
+    .collection('messages')
+    .orderBy('date')
+    .snapshots()
+    .map(_searchMessagesListFromSnapshot);
   }
 
 
@@ -98,24 +140,38 @@ class DatabaseService{
   }
 
 
-
+ 
   // addMessage 
-  addMessage(conversationId, textMessage, numberOfMessages){
+  addMessage(conversationId, textMessage, senderName){
     conversationsCollection
     .doc(conversationId)
-    .set(
-      {
-        'messages': {
-          '${numberOfMessages++}' : {
-            'text': textMessage,
-            'senderId': uid,
-          }
-        }
-      }, SetOptions(merge: true),
+    .collection('messages')
+    .add({
+      'text': textMessage,
+      'senderId': uid,
+      'date': FieldValue.serverTimestamp(),
+      'senderName': senderName,
+    });
+  }
+
+
+  // create user started conversation 
+  createUserConversation(conversationId, photoURL, displayName, lastMessage, userId){
+    userCollection
+    .doc(uid)
+    .collection('converstions')
+    .add({
+        'conversationId': conversationId,
+        'userId': userId,
+        'fullName': displayName ?? '',
+        'lastMessage': lastMessage,
+        'numberOfUnseenMessages': 1,
+        'profilePic': photoURL ?? '',
+      }
     );
   }
 
-  
+
   // create a conversation 
   Future<String> createConveration(String reciverUid) async {
     return await conversationsCollection.add(
@@ -124,7 +180,6 @@ class DatabaseService{
           reciverUid,
           uid
         ],
-        "messages": [],
       }
     ).then((DocumentReference doc ) {
         conversationsCollection.doc(doc.id).set(

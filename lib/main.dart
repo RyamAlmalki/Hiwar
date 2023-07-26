@@ -1,7 +1,6 @@
 import 'package:chatapp/firebase_options.dart';
 import 'package:chatapp/screens/home/home_screen.dart';
 import 'package:chatapp/screens/authenticate/login_screen.dart';
-import 'package:chatapp/screens/home/message_screen.dart';
 import 'package:chatapp/screens/authenticate/register_screen.dart';
 import 'package:chatapp/screens/home/profile_screen.dart';
 import 'package:chatapp/screens/home/search_screen.dart';

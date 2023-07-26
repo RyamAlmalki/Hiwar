@@ -10,7 +10,8 @@ import '../../shared/const.dart';
 class MessageScreen extends StatefulWidget {
   String? chatId;
   ChatUser? user;
-  MessageScreen({super.key, this.chatId, this.user});
+  int numberOfUnseenMessages = 0;
+  MessageScreen({super.key, this.chatId, this.user, required this.numberOfUnseenMessages});
   
   @override
   State<MessageScreen> createState() => _MessageScreentState();
@@ -22,7 +23,7 @@ class _MessageScreentState extends State<MessageScreen> {
   final messageTextConroller = TextEditingController();
   String? messageText;
   bool forBool = false;
-
+  
 
   sendMessage() async {
     if(widget.chatId == null){
@@ -45,11 +46,43 @@ class _MessageScreentState extends State<MessageScreen> {
       DatabaseService(uid:FirebaseAuth.instance.currentUser!.uid).addMessage(widget.chatId, messageText, FirebaseAuth.instance.currentUser?.displayName);
       
     }else{
+
       DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid).addMessage(widget.chatId, messageText, FirebaseAuth.instance.currentUser?.displayName);
 
-      // update user last message 
-      
+      // update user last message + last message day 
+      DatabaseService().updateLastMessage(widget.chatId, FirebaseAuth.instance.currentUser!.uid, messageText);
+
+      DatabaseService().updateLastMessage(widget.chatId, widget.user!.uid, messageText);
+
+      // update the last unseen message for the other user who didn't send the message 
+      updateLastUnseenMessage();
     }
+  }
+
+  updateLastUnseenMessage(){
+    setState(() {
+        widget.numberOfUnseenMessages += 1;
+      });
+
+     // update
+      DatabaseService().updateLastUnseenMessage(widget.chatId, widget.user!.uid, widget.numberOfUnseenMessages);
+  }
+
+
+  @override
+  void initState() {
+    // update last seem message 
+    resetLastUnseenMessage();
+    super.initState();
+  }
+
+  resetLastUnseenMessage(){
+    setState(() {
+      widget.numberOfUnseenMessages = 0;
+    });
+
+     // update user last message + last message day + add to number of last seen message 
+      DatabaseService().updateLastUnseenMessage(widget.chatId, FirebaseAuth.instance.currentUser!.uid, widget.numberOfUnseenMessages);
   }
 
 
@@ -83,10 +116,9 @@ class _MessageScreentState extends State<MessageScreen> {
       body: SafeArea(
       child: Column(
         children: [
-        
 
             StreamBuilder<List<Message>?>(
-              stream: DatabaseService().messages2(widget.chatId),
+              stream: DatabaseService().messages(widget.chatId),
               builder: (context, snapshot){
 
                 if(snapshot.hasData){
@@ -110,7 +142,6 @@ class _MessageScreentState extends State<MessageScreen> {
               }
             ),
             
-      
 
             Row(
               children: [

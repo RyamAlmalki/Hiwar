@@ -5,6 +5,7 @@ class Conversation{
   String lastMessage;
   int numberOfUnseenMessages;
   String userId;
-  
-  Conversation({required this.id, required this.fullName, required this.lastMessage, required this.profilePic, required this.numberOfUnseenMessages, required this.userId});
+  DateTime date;
+
+  Conversation({required this.id, required this.fullName, required this.lastMessage, required this.profilePic, required this.numberOfUnseenMessages, required this.userId, required this.date});
 }

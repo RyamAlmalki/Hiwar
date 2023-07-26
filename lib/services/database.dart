@@ -45,6 +45,7 @@ class DatabaseService{
     ).toList();
   }
 
+
   // get conversation user 
   Future<ChatUser?> getConversationUser(userId) async {
     ChatUser? user;
@@ -92,7 +93,8 @@ class DatabaseService{
           fullName: doc['fullName'] ?? '', 
           lastMessage: doc['lastMessage'] ?? '', 
           profilePic: doc['profilePic'] ?? '',
-          numberOfUnseenMessages: doc['numberOfUnseenMessages']
+          numberOfUnseenMessages: doc['numberOfUnseenMessages'],
+          date:(doc['date'] as Timestamp).toDate()
         );
       }
     ).toList();
@@ -108,6 +110,28 @@ class DatabaseService{
     .map(_searchConversationListFromSnapshot);
   }
 
+
+  // updateLastUnseenMessage
+  updateLastUnseenMessage(conversationId, id, numberOfUnseenMessages){
+    userCollection
+    .doc(id) // each user id 
+    .collection('converstions') 
+    .where('conversationId', isEqualTo: conversationId)
+    .get()
+    .then((QuerySnapshot querySnapshot){
+        if(querySnapshot.docs.isNotEmpty){
+          
+          querySnapshot.docs[0].reference.update(
+            {
+              'numberOfUnseenMessages': numberOfUnseenMessages
+            }
+          );
+        }
+      }
+    );
+  }
+
+
   // Search List fron snapshot 
   List<Message>? _searchMessagesListFromSnapshot(QuerySnapshot snapshot){
       return snapshot.docs
@@ -121,10 +145,11 @@ class DatabaseService{
     ).toList();
   }
 
+
   // get messages from a strea,
-  Stream<List<Message>?>? messages2(conversationId){
+  Stream<List<Message>?>? messages(conversationId){
     return conversationsCollection
-    .doc('F9NCKhnCQjACP8sVloWv')
+    .doc(conversationId)
     .collection('messages')
     .orderBy('date')
     .snapshots()
@@ -132,15 +157,6 @@ class DatabaseService{
   }
 
 
-  // get conversations from a stream
-  Stream<DocumentSnapshot<Object?>> messages(conversationId){
-    return conversationsCollection
-    .doc(conversationId)
-    .snapshots();
-  }
-
-
- 
   // addMessage 
   addMessage(conversationId, textMessage, senderName){
     conversationsCollection
@@ -152,6 +168,27 @@ class DatabaseService{
       'date': FieldValue.serverTimestamp(),
       'senderName': senderName,
     });
+  }
+
+
+  // update conversation last message
+  updateLastMessage(conversationId, id, lastMessage){
+    userCollection
+    .doc(id) // each user id 
+    .collection('converstions') 
+    .where('conversationId', isEqualTo: conversationId)
+    .get()
+    .then((QuerySnapshot querySnapshot){
+        if(querySnapshot.docs.isNotEmpty){
+          
+          querySnapshot.docs[0].reference.update(
+            {
+              'lastMessage': lastMessage,
+            }
+          );
+        }
+      }
+    );
   }
 
 
@@ -167,6 +204,7 @@ class DatabaseService{
         'lastMessage': lastMessage,
         'numberOfUnseenMessages': 1,
         'profilePic': photoURL ?? '',
+        'date': DateTime.now()
       }
     );
   }

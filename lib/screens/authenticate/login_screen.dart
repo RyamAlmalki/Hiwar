@@ -97,23 +97,25 @@ class _LoginScreenState extends State<LoginScreen> {
                                       
                         const SizedBox(height: 20,),
                           
-                        SizedBox(
-                          width:350,
-                          child: TextFormField(
-                              validator: (value) => value!.isEmpty ? 'value cannot be empty' : null,
-                              style: const TextStyle(color: Colors.white),
-                              keyboardType: TextInputType.emailAddress,
-                              controller: emailForm,
-                              decoration: decorationStyles.copyWith(
-                                labelText: 'Enter Email', 
-                                prefixIcon: Icon(Icons.email, color: textColor,
-                              ),
-                            )
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 20),
+                          child: SizedBox(
+                            width:350,
+                            child: TextFormField(
+                                validator: (value) => value!.isEmpty ? 'value cannot be empty' : null,
+                                style: const TextStyle(color: Colors.white),
+                                keyboardType: TextInputType.emailAddress,
+                                controller: emailForm,
+                                decoration: decorationStyles.copyWith(
+                                  labelText: 'Enter Email', 
+                                  prefixIcon: Icon(Icons.email, color: textColor,
+                                ),
+                              )
+                            ),
                           ),
                         ),
                       
-                        const SizedBox(height: 20,),
-                                  
+                    
                         SizedBox(
                           width: 350,
                           child: TextFormField(

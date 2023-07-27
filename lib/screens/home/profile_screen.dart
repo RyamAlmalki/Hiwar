@@ -82,7 +82,7 @@ class _ProlfieScreenState extends State<ProfileScreen> {
                     backgroundColor: accentColor, // Background color
                   ),
                   onPressed: () async{
-                    await singout();
+                    Navigator.of(context).pushReplacementNamed('uploadImageScreen');
                   },
                   child: const Text('Edit Name'),
                 ),

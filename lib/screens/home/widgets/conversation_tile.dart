@@ -1,5 +1,6 @@
 import 'package:chatapp/models/conversation.dart';
 import 'package:chatapp/models/user.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../../../shared/const.dart';
 import 'package:chatapp/screens/home/message_screen.dart';
@@ -33,9 +34,9 @@ class ConversationTile extends StatelessWidget {
           ),
         ), 
         tileColor: background,
-        leading: const CircleAvatar(
+        leading: CircleAvatar(
           radius: 30,
-          backgroundImage: AssetImage('assets/images/profile.png'),
+          backgroundImage: NetworkImage(conversation.profilePic ?? '') ,
         ),
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,

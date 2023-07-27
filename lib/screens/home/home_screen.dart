@@ -26,7 +26,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  
   @override
   void deactivate() {
     super.deactivate();
@@ -44,9 +43,9 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: () async{
                  Navigator.of(context).pushReplacementNamed('profileScreen');
               },
-              child: const CircleAvatar(
+              child: CircleAvatar(
                 radius: 19,
-                backgroundImage: AssetImage('assets/images/profile.png'), // should show the user image
+                backgroundImage: NetworkImage(FirebaseAuth.instance.currentUser?.photoURL ?? '') , // should show the user image
               ),
             ),
               

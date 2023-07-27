@@ -52,7 +52,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }else{
       
       // ignore: use_build_context_synchronously
-      Navigator.of(context).pushReplacementNamed('homeScreen');
+      Navigator.of(context).pushReplacementNamed('uploadImageScreen');
     }
   }
 

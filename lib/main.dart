@@ -1,4 +1,5 @@
 import 'package:chatapp/firebase_options.dart';
+import 'package:chatapp/screens/authenticate/upload_image_screen.dart';
 import 'package:chatapp/screens/home/home_screen.dart';
 import 'package:chatapp/screens/authenticate/login_screen.dart';
 import 'package:chatapp/screens/authenticate/register_screen.dart';
@@ -41,6 +42,7 @@ class MyApp extends StatelessWidget {
         'loginScreen':(context) => const LoginScreen(),
         'profileScreen':(context) => const ProfileScreen(),
         'searchScreen':(context) => const SearchScreen(),
+        'uploadImageScreen':(context) => const UploadImageScreen(),
       },
     );
   }

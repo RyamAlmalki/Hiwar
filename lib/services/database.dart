@@ -31,6 +31,15 @@ class DatabaseService{
   }
 
 
+  // update user image 
+  updateUserProfileImage(path){
+    userCollection
+    .doc(uid) 
+    .update({
+      'profilePic': path
+    });
+  }
+
   // Search List fron snapshot 
   List<ChatUser>? _searchUserListFromSnapshot(QuerySnapshot snapshot){
       return snapshot.docs

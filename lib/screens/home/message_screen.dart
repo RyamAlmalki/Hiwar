@@ -32,9 +32,11 @@ class _MessageScreentState extends State<MessageScreen> {
       widget.chatId = newConversationId;
 
       // set the chatId to this conversation 
-      setState(() {
-        widget.chatId = newConversationId;
-      });
+      if (this.mounted) {
+        setState(() {
+           widget.chatId = newConversationId;
+        });
+      }
       
       // add the new conversation to sender 
       DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid).createUserConversation(widget.chatId, widget.user?.photoURL, widget.user?.displayName , messageText, widget.user?.uid);
@@ -99,9 +101,9 @@ class _MessageScreentState extends State<MessageScreen> {
               onPressed: () async{
                  //Navigator.of(context).pushReplacementNamed('homeScreen');
               },
-              child: const CircleAvatar(
+              child: CircleAvatar(
                 radius: 19,
-                backgroundImage: AssetImage('assets/images/profile.png'), // should show the user image
+                backgroundImage: NetworkImage(widget.user!.photoURL ?? '') , // should show the user image
               ),
             ),
               

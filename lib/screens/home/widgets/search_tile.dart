@@ -16,9 +16,9 @@ class SearchTile extends StatelessWidget {
       child: ListTile(
         subtitle: Text('${user?.email}', style: TextStyle(color: textColor, fontWeight: FontWeight.bold, fontSize: 10),),
         tileColor: background,
-        leading: const CircleAvatar(
+        leading: CircleAvatar(
           radius: 30,
-          backgroundImage: AssetImage('assets/images/profile.png'),
+          backgroundImage: NetworkImage(user!.photoURL ?? '') ,
         ),
         title: Text('${user?.displayName}', style: TextStyle(color: textColor, fontWeight: FontWeight.bold, fontSize: 18),),
         onTap: (){

@@ -93,10 +93,25 @@ class _MessageScreentState extends State<MessageScreen> {
     return Scaffold(
       backgroundColor: background,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
+        leading: null,
         title: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
+            
+            IconButton(
+              icon: Icon(
+                Icons.arrow_back,
+                color: textColor,
+                size: 30,
+              ),
+              onPressed: () {
+                 Navigator.of(context).pushReplacementNamed('homeScreen');
+              },
+            ),
 
+            Text('${widget.user?.displayName}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),),
+            
             TextButton(
               onPressed: () async{
                  //Navigator.of(context).pushReplacementNamed('homeScreen');
@@ -106,9 +121,7 @@ class _MessageScreentState extends State<MessageScreen> {
                 backgroundImage: NetworkImage(widget.user!.photoURL ?? '') , // should show the user image
               ),
             ),
-              
-            Text('${widget.user?.displayName}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),),
-            
+
           ],
         ), 
         centerTitle: false, 
@@ -136,6 +149,7 @@ class _MessageScreentState extends State<MessageScreen> {
            
                         return MessageBubble(message: message, isMe: message.senderId == FirebaseAuth.instance.currentUser!.uid);
                       },
+                      
                     ),
                   );
                 }else{
@@ -145,42 +159,50 @@ class _MessageScreentState extends State<MessageScreen> {
             ),
             
 
-            Row(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 10, right: 10),
-                  child: SizedBox(
-                    width: MediaQuery.of(context).size.width / 1.2,
-                    height: 40,
-                    child: TextField(
-                      controller: messageTextConroller,
-                      style: TextStyle(color:textColor), 
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: forBool ? null : "Type your message...",
-                        hintStyle: TextStyle(color: textColor),
-                        prefixIcon: Icon(Icons.search, color: textColor,),
-                        filled: true,
-                        fillColor: accentColor, 
-                      ),
+            Padding(
+              padding: const EdgeInsets.only(left: 20, right: 20, top: 10),
+              child: TextField(
+                minLines: 1,
+                maxLines: 5,
+                textInputAction: TextInputAction.go,
+                keyboardType: TextInputType.multiline,
+                controller: messageTextConroller,
+                style: TextStyle(color:textColor), 
+                
+                decoration: InputDecoration(
+                  focusedBorder: OutlineInputBorder(
+                   borderRadius: BorderRadius.circular(50),
+                    borderSide:  BorderSide(
+                      color: primaryColor , 
+                      width: 0.5
+                    )
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(50),
+                    borderSide: BorderSide(color: Colors.transparent)
+                  ),
+                  hintText: forBool ? null : "Type your message...",
+                  hintStyle: TextStyle(color: textColor),
+                  prefixIcon: Icon(Icons.search, color: textColor,),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      Icons.send,
+                      color: textColor
                     ),
+                    onPressed: () {
+                      setState(() {
+                        messageText = messageTextConroller.text;
+                      });
+            
+                      messageTextConroller.clear(); 
+                      sendMessage();
+                    },
                   ),
-                ),
-                IconButton(
-                  icon: Icon(
-                    Icons.send,
-                    color: textColor,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      messageText = messageTextConroller.text;
-                    });
 
-                    messageTextConroller.clear(); 
-                    sendMessage();
-                  },
+                  filled: true,
+                  fillColor: accentColor, 
                 ),
-              ],
+              ),
             ),
           ],
         )

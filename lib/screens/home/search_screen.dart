@@ -29,18 +29,18 @@ class SearchScreenState extends State<SearchScreen> {
       backgroundColor: background,
       appBar: AppBar(
         backgroundColor: background,
-        elevation: 1,
+        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, ),
+          icon: const Icon(Icons.arrow_back_ios, ),
           onPressed: () {
              Navigator.of(context).pushReplacementNamed('homeScreen');
           },
         ),
         title: Container(
           width: double.infinity,
-          height: 40,
+          height: 50,
           decoration:  BoxDecoration(
-            color: Colors.white, borderRadius: BorderRadius.circular(5)),
+            color: accentColor, borderRadius: BorderRadius.circular(40)),
           child: Center(
             child: TextField(
               onChanged: (value) {
@@ -50,14 +50,15 @@ class SearchScreenState extends State<SearchScreen> {
               },
               controller: searchController,
               decoration: InputDecoration(
-                prefixIcon: const Icon(Icons.search),
+                prefixIcon: const Icon(Icons.search, color: Colors.white,),
                 suffixIcon: IconButton(
-                  icon: const Icon(Icons.clear),
+                  icon: const Icon(Icons.clear, color: Colors.white,),
                   onPressed: () {
                     searchController.clear();
                   },
                 ),
                 hintText: 'Search',
+                hintStyle: TextStyle(color: Colors.white, fontSize: 17),
                 border: InputBorder.none
               ),
             ),

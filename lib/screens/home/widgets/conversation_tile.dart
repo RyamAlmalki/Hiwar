@@ -17,16 +17,16 @@ class ConversationTile extends StatelessWidget {
       padding: const EdgeInsets.only(top: 2),
       child: ListTile(
         subtitle: Padding(
-          padding: const EdgeInsets.only(top: 10),
+          padding: const EdgeInsets.only(top: 5),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(conversation.lastMessage, style: const TextStyle(color: Colors.amber, fontWeight: FontWeight.normal, fontSize: 15),),
+              Expanded(child: Text(conversation.lastMessage, maxLines: 1, overflow: TextOverflow.clip, softWrap: false,  style: TextStyle(color: textColor, fontWeight: FontWeight.normal, fontSize: 15),)),
               conversation.numberOfUnseenMessages != 0 ? CircleAvatar(
                 radius: 10,
                 backgroundColor: primaryColor, 
                 child:  Padding(
-                  padding:  EdgeInsets.all(1.0),
+                  padding:  const EdgeInsets.all(1.0),
                   child:  Text('${conversation.numberOfUnseenMessages}', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
                 ),
               ) : CircleAvatar(backgroundColor: background, radius: 10,),
@@ -41,7 +41,7 @@ class ConversationTile extends StatelessWidget {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('${conversation.fullName}', style: TextStyle(color: textColor, fontWeight: FontWeight.bold, fontSize: 18),),
+            Text('${conversation.fullName}', softWrap: true, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),),
             Text(DateFormat('EEEE').format(conversation.date), style: TextStyle(color: textColor, fontWeight: FontWeight.bold, fontSize: 18),),
           ],
         ),

@@ -14,13 +14,16 @@ class SearchTile extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(top: 2),
       child: ListTile(
-        subtitle: Text('${user?.email}', style: TextStyle(color: textColor, fontWeight: FontWeight.bold, fontSize: 10),),
+        subtitle: Padding(
+          padding: const EdgeInsets.only(top: 5.0),
+          child: Text('${user?.email}', style: TextStyle(color: textColor, fontWeight: FontWeight.normal, fontSize: 15),),
+        ),
         tileColor: background,
         leading: CircleAvatar(
           radius: 30,
           backgroundImage: NetworkImage(user!.photoURL ?? '') ,
         ),
-        title: Text('${user?.displayName}', style: TextStyle(color: textColor, fontWeight: FontWeight.bold, fontSize: 18),),
+        title: Text('${user?.displayName}', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),),
         onTap: (){
           Navigator.push(
             context,

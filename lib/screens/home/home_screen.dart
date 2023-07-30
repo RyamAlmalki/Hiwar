@@ -41,17 +41,25 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            TextButton(
-              onPressed: () async{
-                 Navigator.of(context).pushReplacementNamed('profileScreen');
-              },
+            SizedBox(
+              width: 60,
               child: CircleAvatar(
                 radius: 19,
-                backgroundImage: NetworkImage(FirebaseAuth.instance.currentUser?.photoURL ?? '') , // should show the user image
+                backgroundColor: accentColor, 
+                child: IconButton(
+                icon:  const Icon(
+                    Icons.person_3_outlined,
+                    color: Colors.white,
+                    size: 25,
+                  ),
+                  onPressed: () async{
+                    Navigator.of(context).pushReplacementNamed('profileScreen');
+                  },
+                ),
               ),
-            ),
+            ),  
               
-            const Text('Chat', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),),
+            const Text('Messages', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),),
             
             SizedBox(
               width: 60,
@@ -74,7 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ), 
         centerTitle: false, 
         backgroundColor:background, 
-        elevation: 1,
+        elevation: 0,
       ),
       body: Center(
         child: SafeArea(

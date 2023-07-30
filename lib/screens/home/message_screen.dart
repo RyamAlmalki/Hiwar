@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../../models/message.dart';
 import '../../models/user.dart';
@@ -23,7 +24,7 @@ class _MessageScreentState extends State<MessageScreen> {
   final messageTextConroller = TextEditingController();
   String? messageText;
   bool forBool = false;
-  
+  bool hasText = false;
 
   sendMessage() async {
     if(widget.chatId == null){
@@ -96,37 +97,43 @@ class _MessageScreentState extends State<MessageScreen> {
         automaticallyImplyLeading: false,
         leading: null,
         title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             
             IconButton(
               icon: Icon(
-                Icons.arrow_back,
+                
+                Icons.arrow_back_ios,
                 color: textColor,
                 size: 30,
+                
               ),
               onPressed: () {
                  Navigator.of(context).pushReplacementNamed('homeScreen');
               },
             ),
-
-            Text('${widget.user?.displayName}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),),
             
-            TextButton(
+              TextButton(
               onPressed: () async{
-                 //Navigator.of(context).pushReplacementNamed('homeScreen');
+                  //Navigator.of(context).pushReplacementNamed('homeScreen');
               },
               child: CircleAvatar(
-                radius: 19,
+                radius: 20,
                 backgroundImage: NetworkImage(widget.user!.photoURL ?? '') , // should show the user image
               ),
             ),
 
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('${widget.user?.displayName}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),), 
+              ],
+            ),
           ],
         ), 
         centerTitle: false, 
         backgroundColor:background, 
-        elevation: 1,
+        elevation: 0,
       ),
       body: SafeArea(
       child: Column(
@@ -158,10 +165,14 @@ class _MessageScreentState extends State<MessageScreen> {
               }
             ),
             
+            
 
             Padding(
-              padding: const EdgeInsets.only(left: 20, right: 20, top: 10),
+              padding: const EdgeInsets.only(left: 10, right: 10, top: 1),
               child: TextField(
+                onChanged: (value) {
+                  value.isNotEmpty ? setState(() => hasText = true) : setState(() => hasText = false);
+                },
                 minLines: 1,
                 maxLines: 5,
                 textInputAction: TextInputAction.go,
@@ -181,10 +192,30 @@ class _MessageScreentState extends State<MessageScreen> {
                     borderRadius: BorderRadius.circular(50),
                     borderSide: BorderSide(color: Colors.transparent)
                   ),
-                  hintText: forBool ? null : "Type your message...",
+                  hintText: forBool ? null : "Send Message...",
                   hintStyle: TextStyle(color: textColor),
-                  prefixIcon: Icon(Icons.search, color: textColor,),
-                  suffixIcon: IconButton(
+                  filled: true,
+                  fillColor: accentColor, 
+                  prefixIcon: !hasText ?      
+                    IconButton(
+                    icon: Icon(
+                      Icons.camera_alt,
+                      color: textColor
+                    ),
+                    onPressed: () {
+                      
+                    },
+                  ): IconButton(
+                    icon: const Icon(
+                      Icons.camera_alt,
+                      color: Colors.white10
+                    ),
+                    onPressed: () {
+                      
+                    },
+                  ),
+                  suffixIcon: hasText ? 
+                  IconButton(
                     icon: Icon(
                       Icons.send,
                       color: textColor
@@ -193,14 +224,19 @@ class _MessageScreentState extends State<MessageScreen> {
                       setState(() {
                         messageText = messageTextConroller.text;
                       });
-            
+                                
                       messageTextConroller.clear(); 
                       sendMessage();
                     },
+                  ): IconButton(
+                    icon: Icon(
+                      Icons.mic,
+                      color: textColor
+                    ),
+                    onPressed: () {
+                      
+                    },
                   ),
-
-                  filled: true,
-                  fillColor: accentColor, 
                 ),
               ),
             ),
@@ -224,20 +260,29 @@ class MessageBubble extends StatelessWidget {
       child: Column(
         crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start, 
         children: [
-          Text('${message.senderName}', style: TextStyle(color: textColor, fontSize: 12),),
+          //Text('${message.senderName}', style: TextStyle(color: Colors.white, fontSize: 12),),
           Material(
-            color: isMe? primaryColor : Colors.white,
-            elevation: 5,
-            borderRadius: BorderRadius.only(topLeft: isMe ? const Radius.circular(30.0) : const Radius.circular(0.0), bottomRight: const Radius.circular(30.0), bottomLeft: const Radius.circular(30.0), topRight:  isMe ? const Radius.circular(0.0) : const Radius.circular(30.0)),
+            
+            color: isMe? bubbleColor : accentColor,
+            elevation: 0,
+            borderRadius: BorderRadius.only(topLeft: Radius.circular(30.0) , bottomRight: const Radius.circular(30.0), bottomLeft: const Radius.circular(30.0), topRight:   const Radius.circular(30.0)),
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                  '${message.message}', 
-                  style:  TextStyle(color: isMe ? Colors.white: Colors.black, fontSize: 15),
+                   Text(
+                    '${message.message}', 
+                    softWrap: true,
+                    overflow: TextOverflow.clip,
+                    style:  TextStyle(color: isMe ? Colors.white: Colors.white, fontSize: 16),
                   ),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.end,
+                  //   children: [
+                  //     Text(DateFormat.jm().format(message.date), style:  TextStyle(color:  Colors.white, fontSize: 10, fontWeight: FontWeight.bold), ),
+                  //   ],
+                  // )
                 ],
               ),
             ),
@@ -247,4 +292,5 @@ class MessageBubble extends StatelessWidget {
     );
   }
 }
+
 

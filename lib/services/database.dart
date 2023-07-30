@@ -148,7 +148,8 @@ class DatabaseService{
         return Message(
           message: doc['text'],
           senderId: doc['senderId'],
-          senderName: doc['senderName']
+          senderName: doc['senderName'],
+          date: (doc['date'] as Timestamp).toDate()
         );
       }
     ).toList();
@@ -193,6 +194,7 @@ class DatabaseService{
           querySnapshot.docs[0].reference.update(
             {
               'lastMessage': lastMessage,
+              'date': DateTime.now()
             }
           );
         }

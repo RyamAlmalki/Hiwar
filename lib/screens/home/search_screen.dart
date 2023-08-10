@@ -79,6 +79,10 @@ class SearchScreenState extends State<SearchScreen> {
                       itemCount: users?.length,
                       itemBuilder: (context, index) {
                         ChatUser user = users!.elementAt(index);
+                        DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid).getSearchConversation(user.uid);
+                        // have to check if i have conversation with this user 
+
+
                         return SearchTile(user: user);
                       },
                     ),

@@ -40,6 +40,7 @@ class DatabaseService{
     });
   }
 
+
   // Search List fron snapshot 
   List<ChatUser>? _searchUserListFromSnapshot(QuerySnapshot snapshot){
       return snapshot.docs
@@ -149,14 +150,15 @@ class DatabaseService{
           message: doc['text'],
           senderId: doc['senderId'],
           senderName: doc['senderName'],
-          date: (doc['date'] as Timestamp).toDate()
+          date: (doc['date'] as Timestamp).toDate(),
+          type: doc['type']
         );
       }
     ).toList();
   }
 
 
-  // get messages from a strea,
+  // get messages from a stream
   Stream<List<Message>?>? messages(conversationId){
     return conversationsCollection
     .doc(conversationId)
@@ -167,8 +169,22 @@ class DatabaseService{
   }
 
 
+
+  // get messages from a stream
+  Stream<List<Message>?>? messagesImage(conversationId){
+    return conversationsCollection
+    .doc(conversationId)
+    .collection('messages')
+    .orderBy('date')
+    .where('type', isEqualTo: 'image')
+    .snapshots()
+    .map(_searchMessagesListFromSnapshot);
+  }
+
+
+
   // addMessage 
-  addMessage(conversationId, textMessage, senderName){
+  addMessage(conversationId, textMessage, senderName, messageType){
     conversationsCollection
     .doc(conversationId)
     .collection('messages')
@@ -177,6 +193,7 @@ class DatabaseService{
       'senderId': uid,
       'date': FieldValue.serverTimestamp(),
       'senderName': senderName,
+      'type': messageType
     });
   }
 
@@ -240,6 +257,19 @@ class DatabaseService{
         return doc.id;
       } 
     );
+  }
+
+  Future<Map?> getSearchConversation(userId) async{
+    await userCollection
+    .doc(uid)
+    .collection('converstions')
+    .where('userId', isEqualTo: userId)
+    .get()
+    .then((QuerySnapshot querySnapshot) {
+     for (var doc in querySnapshot.docs) {
+        return doc.data();
+    }
+    });
   }
 
 }

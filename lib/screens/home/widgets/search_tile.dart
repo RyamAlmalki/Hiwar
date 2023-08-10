@@ -23,11 +23,11 @@ class SearchTile extends StatelessWidget {
           radius: 30,
           backgroundImage: NetworkImage(user!.photoURL ?? '') ,
         ),
-        title: Text('${user?.displayName}', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),),
+        title: Text('${user?.displayName}', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),),
         onTap: (){
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) =>  MessageScreen(user: user, numberOfUnseenMessages: 0,)),
+            MaterialPageRoute(builder: (context) =>  MessageScreen(userId: user?.uid, numberOfUnseenMessages: 0,)),
           );
         },
       ),

@@ -1,24 +1,21 @@
 import 'package:chatapp/models/conversation.dart';
-import 'package:chatapp/models/user.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../../../shared/const.dart';
 import 'package:chatapp/screens/home/message_screen.dart';
 import 'package:intl/intl.dart';
 
 class ConversationTile extends StatelessWidget {
-  ConversationTile({super.key, required this.conversation, this.user});
+  ConversationTile({super.key, required this.conversation});
   Conversation conversation;
-  ChatUser? user;
+
+  // USER ID
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(top: 2),
       child: ListTile(
-        shape: UnderlineInputBorder(
-
-         ),
+        
         subtitle: Padding(
           padding: const EdgeInsets.only(top: 5),
           child: Row(
@@ -30,7 +27,7 @@ class ConversationTile extends StatelessWidget {
                 backgroundColor: primaryColor, 
                 child:  Padding(
                   padding:  const EdgeInsets.all(1.0),
-                  child:  Text('${conversation.numberOfUnseenMessages}', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
+                  child:  Text('${conversation.numberOfUnseenMessages}', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
                 ),
               ) : CircleAvatar(backgroundColor: background, radius: 10,),
             ],
@@ -39,19 +36,19 @@ class ConversationTile extends StatelessWidget {
         tileColor: background,
         leading: CircleAvatar(
           radius: 30,
-          backgroundImage: NetworkImage(conversation.profilePic ?? '') ,
+          backgroundImage: NetworkImage(conversation.profilePic) ,
         ),
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('${conversation.fullName}', softWrap: true, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),),
+            Text(conversation.fullName, softWrap: true, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),),
             Text(DateFormat('EEEE').format(conversation.date), style: TextStyle(color: textColor, fontWeight: FontWeight.bold, fontSize: 18),),
           ],
         ),
         onTap: (){
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) =>  MessageScreen(chatId: conversation.id, user: user, numberOfUnseenMessages: conversation.numberOfUnseenMessages,)),
+            MaterialPageRoute(builder: (context) =>  MessageScreen(chatId: conversation.id, userId: conversation.userId, numberOfUnseenMessages: conversation.numberOfUnseenMessages,)),
           );
         },
       ),

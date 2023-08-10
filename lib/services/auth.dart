@@ -65,8 +65,8 @@ class AuthService{
   Future fetchUser(final email) async {
     try{
       return await _auth.fetchSignInMethodsForEmail(email);
+    // ignore: empty_catches
     }catch(e){
-      print(e);
     }   
   }
 
@@ -75,8 +75,9 @@ class AuthService{
   Future signout() async {
     try{
        _auth.signOut();
+    // ignore: empty_catches
     }catch(e){
-      print(e.toString());
+      
     }
   }
 

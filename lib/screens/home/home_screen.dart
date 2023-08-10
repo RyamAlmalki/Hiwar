@@ -19,7 +19,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void getUser(userId) async{
     ChatUser? user = await DatabaseService().getConversationUser(userId); 
-    if (this.mounted) {
+    if (mounted) {
        setState(() {
        conversationUser = user;
       });
@@ -90,7 +90,7 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
                   // Here we will retrive all the users conversations
                   StreamBuilder<List<Conversation>?>(
-                  stream: DatabaseService(uid: FirebaseAuth.instance.currentUser?.uid).conversations,
+                  stream: DatabaseService(uid: FirebaseAuth.instance.currentUser?.uid).conversations?.distinct(),
                   builder: (context, snapshot) {
                     
                     if(snapshot.hasData){
@@ -101,11 +101,13 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: ListView.builder(
                         itemCount: conversations?.length,
                         itemBuilder: (context, index) {
-                          Conversation conversation = conversations!.elementAt(index);
+                        Conversation conversation = conversations!.elementAt(index);
 
-                         getUser(conversation.userId);
+                        getUser(conversation.userId);
 
-                          return ConversationTile(conversation: conversation, user: conversationUser,);
+                        
+                        return ConversationTile(conversation: conversation);
+                          
                         },
                       ),
                     );

@@ -81,7 +81,7 @@ class _ProlfieScreenState extends State<ProfileScreen> {
 
               const SizedBox(height: 20,),
 
-              Text('${_auth.user?.displayName}', style: TextStyle(fontSize: 30 ,fontWeight: FontWeight.bold, color: Colors.white), ),
+              Text('${_auth.user?.displayName}', style: const TextStyle(fontSize: 30 ,fontWeight: FontWeight.bold, color: Colors.white), ),
               
               const SizedBox(height: 40),
 
@@ -100,51 +100,51 @@ class _ProlfieScreenState extends State<ProfileScreen> {
                   children: [
                   
                     Padding(
-                      padding: EdgeInsets.only(left: 5, right: 10, top: 10),
+                      padding: const EdgeInsets.only(left: 5, right: 10, top: 10),
                       child: ListTile(
                         leading: CircleAvatar(
                           backgroundColor: background,
-                          child: Icon(Icons.person, color: Colors.white,)
+                          child: const Icon(Icons.person, color: Colors.white,)
                         ),
-                        title: Text('Edit name', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
-                        trailing: Icon(Icons.arrow_forward_ios, color: Colors.white,),
+                        title: const Text('Edit name', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
+                        trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white,),
                       ),
                     ),
 
                     Padding(
-                      padding: EdgeInsets.only(left: 5, right: 10, top: 10),
+                      padding: const EdgeInsets.only(left: 5, right: 10, top: 10),
                       child: ListTile(
                         leading: CircleAvatar(
                           backgroundColor: background,
-                          child: Icon(Icons.mail, color: Colors.white,)
+                          child: const Icon(Icons.mail, color: Colors.white,)
                         ),
-                        title: Text('Edit email', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
-                        trailing: Icon(Icons.arrow_forward_ios, color: Colors.white,),
+                        title: const Text('Edit email', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
+                        trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white,),
                       ),
                     ),
 
 
                     Padding(
-                      padding: EdgeInsets.only(left: 5, right: 10, top: 10),
+                      padding: const EdgeInsets.only(left: 5, right: 10, top: 10),
                       child: ListTile(
                         leading: CircleAvatar(
                           backgroundColor: background,
-                          child: Icon(Icons.delete, color: Colors.white,)
+                          child: const Icon(Icons.delete, color: Colors.white,)
                         ),
-                        title: Text('Delete account', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
-                        trailing: Icon(Icons.arrow_forward_ios, color: Colors.white,),
+                        title: const Text('Delete account', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
+                        trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white,),
                       ),
                     ),
 
                     Padding(
-                      padding: EdgeInsets.only(left: 5, right: 10, top: 10),
+                      padding: const EdgeInsets.only(left: 5, right: 10, top: 10),
                       child: ListTile(
                         leading: CircleAvatar(
                           backgroundColor: background,
-                          child: Icon(Icons.waving_hand, color: Colors.white),
+                          child: const Icon(Icons.waving_hand, color: Colors.white),
                         ),
-                        title: Text('Sign out', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
-                        trailing: Icon(Icons.arrow_forward_ios, color: Colors.white,),
+                        title: const Text('Sign out', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
+                        trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white,),
                         onTap: () async {
                           await singout();
                         },

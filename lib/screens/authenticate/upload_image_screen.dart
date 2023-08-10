@@ -34,17 +34,17 @@ class _UploadImageScreenState extends State<UploadImageScreen> {
                 String uniqueFileName = DateTime.now().millisecondsSinceEpoch.toString();
 
                 // Step 3: Upload image to Firestore Storage 
-                StorageService().uploadImage(uniqueFileName, file?.path);
+                StorageService().uploadImage(uniqueFileName, file.path);
               },
               
-              icon: Icon(Icons.square, size: 100,)
+              icon: const Icon(Icons.square, size: 100,)
             ),
 
             ElevatedButton(
               onPressed: (){
                 Navigator.of(context).pushReplacementNamed('homeScreen');
             }, 
-              child: Text('Later')
+              child: const Text('Later')
             )
           ],
         ),

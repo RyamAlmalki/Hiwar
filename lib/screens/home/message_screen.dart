@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../models/conversation.dart';
 import '../../models/message.dart';
 import '../../models/user.dart';
 import '../../services/database.dart';
@@ -33,7 +34,7 @@ class _MessageScreentState extends State<MessageScreen> {
   // HAVE USER HERE
   ChatUser? user;
   String? messageTextType;
-
+  Conversation? previousConversation;
 
   sendMessage() async {
     // if null no conversation has been created between the two 
@@ -105,23 +106,50 @@ class _MessageScreentState extends State<MessageScreen> {
 
      // update
       DatabaseService().updateLastUnseenMessage(widget.chatId, user!.uid, widget.numberOfUnseenMessages);
+
+      // the user who sent the message will not have new message showing
+      DatabaseService().updateLastUnseenMessage(widget.chatId, FirebaseAuth.instance.currentUser!.uid, 0);
   }
+
 
   void getUser(userId) async{
     ChatUser? currentUser = await DatabaseService().getConversationUser(userId); 
     
+
     if (mounted) {
        setState(() {
         user = currentUser;
       });
     }
+
+    getPreviousConversation();
   }
+
+
+  // get previous conversation 
+  void getPreviousConversation() async{
+    // i will get the previous conversation from the reciver since i will use numberOfUnseenMessages from his side to update and resent the numberOfUnseenMessages to 0 for the sender
+    Conversation? conversation = await DatabaseService(uid: user?.uid).getPreviousConversation(FirebaseAuth.instance.currentUser!.uid);
+
+    if (mounted) {
+      if(conversation != null ){
+        setState(() {
+          widget.chatId = conversation.id;
+          widget.numberOfUnseenMessages = conversation.numberOfUnseenMessages;
+        });
+      }
+    }
+  
+  }
+
+
 
 
   @override
   void initState() {
     // GETUSER 
     getUser(widget.userId);
+
     // update last seem message 
     resetLastUnseenMessage();
     super.initState();
@@ -229,7 +257,7 @@ class _MessageScreentState extends State<MessageScreen> {
                     ),
                   );
                 }else{
-                  return const Expanded(child: CircularProgressIndicator());
+                  return Expanded(child: Container(color: background,));
                 }
               }
             ),

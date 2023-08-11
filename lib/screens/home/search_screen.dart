@@ -16,12 +16,15 @@ class SearchScreen extends StatefulWidget {
 class SearchScreenState extends State<SearchScreen> {
   final searchController = TextEditingController();
   String? searchResult;
+  
+
 
   @override
   void dispose() {
     searchController.dispose();
     super.dispose();
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +82,9 @@ class SearchScreenState extends State<SearchScreen> {
                       itemCount: users?.length,
                       itemBuilder: (context, index) {
                         ChatUser user = users!.elementAt(index);
-                        DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid).getSearchConversation(user.uid);
+                         
+                        //getUserConversation(user);
+                        //print(conversation);
                         // have to check if i have conversation with this user 
 
 

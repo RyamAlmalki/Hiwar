@@ -116,6 +116,7 @@ class DatabaseService{
     return userCollection
     .doc(uid)
     .collection('converstions')
+    .orderBy('date')
     .snapshots()
     .map(_searchConversationListFromSnapshot);
   }
@@ -259,17 +260,31 @@ class DatabaseService{
     );
   }
 
-  Future<Map?> getSearchConversation(userId) async{
-    await userCollection
+
+   Future<Conversation?> getPreviousConversation(userId) async{
+    QuerySnapshot querySnapshot = await userCollection
     .doc(uid)
     .collection('converstions')
     .where('userId', isEqualTo: userId)
-    .get()
-    .then((QuerySnapshot querySnapshot) {
-     for (var doc in querySnapshot.docs) {
-        return doc.data();
+    .limit(1)
+    .get();
+
+    if(querySnapshot.size != 0){
+      dynamic doc =  querySnapshot.docs.first.data();
+      Conversation conversation = Conversation(
+          userId: doc['userId'],
+          id: doc['conversationId'] ?? '',
+          fullName: doc['fullName'] ?? '', 
+          lastMessage: doc['lastMessage'] ?? '', 
+          profilePic: doc['profilePic'] ?? '',
+          numberOfUnseenMessages: doc['numberOfUnseenMessages'],
+          date:(doc['date'] as Timestamp).toDate()
+        );
+
+    return conversation;
     }
-    });
+     
   }
 
+  
 }

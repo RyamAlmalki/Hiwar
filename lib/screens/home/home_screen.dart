@@ -15,16 +15,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  ChatUser? conversationUser;
-
-  void getUser(userId) async{
-    ChatUser? user = await DatabaseService().getConversationUser(userId); 
-    if (mounted) {
-       setState(() {
-       conversationUser = user;
-      });
-    }
-  }
 
   @override
   void deactivate() {
@@ -94,7 +84,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   builder: (context, snapshot) {
                     
                     if(snapshot.hasData){
-                    List<Conversation>? conversations = snapshot.data;
+                    List<Conversation>? conversations = snapshot.data?.reversed.toList();
 
             
                     return Expanded(
@@ -102,9 +92,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         itemCount: conversations?.length,
                         itemBuilder: (context, index) {
                         Conversation conversation = conversations!.elementAt(index);
-
-                        getUser(conversation.userId);
-
                         
                         return ConversationTile(conversation: conversation);
                           

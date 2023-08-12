@@ -5,8 +5,8 @@ import '../../../shared/const.dart';
 
 
 class ViewImage extends StatelessWidget {
-  ViewImage({super.key, required this.message});
-  Message message;
+  const ViewImage({super.key, required this.message});
+  final Message message;
 
   @override
   Widget build(BuildContext context) {

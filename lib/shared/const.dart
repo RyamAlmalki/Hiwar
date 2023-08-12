@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 
-final Color accentColor = HexColor("#35353d"); 
+final Color accentColor = HexColor("#1a1a1a"); 
 final Color primaryColor = HexColor("#F7931E");
 final Color background = HexColor("#202025"); 
 final Color textColor = HexColor("#C4C4C4");
@@ -13,11 +13,18 @@ InputDecoration decorationStyles = InputDecoration(
     filled: true,
     fillColor: accentColor,
     hintStyle: TextStyle(color: textColor),
+    floatingLabelBehavior: FloatingLabelBehavior.never,
+    focusedBorder: OutlineInputBorder(
+      borderSide: BorderSide(color: accentColor, width: 0),
+      borderRadius: BorderRadius.circular(10)
+    ),
     disabledBorder: OutlineInputBorder(
-      borderSide: BorderSide(color: primaryColor, width: 1),
+      borderSide: BorderSide(color: accentColor, width: 0),
+      borderRadius: BorderRadius.circular(10)
     ),
     enabledBorder:  OutlineInputBorder(
-    borderSide: BorderSide(color: textColor, width: 0),
-  ),
+      borderSide: BorderSide(color: accentColor, width: 0),
+      borderRadius: BorderRadius.circular(10)
+    ),
   labelStyle: TextStyle(color: textColor),
 );

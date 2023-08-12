@@ -6,8 +6,8 @@ import '../message_screen.dart';
 
 class SearchTile extends StatelessWidget {
 
-  ChatUser? user;
-  SearchTile({super.key, this.user});
+  final ChatUser? user;
+  const SearchTile({super.key, this.user});
 
   @override
   Widget build(BuildContext context) {
@@ -20,8 +20,10 @@ class SearchTile extends StatelessWidget {
         ),
         tileColor: background,
         leading: CircleAvatar(
+          backgroundColor: accentColor,
           radius: 30,
           backgroundImage: NetworkImage(user!.photoURL ?? '') ,
+          child: user?.photoURL == "" ? Text(user!.displayName![0], style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),) : null,
         ),
         title: Text('${user?.displayName}', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),),
         onTap: (){

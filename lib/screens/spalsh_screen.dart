@@ -31,15 +31,22 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: background,
-      child: AnimatedOpacity(
-        opacity: _isVisible ? 1.0 : 0,
-        duration: const Duration(milliseconds: 1200),
-        child: Center(
-          child: Image.asset('assets/images/logo.png'),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          height: 50,
+          width: MediaQuery.of(context).size.width / 1.2,
+          color: Colors.black,
+          child: AnimatedOpacity(
+            opacity: _isVisible ? 1.0 : 0,
+            duration: const Duration(milliseconds: 1200),
+            child: Center(
+              child: Image.asset('assets/images/big_logo.png'),
+            ),
+          ),
         ),
-      ),
+      ],
     );
   }
 }

@@ -62,9 +62,9 @@ class _MessageScreentState extends State<MessageScreen> {
       // check type of last message before you update 
       if(messageTextType == 'image'){
         // update last message for each user !!!
-        DatabaseService().updateLastMessage(widget.chatId, FirebaseAuth.instance.currentUser!.uid, 'image');
+        DatabaseService().updateLastMessage(widget.chatId, FirebaseAuth.instance.currentUser!.uid, 'Photo');
 
-        DatabaseService().updateLastMessage(widget.chatId, user!.uid, 'image');
+        DatabaseService().updateLastMessage(widget.chatId, user!.uid, 'Photo');
 
       }else if(messageTextType == 'text'){
          // update last message for each user !!!
@@ -83,9 +83,9 @@ class _MessageScreentState extends State<MessageScreen> {
       // check type of last message before you update 
       if(messageTextType == 'image'){
         // update last message for each user !!!
-        DatabaseService().updateLastMessage(widget.chatId, FirebaseAuth.instance.currentUser!.uid, 'image');
+        DatabaseService().updateLastMessage(widget.chatId, FirebaseAuth.instance.currentUser!.uid, 'Photo');
 
-        DatabaseService().updateLastMessage(widget.chatId, user!.uid, 'image');
+        DatabaseService().updateLastMessage(widget.chatId, user!.uid, 'Photo');
 
       }else if(messageTextType == 'text'){
          // update last message for each user !!!
@@ -165,12 +165,14 @@ class _MessageScreentState extends State<MessageScreen> {
   }
 
 
-   getFromCamera() async {
+   Future<bool> getFromGallery() async {
        // Step 1: Pick image 
       ImagePicker imagePicker =  ImagePicker();
       XFile? file = await imagePicker.pickImage(source: ImageSource.gallery);
 
-      if(file==null) {return;}
+      if(file==null) {
+        return false;
+      }
 
       // Step 2: generate a unique name for each image 
       String uniqueFileName = DateTime.now().millisecondsSinceEpoch.toString();
@@ -182,6 +184,8 @@ class _MessageScreentState extends State<MessageScreen> {
         messageText = imageUrl;
         messageTextType = 'image';
       });
+
+      return true;
     }
   
 
@@ -189,7 +193,7 @@ class _MessageScreentState extends State<MessageScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: background,
+      backgroundColor: Colors.black,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         leading: null,
@@ -215,8 +219,11 @@ class _MessageScreentState extends State<MessageScreen> {
                 Navigator.of(context).push(MaterialPageRoute(builder: (context) => FriendProfileScreen(user: user, chatId: widget.chatId,))); 
               },
               child: CircleAvatar(
+                backgroundColor: accentColor,
                 radius: 20,
-                backgroundImage: NetworkImage(user?.photoURL ?? '') , // should show the user image
+                backgroundImage: NetworkImage(user?.photoURL ?? '') ,
+                child: user?.photoURL == "" ? Text(user!.displayName![0], style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),) : null, 
+                // should show the user image
               ),
             ),
 
@@ -229,15 +236,15 @@ class _MessageScreentState extends State<MessageScreen> {
           ],
         ), 
         centerTitle: false, 
-        backgroundColor:background, 
-        elevation: 0,
+        backgroundColor:Colors.black, 
+        elevation: 1,
       ),
       body: SafeArea(
       child: Column(
         children: [
 
             StreamBuilder<List<Message>?>(
-              stream: DatabaseService().messages(widget.chatId),
+              stream: DatabaseService().messages(widget.chatId)?.distinct(),
               builder: (context, snapshot){
 
                 if(snapshot.hasData){
@@ -301,8 +308,13 @@ class _MessageScreentState extends State<MessageScreen> {
                     ),
                     onPressed: () async {
                       
-                      await getFromCamera();
-                      sendMessage();
+                      bool result = await getFromGallery();
+                      
+                      // if result is true
+                      if(result){
+                        sendMessage();
+                      }
+                      
                     },
                   ): IconButton(
                     icon: const Icon(
@@ -349,9 +361,9 @@ class _MessageScreentState extends State<MessageScreen> {
 
 
 class MessageBubble extends StatelessWidget {
-  MessageBubble({super.key, required this.message, required this.isMe, });
-  Message message;
-  bool isMe;
+  const MessageBubble({super.key, required this.message, required this.isMe, });
+  final Message message;
+  final bool isMe;
 
   @override
   Widget build(BuildContext context) {

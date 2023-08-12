@@ -1,7 +1,5 @@
 import 'package:chatapp/shared/const.dart';
 import 'package:chatapp/screens/authenticate/auth_widget/background.dart';
-import 'package:chatapp/screens/authenticate/auth_widget/line_title.dart';
-import 'package:chatapp/screens/authenticate/auth_widget/rounded_button.dart';
 import 'package:flutter/material.dart';
 
 import '../../services/auth.dart';
@@ -69,7 +67,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: background,
+      backgroundColor: Colors.black,
       body: SizedBox(
         height: MediaQuery.of(context).size.height,
         child: Stack(  
@@ -77,30 +75,29 @@ class _RegisterScreenState extends State<RegisterScreen> {
             const AuthBackground(),
             
             Positioned(
-            top: MediaQuery.of(context).size.height / 5,
+            top: MediaQuery.of(context).size.height /4,
             left: MediaQuery.of(context).size.width / 10,
               child: Form(
                   key: _formKey,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
+                      
                       Hero(
                         tag: "logo",
                           child: SizedBox(
-                            height: 100,
-                            child: Center(child: Image.asset('assets/images/logo.png'),),
+                            width: MediaQuery.of(context).size.width / 1.2,
+                            height: 60,
+                            child: Center(child: Image.asset('assets/images/big_logo.png'),),
                         )
                       ),
                         
-                      TitleLine(
-                        title: 'Register', 
-                        width: 130,
-                        ),
-                      
-                      const SizedBox(height: 20,),
+                    
+                      const SizedBox(height: 40,),
                 
+
                       SizedBox(
-                        width:350,
+                        width: MediaQuery.of(context).size.width / 1.2,
                         child: TextFormField(
                             style: const TextStyle(color: Colors.white),
                             keyboardType: TextInputType.text,
@@ -116,7 +113,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       const SizedBox(height: 20,),
                       
                       SizedBox(
-                        width:350,
+                        width: MediaQuery.of(context).size.width / 1.2,
                         child: TextFormField(
                             style: const TextStyle(color: Colors.white),
                             keyboardType: TextInputType.emailAddress,
@@ -130,7 +127,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       const SizedBox(height: 20,),
                       
                       SizedBox(
-                        width: 350,
+                        width: MediaQuery.of(context).size.width / 1.2,
                         child: TextFormField(
                           style: const TextStyle(color: Colors.white),
                           keyboardType: TextInputType.text,
@@ -158,16 +155,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     const SizedBox(height: 50,),
                     
                     SizedBox(
-                      width: 300,
-                      height: 50,       
-                      child: RoundedButton(
-                        onPressed: () async {
-                          // it's async because we will perform an async task to register 
-                          signUp();
-                        }, 
-                        title: 'Register',
-                      )
-                    ),
+                        width: MediaQuery.of(context).size.width / 1.4,
+                        height: 50,       
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: primaryColor,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)
+                            )
+                          ),
+                          onPressed: () async {
+                            await signUp();
+                          }, 
+                          child: const Text('Register', style: TextStyle(fontWeight: FontWeight.bold),),
+                        )
+                      ),
                     
                     SizedBox(
                       height: MediaQuery.of(context).size.height / 5 ,

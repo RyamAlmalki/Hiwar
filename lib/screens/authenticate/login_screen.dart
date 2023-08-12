@@ -1,6 +1,4 @@
 import 'package:chatapp/screens/authenticate/auth_widget/background.dart';
-import 'package:chatapp/screens/authenticate/auth_widget/line_title.dart';
-import 'package:chatapp/screens/authenticate/auth_widget/rounded_button.dart';
 import 'package:chatapp/services/auth.dart';
 import 'package:flutter/material.dart';
 import '../../shared/const.dart';
@@ -65,14 +63,14 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: background,
+      backgroundColor: Colors.black,
       resizeToAvoidBottomInset: false,
       body: Stack(  
         children: [
           const AuthBackground(),
             
           Positioned(
-          top: MediaQuery.of(context).size.height / 4,
+          top: MediaQuery.of(context).size.height / 3.5,
           left: MediaQuery.of(context).size.width / 11,
             child: Form(
                 key: _formKey,
@@ -80,27 +78,23 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
+
                         Hero(
-                          tag: "logo",
-                            child: SizedBox(
-                              height: 100,
-                              child: Center(
-                                child: Image.asset('assets/images/logo.png'),
-                            ),
-                          )
-                        ),
+                        tag: "logo",
+                          child: SizedBox(
+                            width: MediaQuery.of(context).size.width / 1.2,
+                            height: 60,
+                            child: Center(child: Image.asset('assets/images/big_logo.png'),),
+                        )
+                      ),
                           
-                        TitleLine(
-                          title: 'Login', 
-                          width: 150,
-                        ),
-                                      
-                        const SizedBox(height: 20,),
+                              
+                        const SizedBox(height: 40,),
                           
                         Padding(
                           padding: const EdgeInsets.only(bottom: 20),
                           child: SizedBox(
-                            width:350,
+                            width: MediaQuery.of(context).size.width / 1.2,
                             child: TextFormField(
                                 validator: (value) => value!.isEmpty ? 'value cannot be empty' : null,
                                 style: const TextStyle(color: Colors.white),
@@ -117,7 +111,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       
                     
                         SizedBox(
-                          width: 350,
+                          width: MediaQuery.of(context).size.width / 1.2,
                           child: TextFormField(
                             validator: (value) => value!.length < 6 ? 'Enter a password 6+ chars long' : null,
                             style: const TextStyle(color: Colors.white),
@@ -146,13 +140,19 @@ class _LoginScreenState extends State<LoginScreen> {
                       const SizedBox(height: 50,),
                       
                       SizedBox(
-                        width: 300,
+                        width: MediaQuery.of(context).size.width / 1.4,
                         height: 50,       
-                        child: RoundedButton(
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: primaryColor,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)
+                            )
+                          ),
                           onPressed: () async {
                             await login();
                           }, 
-                          title: 'Login',
+                          child: const Text('Login', style: TextStyle(fontWeight: FontWeight.bold),),
                         )
                       ),
                         

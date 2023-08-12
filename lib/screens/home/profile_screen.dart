@@ -33,7 +33,7 @@ class _ProlfieScreenState extends State<ProfileScreen> {
                 size: 25,
               ),
               onPressed: () async{
-                Navigator.of(context).pushReplacementNamed('homeScreen');
+                Navigator.of(context).pop();
               },
             ),
           ],

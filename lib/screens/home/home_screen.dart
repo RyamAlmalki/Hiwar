@@ -1,5 +1,4 @@
 import 'package:chatapp/models/conversation.dart';
-import 'package:chatapp/models/user.dart';
 import 'package:chatapp/shared/const.dart';
 import 'package:chatapp/screens/home/widgets/conversation_tile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -21,10 +20,11 @@ class _HomeScreenState extends State<HomeScreen> {
     super.deactivate();
   }
   
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: background,
+      backgroundColor: Colors.black,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         leading: null,
@@ -38,9 +38,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 backgroundColor: accentColor, 
                 child: IconButton(
                 icon:  const Icon(
-                    Icons.person_3_outlined,
+                    Icons.person_2,
                     color: Colors.white,
-                    size: 25,
+                    size: 20,
                   ),
                   onPressed: () async{
                     Navigator.of(context).pushReplacementNamed('profileScreen');
@@ -49,7 +49,15 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),  
               
-            const Text('Messages', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),),
+
+            const Text(
+              'Messages', 
+              style: TextStyle(
+                fontWeight: 
+                FontWeight.bold, 
+                fontSize: 20),
+              ),
+
             
             SizedBox(
               width: 60,
@@ -58,9 +66,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 backgroundColor: accentColor, 
                 child: IconButton(
                 icon:  const Icon(
-                    Icons.search,
+                    Icons.search_sharp,
                     color: Colors.white,
-                    size: 25,
+                    size: 20,
+                    weight: 10,
                   ),
                   onPressed: () async{
                     Navigator.of(context).pushReplacementNamed('searchScreen');
@@ -71,7 +80,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ), 
         centerTitle: false, 
-        backgroundColor:background, 
+        backgroundColor: Colors.black, 
         elevation: 0,
       ),
       body: Center(
@@ -86,23 +95,33 @@ class _HomeScreenState extends State<HomeScreen> {
                     if(snapshot.hasData){
                     List<Conversation>? conversations = snapshot.data?.reversed.toList();
 
-            
                     return Expanded(
-                        child: ListView.builder(
-                        itemCount: conversations?.length,
+                        child: ListView.separated(
+                        itemCount: conversations!.length,
                         itemBuilder: (context, index) {
-                        Conversation conversation = conversations!.elementAt(index);
+                        Conversation conversation = conversations.elementAt(index);
                         
                         return ConversationTile(conversation: conversation);
                           
+                        }, separatorBuilder: (BuildContext context, int index) {  
+                          return const Divider(
+                            height: 15,
+                            thickness: 0.2,
+                            indent: 1,
+                            endIndent: 0,
+                            color: Colors.black26,
+                          );
                         },
                       ),
                     );
                   }else{
-                    return const Text('No Frineds :(', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),);
+                    // return loading page 
+                    return Expanded(child: Container());
                   }
                 }
               ),
+
+              
             ],   
           ),
         ),

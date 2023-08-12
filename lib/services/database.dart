@@ -90,6 +90,7 @@ class DatabaseService{
         return _searchUserListFromSnapshot(snapshot);
       });
     }
+    return null;
   }
   
 
@@ -176,7 +177,6 @@ class DatabaseService{
     return conversationsCollection
     .doc(conversationId)
     .collection('messages')
-    .orderBy('date')
     .where('type', isEqualTo: 'image')
     .snapshots()
     .map(_searchMessagesListFromSnapshot);
@@ -283,6 +283,7 @@ class DatabaseService{
 
     return conversation;
     }
+    return null;
      
   }
 

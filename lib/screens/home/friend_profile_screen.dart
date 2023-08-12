@@ -6,9 +6,9 @@ import '../../services/database.dart';
 import '../../shared/const.dart';
 
 class FriendProfileScreen extends StatefulWidget {
-  FriendProfileScreen({super.key, this.user, this.chatId});
-  String? chatId;
-  ChatUser? user;
+  const FriendProfileScreen({super.key, this.user, this.chatId});
+  final String? chatId;
+  final ChatUser? user;
 
   @override
   State<FriendProfileScreen> createState() => _FriendProfileScreenState();
@@ -52,8 +52,10 @@ class _FriendProfileScreenState extends State<FriendProfileScreen> {
                 radius: 100,
                 backgroundColor: accentColor,
                 child: CircleAvatar(
+                  backgroundColor: accentColor,
                   radius: 90,
                   backgroundImage: NetworkImage(widget.user?.photoURL ?? '') ,
+                  child: widget.user?.photoURL == "" ? Text(widget.user!.displayName![0], style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 40),) : null,
                 ),
               ),
 
@@ -65,9 +67,10 @@ class _FriendProfileScreenState extends State<FriendProfileScreen> {
 
               Container(
                 width: MediaQuery.of(context).size.width / 1.1,
- 
+        
                 decoration: BoxDecoration(
                   color: accentColor,
+                  
                   borderRadius: const BorderRadius.only(
                       topRight: Radius.circular(10.0),
                       bottomRight: Radius.circular(10.0),
@@ -75,11 +78,12 @@ class _FriendProfileScreenState extends State<FriendProfileScreen> {
                       bottomLeft: Radius.circular(10.0)),
                 ),
                 child: Column(
+               
                   children: [
                   
                     SingleChildScrollView(
                       child: StreamBuilder<List<Message>?>(
-                        stream: DatabaseService().messages(widget.chatId)?.distinct(),
+                        stream: DatabaseService().messagesImage(widget.chatId),
 
                         builder: (context, snapshot){
                     
@@ -87,44 +91,30 @@ class _FriendProfileScreenState extends State<FriendProfileScreen> {
                             List<Message>? messages = snapshot.data?.reversed.toList();
                     
                             return GridView.builder(
+                              
                                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                                   crossAxisCount: 3,
-                                  crossAxisSpacing: 0,
+                                  crossAxisSpacing: 1,
                                   mainAxisSpacing: 0,
-                                  
+                                  mainAxisExtent: 150,
                                 ),
                                 primary: false,
-                                itemCount: messages?.length,
+                                itemCount: 3,
                                 shrinkWrap: true, itemBuilder: (BuildContext context, int index) {  
                                   
-                                  if(messages?.elementAt(index).type == 'image'){
-                                    return Padding(
-                                      padding: const EdgeInsets.all(5.0),
-                                      child: Container(
-                                        width: 100.0,
-                                        height: 200.0,
-                                        decoration: BoxDecoration(
-                                          image: DecorationImage(
-                                              fit: BoxFit.cover, image: NetworkImage('${messages?.elementAt(index).message}')),
-                                          borderRadius: const BorderRadius.all(Radius.circular(8.0)),
-                                          color: Colors.redAccent,
-                                        ),
-                                      ),
-                                    );
-                                  }else{
-                                    return Padding(
-                                      padding: const EdgeInsets.all(5.0),
-                                      child: Container(
-                                        width: 100.0,
-                                        height: 150.0,
-                                        decoration: const BoxDecoration(
-                                          borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                                          color: Colors.redAccent,
-                                        ),
-                                      ),
-                                    ); 
-                                  }
-                                }
+                                return Padding(
+                                  padding: const EdgeInsets.only(top: 2, left: 2, right: 2),
+                                  child: Container(
+                                    width: 100.0,
+                                    decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                          fit: BoxFit.cover, image: NetworkImage('${messages?.elementAt(index).message}')),
+                                      borderRadius: const BorderRadius.all(Radius.circular(8.0)),
+                                      color: Colors.redAccent,
+                                    ),
+                                  ),
+                                );
+                              }
                             );
                     
                           }else{
@@ -134,7 +124,21 @@ class _FriendProfileScreenState extends State<FriendProfileScreen> {
                       ),
                     ),
 
+                    SizedBox(
+                      width: 100,
+                      height: 50,
+                      
+                      child: TextButton(
+                        child: const Text('View All', style: TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold),), 
+                        onPressed: (){
+
+                        },
+                      ),
+                    )
                   ],
+
+
+                  
                 )
               )
             ]

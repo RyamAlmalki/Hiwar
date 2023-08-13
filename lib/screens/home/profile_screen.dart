@@ -1,7 +1,11 @@
+import 'package:chatapp/services/database.dart';
 import 'package:chatapp/shared/const.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../services/auth.dart';
+import '../../services/storage.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -18,6 +22,27 @@ class _ProlfieScreenState extends State<ProfileScreen> {
     Navigator.of(context).pushReplacementNamed('loginScreen');
   }
 
+  changeProfileImage() async{
+    // Step 1: Pick image 
+    ImagePicker imagePicker =  ImagePicker();
+    XFile? file = await imagePicker.pickImage(source: ImageSource.gallery);
+
+    if(file==null) {return;}
+
+    // Step 2: generate a unique name for each image 
+    String uniqueFileName = DateTime.now().millisecondsSinceEpoch.toString();
+
+    // Step 3: Upload image to Firestore Storage 
+    String? imageUrl = await StorageService().uploadImage(uniqueFileName, file.path);
+
+    print(imageUrl);
+    print('rtrtrtrtrttrtrtrtrtr'); 
+    if(imageUrl != null){
+      DatabaseService(uid: FirebaseAuth.instance.currentUser?.uid).updateImageUrlForOtherUsers(imageUrl);
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,16 +58,16 @@ class _ProlfieScreenState extends State<ProfileScreen> {
                 size: 25,
               ),
               onPressed: () async{
-                Navigator.of(context).pop();
+                Navigator.of(context).pushReplacementNamed('homeScreen');
               },
             ),
           ],
         ), 
         centerTitle: false, 
-        backgroundColor:background, 
+        backgroundColor: Colors.black, 
         elevation: 0,
       ),
-      backgroundColor: background,
+      backgroundColor: Colors.black,
       body: SingleChildScrollView(
         child: Center(
           child: Column(
@@ -54,6 +79,7 @@ class _ProlfieScreenState extends State<ProfileScreen> {
                 radius: 100,
                 backgroundColor: accentColor,
                 child: CircleAvatar(
+                  backgroundColor: accentColor,
                   radius: 90,
                   backgroundImage: NetworkImage(_auth.user?.photoURL ?? '') ,
                   child: Column(
@@ -68,7 +94,7 @@ class _ProlfieScreenState extends State<ProfileScreen> {
                             child: IconButton(
                             icon: const Icon(Icons.add, color: Colors.white,),
                             onPressed: () {
-                                Navigator.of(context).pushReplacementNamed('uploadImageScreen');
+                                changeProfileImage();
                               },
                             )
                           )
@@ -91,10 +117,10 @@ class _ProlfieScreenState extends State<ProfileScreen> {
                 decoration: BoxDecoration(
                   color: accentColor,
                   borderRadius: const BorderRadius.only(
-                      topRight: Radius.circular(40.0),
-                      bottomRight: Radius.circular(40.0),
-                      topLeft: Radius.circular(40.0),
-                      bottomLeft: Radius.circular(40.0)),
+                      topRight: Radius.circular(10.0),
+                      bottomRight: Radius.circular(10.0),
+                      topLeft: Radius.circular(10.0),
+                      bottomLeft: Radius.circular(10.0)),
                 ),
                 child: Column(
                   children: [

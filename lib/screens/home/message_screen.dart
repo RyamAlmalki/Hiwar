@@ -15,7 +15,8 @@ import '../../shared/const.dart';
 class MessageScreen extends StatefulWidget {
   String? chatId;
   int numberOfUnseenMessages = 0;
-  MessageScreen({super.key, this.chatId, required this.numberOfUnseenMessages, this.userId});
+  DateTime? lastSavedConversationDate;
+  MessageScreen({super.key, this.chatId, required this.numberOfUnseenMessages, this.userId, this.lastSavedConversationDate});
   
   // HAVE USER ID HERE 
   String? userId;
@@ -23,6 +24,7 @@ class MessageScreen extends StatefulWidget {
   @override
   State<MessageScreen> createState() => _MessageScreentState();
 }
+
 
 class _MessageScreentState extends State<MessageScreen> {
   int numberOfMessages = 0;
@@ -35,6 +37,9 @@ class _MessageScreentState extends State<MessageScreen> {
   ChatUser? user;
   String? messageTextType;
   Conversation? previousConversation;
+  bool? showitems = false;
+  String? chatId;
+  late final _stream;
 
   sendMessage() async {
     // if null no conversation has been created between the two 
@@ -147,12 +152,15 @@ class _MessageScreentState extends State<MessageScreen> {
 
   @override
   void initState() {
+    print(widget.lastSavedConversationDate);
+    super.initState();
+    _stream = DatabaseService().messages(widget.chatId, widget.lastSavedConversationDate);
     // GETUSER 
     getUser(widget.userId);
 
     // update last seem message 
     resetLastUnseenMessage();
-    super.initState();
+    
   }
 
   resetLastUnseenMessage(){
@@ -210,13 +218,17 @@ class _MessageScreentState extends State<MessageScreen> {
                 
               ),
               onPressed: () {
+                // Before going to the homescreen we have to clear current user unseenMessages 
+                // Because both users can be opening the chat at same time 
+
+                resetLastUnseenMessage();
                  Navigator.of(context).pushReplacementNamed('homeScreen');
               },
             ),
             
               TextButton(
               onPressed: () async{
-                Navigator.of(context).push(MaterialPageRoute(builder: (context) => FriendProfileScreen(user: user, chatId: widget.chatId,))); 
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) => FriendProfileScreen(user: user, chatId: widget.chatId, lastSavedConversationDate: widget.lastSavedConversationDate,))); 
               },
               child: CircleAvatar(
                 backgroundColor: accentColor,
@@ -244,7 +256,7 @@ class _MessageScreentState extends State<MessageScreen> {
         children: [
 
             StreamBuilder<List<Message>?>(
-              stream: DatabaseService().messages(widget.chatId)?.distinct(),
+              stream: _stream,
               builder: (context, snapshot){
 
                 if(snapshot.hasData){
@@ -264,92 +276,176 @@ class _MessageScreentState extends State<MessageScreen> {
                     ),
                   );
                 }else{
-                  return Expanded(child: Container(color: background,));
+                  return Expanded(child: Container(color: Colors.black,));
                 }
               }
             ),
             
             
 
-            Padding(
-              padding: const EdgeInsets.only(left: 10, right: 10, top: 1),
-              child: TextField(
-                onChanged: (value) {
-                  value.isNotEmpty ? setState(() => hasText = true) : setState(() => hasText = false);
-                },
-                minLines: 1,
-                maxLines: 5,
-                textInputAction: TextInputAction.go,
-                keyboardType: TextInputType.multiline,
-                controller: messageTextConroller,
-                style: TextStyle(color:textColor), 
-                
-                decoration: InputDecoration(
-                  focusedBorder: OutlineInputBorder(
-                   borderRadius: BorderRadius.circular(50),
-                    borderSide:  BorderSide(
-                      color: primaryColor , 
-                      width: 0.5
-                    )
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(50),
-                    borderSide: const BorderSide(color: Colors.transparent)
-                  ),
-                  hintText: forBool ? null : "Send Message...",
-                  hintStyle: TextStyle(color: textColor),
-                  filled: true,
-                  fillColor: accentColor, 
-                  prefixIcon: !hasText ?      
-                    IconButton(
-                    icon: Icon(
-                      Icons.camera_alt,
-                      color: textColor
+            Container(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Expanded(
+                    child: TextField(
+                      onChanged: (value) {
+                        value.isNotEmpty ? setState(() => hasText = true) : setState(() => hasText = false);
+                      },
+                      minLines: 1,
+                      maxLines: 5,
+                      textInputAction: TextInputAction.newline,
+                      keyboardType: TextInputType.multiline,
+                      controller: messageTextConroller,
+                      style: TextStyle(color:textColor), 
+                      
+                      decoration: InputDecoration(
+                        focusedBorder: OutlineInputBorder(
+                         borderRadius: BorderRadius.circular(20),
+                          borderSide:  const BorderSide(
+                            color: Colors.black , 
+                            width: 0.5
+                          )
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          borderSide: const BorderSide(color: Colors.transparent)
+                        ),
+                        hintText: forBool ? null : "Send Message...",
+                        hintStyle: TextStyle(color: textColor),
+                        filled: true,
+                        fillColor: accentColor, 
+                        suffixIcon: hasText ? 
+                        IconButton(
+                          icon: Icon(
+                            Icons.send,
+                            color: textColor
+                          ),
+                          onPressed: () async {
+                            setState(() {
+                              messageText = messageTextConroller.text;
+                              messageTextType = 'text';
+                            });
+                                      
+                            messageTextConroller.clear(); 
+                            await sendMessage();
+                          },
+                        ): IconButton(
+                          icon: Icon(
+                            Icons.mic,
+                            color: textColor
+                          ),
+                          onPressed: () {
+                            
+                          },
+                        ),
+                      ),
                     ),
-                    onPressed: () async {
-                      
-                      bool result = await getFromGallery();
-                      
-                      // if result is true
-                      if(result){
-                        sendMessage();
-                      }
-                      
-                    },
-                  ): IconButton(
-                    icon: const Icon(
-                      Icons.camera_alt,
-                      color: Colors.white10
-                    ),
-                    onPressed: () {
-                      
-                    },
                   ),
-                  suffixIcon: hasText ? 
-                  IconButton(
-                    icon: Icon(
-                      Icons.send,
-                      color: textColor
+            
+                  showitems == false ? Padding(
+                    padding: const EdgeInsets.only(left: 5),
+                    child: SizedBox(
+                      width: 60,
+                      height: 60,
+                      child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: accentColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(100)
+                        )
+                      ),
+                      onPressed: (){
+                        setState(() {
+                          showitems = true;
+                        });
+                      }, 
+                      child: Icon(Icons.add)
+                      ),
                     ),
-                    onPressed: () {
-                      setState(() {
-                        messageText = messageTextConroller.text;
-                        messageTextType = 'text';
-                      });
-                                
-                      messageTextConroller.clear(); 
-                      sendMessage();
-                    },
-                  ): IconButton(
-                    icon: Icon(
-                      Icons.mic,
-                      color: textColor
-                    ),
-                    onPressed: () {
-                      
-                    },
-                  ),
-                ),
+                  ) : const Column(),
+            
+                  showitems == true ? 
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 5),
+                        child: SizedBox(
+                          width: 60,
+                          height: 60,
+                          child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: accentColor,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(100)
+                            )
+                          ),
+                          onPressed: () async{
+                            
+                            bool result = await getFromGallery();
+                            
+                              // if result is true
+                              if(result){
+                                sendMessage();
+                              }
+
+                              setState(() {
+                                showitems = false;
+                              });
+                            }, 
+                          child: const Icon(Icons.image)
+                          ),
+                        ),
+                      ), 
+            
+                      Padding(
+                        padding: const EdgeInsets.only(left: 5 , top: 5),
+                        child: SizedBox(
+                          width: 60,
+                          height: 60,
+                          child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: accentColor,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(100)
+                            )
+                          ),
+                          onPressed: (){
+                            showitems = true;
+                          }, 
+                          child: Icon(Icons.camera_alt)
+                          ),
+                        ),
+                      ),
+            
+                       Padding(
+                        padding: const EdgeInsets.only(left: 5 , top: 5),
+                        child: SizedBox(
+                          width: 60,
+                          height: 60,
+                          child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: accentColor,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(100)
+                            )
+                          ),
+                          onPressed: (){
+                            setState(() {
+                              showitems = false;
+                            });
+                          }, 
+                          child: Icon(Icons.clear)
+                          ),
+                        ),
+                      ),
+            
+            
+                    ],
+                    ) : Column(),
+            
+                ]
               ),
             ),
           ],
@@ -378,7 +474,7 @@ class MessageBubble extends StatelessWidget {
                 maxWidth: MediaQuery.of(context).size.width / 1.5,
               ),
               child: Material(
-              color: isMe? bubbleColor : accentColor,
+              color: isMe? message.type == 'text' ? bubbleColor : Colors.black : message.type == 'text' ? accentColor : Colors.black ,
               elevation: 0,
               borderRadius: message.type == 'text' ? BorderRadius.only( topLeft: !isMe ? const Radius.circular(0.0): const Radius.circular(30.0), bottomRight: const Radius.circular(30.0), bottomLeft: const Radius.circular(30.0), topRight:  isMe ? const Radius.circular(0.0): const Radius.circular(30.0)) : const BorderRadius.only( topLeft: Radius.circular(30.0), bottomRight: Radius.circular(30.0), bottomLeft: Radius.circular(30.0), topRight: Radius.circular(30.0)),
               child: Padding(
@@ -411,11 +507,6 @@ class MessageBubble extends StatelessWidget {
                             ),
                           ),
                     )
-
-                    // Container(
-                    //   alignment: Alignment.bottomRight,
-                    //   child: Text(DateFormat.jm().format(message.date), style:  TextStyle(color:  Colors.white, fontSize: 10, fontWeight: FontWeight.bold), )
-                    // ),
                   ],
                 ),
               ),

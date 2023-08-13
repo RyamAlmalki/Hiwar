@@ -7,7 +7,7 @@ class StorageService{
   // Reference to storage root 
   Reference storageRef = FirebaseStorage.instance.ref();
 
-  uploadImage(uniqueName, path) async {
+  Future<String?> uploadImage(uniqueName, path) async {
     // get Reference to storage root 
     Reference referenceDirImages = storageRef.child('images');
 
@@ -26,6 +26,8 @@ class StorageService{
       FirebaseAuth.instance.currentUser?.updatePhotoURL(imageUrl);
       await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid).updateUserProfileImage(imageUrl);
 
+      return imageUrl;
+      
     }catch(e){
       // ignore: avoid_print
       print(e);

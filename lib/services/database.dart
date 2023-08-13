@@ -105,7 +105,8 @@ class DatabaseService{
           lastMessage: doc['lastMessage'] ?? '', 
           profilePic: doc['profilePic'] ?? '',
           numberOfUnseenMessages: doc['numberOfUnseenMessages'],
-          date:(doc['date'] as Timestamp).toDate()
+          date:(doc['date'] as Timestamp).toDate(),
+          lastSavedConversationDate: (doc['lastSavedConversationDate'] as Timestamp).toDate()
         );
       }
     ).toList();
@@ -161,27 +162,48 @@ class DatabaseService{
 
 
   // get messages from a stream
-  Stream<List<Message>?>? messages(conversationId){
+  // add last saved conversation date 
+  Stream<List<Message>?>? messages(conversationId, lastSavedConversationDate){
+
     return conversationsCollection
     .doc(conversationId)
     .collection('messages')
+    .where('date', isGreaterThanOrEqualTo: lastSavedConversationDate)
     .orderBy('date')
     .snapshots()
     .map(_searchMessagesListFromSnapshot);
   }
 
 
+  clearChat(conversationId) async {
+    QuerySnapshot querySnapshot = await userCollection
+    .doc(uid) // the user id who wants to clear chat
+    .collection('converstions') // his conv collection 
+    .where('conversationId', isEqualTo: conversationId) // the chat he is looking to clear
+    .get();
+
+
+    await userCollection
+    .doc(uid) // the user id who wants to clear chat
+    .collection('converstions') // his conv collection 
+    .doc(querySnapshot.docs[0].id) // the doc id 
+    .update({
+      'lastSavedConversationDate': DateTime.now(),
+      'lastMessage': ''
+    });
+  }
+
 
   // get messages from a stream
-  Stream<List<Message>?>? messagesImage(conversationId){
+  Stream<List<Message>?>? messagesImage(conversationId, lastSavedConversationDate){
     return conversationsCollection
     .doc(conversationId)
     .collection('messages')
-    .where('type', isEqualTo: 'image')
+    .where('date', isGreaterThanOrEqualTo: lastSavedConversationDate)
+    .orderBy('date')
     .snapshots()
     .map(_searchMessagesListFromSnapshot);
   }
-
 
 
   // addMessage 
@@ -233,7 +255,8 @@ class DatabaseService{
         'lastMessage': lastMessage,
         'numberOfUnseenMessages': 1,
         'profilePic': photoURL ?? '',
-        'date': DateTime.now()
+        'date': DateTime.now(),
+        'lastSavedConversationDate': DateTime.now()
       }
     );
   }
@@ -278,7 +301,8 @@ class DatabaseService{
           lastMessage: doc['lastMessage'] ?? '', 
           profilePic: doc['profilePic'] ?? '',
           numberOfUnseenMessages: doc['numberOfUnseenMessages'],
-          date:(doc['date'] as Timestamp).toDate()
+          date:(doc['date'] as Timestamp).toDate(),
+          lastSavedConversationDate: (doc['date'] as Timestamp).toDate()
         );
 
     return conversation;
@@ -287,5 +311,34 @@ class DatabaseService{
      
   }
 
+
+  updateImageUrlForOtherUsers(imageUrl) async{
+    await userCollection
+    .doc(uid) // uid of current user who changed the profile 
+    .collection('converstions') // he went to all his started conver
+    .get()
+    .then((doc) => {
+      doc.docs.forEach((element) { // for each conver i want to get id of the other user
+        editImageUrl(element.get('userId'), imageUrl);
+      })
+    });
+  }
+
+  editImageUrl(otherUserUid, imageUrl) async {
+    QuerySnapshot querySnapshot = await userCollection
+    .doc(otherUserUid)
+    .collection('converstions')
+    .where('userId', isEqualTo: uid)
+    .get();
+
+      
+    await userCollection
+    .doc(otherUserUid)
+    .collection('converstions')
+    .doc(querySnapshot.docs[0].id)
+    .update({
+      'profilePic': imageUrl
+    });
+  }
   
 }

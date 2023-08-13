@@ -27,12 +27,13 @@ class SearchScreenState extends State<SearchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: background,
+      backgroundColor: Colors.black,
+      resizeToAvoidBottomInset : false,
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        toolbarHeight: 100, // Set this height
+        toolbarHeight: 108, 
         leading: null,
-        backgroundColor: background,
+        backgroundColor: Colors.black,
         elevation: 0,
         flexibleSpace: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -64,7 +65,7 @@ class SearchScreenState extends State<SearchScreen> {
                         style: TextStyle(
                           fontWeight: 
                           FontWeight.bold, 
-                          fontSize: 25,
+                          fontSize: 20,
                           color: Colors.white
                           ),
                         ),

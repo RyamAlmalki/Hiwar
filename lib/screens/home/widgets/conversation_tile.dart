@@ -20,15 +20,16 @@ class ConversationTile extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Expanded(
-                child: conversation.lastMessage != 'Photo' ? Text(conversation.lastMessage, maxLines: 1, overflow: TextOverflow.clip, softWrap: false,  style: TextStyle(color: textColor, fontWeight: FontWeight.normal, fontSize: 15),) : 
-                  Row(
+              conversation.lastMessage != 'Photo' ? SizedBox(width: MediaQuery.of(context).size.width / 1.5 ,child: Text(conversation.lastMessage, maxLines: 1, overflow: TextOverflow.clip, softWrap: false,  style: TextStyle(color: textColor, fontWeight: FontWeight.normal, fontSize: 15),)) : 
+                SizedBox(
+                  width: 100,
+                  child: Row(
                     children: [
                       Icon(Icons.camera_alt, color: textColor, size: 15,),
                       const SizedBox(width: 6,),
-                      Text(conversation.lastMessage, maxLines: 1, overflow: TextOverflow.clip, softWrap: false,  style: TextStyle(color: textColor, fontWeight: FontWeight.normal, fontSize: 15),)
+                      Text(conversation.lastMessage, maxLines: 1, overflow: TextOverflow.fade, softWrap: false,  style: TextStyle(color: textColor, fontWeight: FontWeight.normal, fontSize: 15),)
                     ],
-                  )
+                  ),
                 ),
               conversation.numberOfUnseenMessages != 0 ? CircleAvatar(
                 radius: 10,
@@ -58,7 +59,7 @@ class ConversationTile extends StatelessWidget {
         onTap: (){
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) =>  MessageScreen(chatId: conversation.id, userId: conversation.userId, numberOfUnseenMessages: conversation.numberOfUnseenMessages,)),
+            MaterialPageRoute(builder: (context) =>  MessageScreen(chatId: conversation.id, userId: conversation.userId, numberOfUnseenMessages: conversation.numberOfUnseenMessages, lastSavedConversationDate: conversation.lastSavedConversationDate,)),
           );
         },
       ),

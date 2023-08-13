@@ -1,4 +1,5 @@
 import 'package:chatapp/models/user.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../models/message.dart';
@@ -6,10 +7,10 @@ import '../../services/database.dart';
 import '../../shared/const.dart';
 
 class FriendProfileScreen extends StatefulWidget {
-  const FriendProfileScreen({super.key, this.user, this.chatId});
+  const FriendProfileScreen({super.key, this.user, this.chatId, this.lastSavedConversationDate});
   final String? chatId;
   final ChatUser? user;
-
+  final DateTime? lastSavedConversationDate;
   @override
   State<FriendProfileScreen> createState() => _FriendProfileScreenState();
 }
@@ -37,10 +38,10 @@ class _FriendProfileScreenState extends State<FriendProfileScreen> {
           ],
         ), 
         centerTitle: false, 
-        backgroundColor:background, 
+        backgroundColor: Colors.black, 
         elevation: 0,
       ),
-      backgroundColor: background,
+      backgroundColor: Colors.black,
       body: SingleChildScrollView(
         child: Center(
           child: Column(
@@ -67,7 +68,7 @@ class _FriendProfileScreenState extends State<FriendProfileScreen> {
 
               Container(
                 width: MediaQuery.of(context).size.width / 1.1,
-        
+                
                 decoration: BoxDecoration(
                   color: accentColor,
                   
@@ -77,70 +78,138 @@ class _FriendProfileScreenState extends State<FriendProfileScreen> {
                       topLeft: Radius.circular(10.0),
                       bottomLeft: Radius.circular(10.0)),
                 ),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                               
+                    children: [
+                      
+                      SizedBox(
+                        width: double.infinity,
+                        height: 50,
+                        
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 10),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Padding(
+                                padding:  EdgeInsets.only(left: 10),
+                                child:  Text('Photos', style: TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold),),
+                              ),
+                              TextButton(
+                                child: Text('See All', style: TextStyle(fontSize: 18, color: primaryColor, fontWeight: FontWeight.bold),), 
+                                onPressed: (){
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                
+                      SingleChildScrollView(
+                        child: StreamBuilder<List<Message>?>(
+                          stream: DatabaseService().messagesImage(widget.chatId, widget.lastSavedConversationDate),
+                  
+                          builder: (context, snapshot){
+                      
+                            if(snapshot.hasData){
+                              List<Message>? messages = snapshot.data?.reversed.toList();
+                      
+                              return GridView.builder(
+                                
+                                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 3,
+                                    crossAxisSpacing: 2,
+                                    mainAxisSpacing: 2,
+                                    mainAxisExtent: 120,
+                                  ),
+                                  primary: false,
+                                  itemCount: messages!.length >= 6 ? 6 : messages.length,
+                                  shrinkWrap: true, itemBuilder: (BuildContext context, int index) {  
+                                    
+                                  return Padding(
+                                    padding: const EdgeInsets.only(top: 2, left: 2, right: 2),
+                                    child: Container(
+                                      width: 50.0,
+                                      decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                            fit: BoxFit.cover, image: NetworkImage('${messages?.elementAt(index).message}')),
+                                        borderRadius: const BorderRadius.all(Radius.circular(8.0)),
+                                        color: accentColor,
+                                      ),
+                                    ),
+                                  );
+                                }
+                              );
+                      
+                            }else{
+                              return const Expanded(child: CircularProgressIndicator());
+                            }
+                          }
+                        ),
+                      )
+                    ],
+                  ),
+                )
+              ),
+              
+              const SizedBox(height: 30,),
+
+
+              Container(
+                width: MediaQuery.of(context).size.width / 1.1,
+ 
+                decoration: BoxDecoration(
+                  color: accentColor,
+                  borderRadius: const BorderRadius.only(
+                      topRight: Radius.circular(10.0),
+                      bottomRight: Radius.circular(10.0),
+                      topLeft: Radius.circular(10.0),
+                      bottomLeft: Radius.circular(10.0)),
+                ),
                 child: Column(
-               
                   children: [
                   
-                    SingleChildScrollView(
-                      child: StreamBuilder<List<Message>?>(
-                        stream: DatabaseService().messagesImage(widget.chatId),
 
-                        builder: (context, snapshot){
-                    
-                          if(snapshot.hasData){
-                            List<Message>? messages = snapshot.data?.reversed.toList();
-                    
-                            return GridView.builder(
-                              
-                                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 3,
-                                  crossAxisSpacing: 1,
-                                  mainAxisSpacing: 0,
-                                  mainAxisExtent: 150,
-                                ),
-                                primary: false,
-                                itemCount: 3,
-                                shrinkWrap: true, itemBuilder: (BuildContext context, int index) {  
-                                  
-                                return Padding(
-                                  padding: const EdgeInsets.only(top: 2, left: 2, right: 2),
-                                  child: Container(
-                                    width: 100.0,
-                                    decoration: BoxDecoration(
-                                      image: DecorationImage(
-                                          fit: BoxFit.cover, image: NetworkImage('${messages?.elementAt(index).message}')),
-                                      borderRadius: const BorderRadius.all(Radius.circular(8.0)),
-                                      color: Colors.redAccent,
-                                    ),
-                                  ),
-                                );
-                              }
-                            );
-                    
-                          }else{
-                            return const Expanded(child: CircularProgressIndicator());
-                          }
-                        }
+                    Padding(
+                      padding: const EdgeInsets.only(left: 5, right: 10, top: 10),
+                      child: ListTile(
+                        leading: CircleAvatar(
+                          backgroundColor: background,
+                          child: const Icon(Icons.clear, color: Colors.white,)
+                        ),
+                        title: const Text('Clear Chat', style: TextStyle(color: Colors.deepOrangeAccent, fontWeight: FontWeight.bold),),
+                        onTap: () async {
+                          
+                          Navigator.of(context).pushReplacementNamed('homeScreen');
+                          // update lastSavedConversationDate to be 
+                          await DatabaseService(uid: FirebaseAuth.instance.currentUser?.uid).clearChat(widget.chatId);
+                         
+                        },
                       ),
                     ),
+                  
 
-                    SizedBox(
-                      width: 100,
-                      height: 50,
-                      
-                      child: TextButton(
-                        child: const Text('View All', style: TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold),), 
-                        onPressed: (){
-
+                    Padding(
+                      padding: const EdgeInsets.only(left: 5, right: 10, top: 10),
+                      child: ListTile(
+                        focusColor: Colors.orange,
+                        leading: CircleAvatar(
+                          backgroundColor: background,
+                          child: const Icon(Icons.block, color: Colors.white),
+                        ),
+                        title: const Text('Block Account', style: TextStyle(color: Colors.deepOrangeAccent, fontWeight: FontWeight.bold),),
+                        onTap: () async {
+                         
                         },
                       ),
                     )
                   ],
-
-
-                  
                 )
-              )
+              ),
+            
+              const SizedBox(height: 30,),
             ]
           ),
         ),

@@ -104,12 +104,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         return ConversationTile(conversation: conversation);
                           
                         }, separatorBuilder: (BuildContext context, int index) {  
-                          return const Divider(
+                          return  Divider(
                             height: 15,
                             thickness: 0.2,
                             indent: 1,
                             endIndent: 0,
-                            color: Colors.black26,
+                            color: accentColor,
                           );
                         },
                       ),

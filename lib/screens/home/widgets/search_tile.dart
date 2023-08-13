@@ -18,7 +18,7 @@ class SearchTile extends StatelessWidget {
           padding: const EdgeInsets.only(top: 5.0),
           child: Text('${user?.email}', style: TextStyle(color: textColor, fontWeight: FontWeight.normal, fontSize: 15),),
         ),
-        tileColor: background,
+        tileColor: Colors.black,
         leading: CircleAvatar(
           backgroundColor: accentColor,
           radius: 30,

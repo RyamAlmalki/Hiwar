@@ -3,8 +3,8 @@ import 'package:hexcolor/hexcolor.dart';
 
 final Color accentColor = HexColor("#1a1a1a"); 
 final Color primaryColor = HexColor("#F7931E");
-final Color background = HexColor("#202025"); 
-final Color textColor = HexColor("#C4C4C4");
+final Color background = HexColor("#1a1a1a"); 
+final Color textColor = HexColor("#e6e6e6");
 final Color bubbleColor = HexColor("#de841b");
 
 // we can use this constant in the different form field.

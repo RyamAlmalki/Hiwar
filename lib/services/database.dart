@@ -144,21 +144,44 @@ class DatabaseService{
     );
   }
 
-
   // Search List fron snapshot 
-  List<Message>? _searchMessagesListFromSnapshot(QuerySnapshot snapshot){
+  List<Message> _searchMessagesListFromSnapshot(QuerySnapshot snapshot){
+
       return snapshot.docs
       .map((doc) {
-        return Message(
+
+          return Message(
           message: doc['text'],
           senderId: doc['senderId'],
           senderName: doc['senderName'],
           date: (doc['date'] as Timestamp).toDate(),
           type: doc['type']
         );
+        
       }
     ).toList();
   }
+
+  // Search List fron snapshot 
+  // List<Message?> _searchMessagesImageListFromSnapshot(QuerySnapshot snapshot){
+
+  //     return snapshot.docs
+  //     .map((doc) {
+  //       if(doc['type'] == 'image'){
+  //         return Message(
+  //         message: doc['text'],
+  //         senderId: doc['senderId'],
+  //         senderName: doc['senderName'],
+  //         date: (doc['date'] as Timestamp).toDate(),
+  //         type: doc['type']
+  //         );
+  //       }
+  //       else{
+  //         return null;
+  //       }
+  //     }
+  //   ).toList();
+  // }
 
 
   // get messages from a stream
@@ -195,7 +218,7 @@ class DatabaseService{
 
 
   // get messages from a stream
-  Stream<List<Message>?>? messagesImage(conversationId, lastSavedConversationDate){
+  Stream<List<Message?>?>? messagesImage(conversationId, lastSavedConversationDate){
     return conversationsCollection
     .doc(conversationId)
     .collection('messages')

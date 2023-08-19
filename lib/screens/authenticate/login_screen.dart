@@ -85,10 +85,10 @@ class _LoginScreenState extends State<LoginScreen> {
                             width: MediaQuery.of(context).size.width / 1.2,
                             height: 60,
                             child: Center(child: Image.asset('assets/images/big_logo.png'),),
-                        )
-                      ),
-                          
-                              
+                          )
+                        ),
+                            
+                                
                         const SizedBox(height: 40,),
                           
                         Padding(

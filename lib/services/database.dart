@@ -162,27 +162,6 @@ class DatabaseService{
     ).toList();
   }
 
-  // Search List fron snapshot 
-  // List<Message?> _searchMessagesImageListFromSnapshot(QuerySnapshot snapshot){
-
-  //     return snapshot.docs
-  //     .map((doc) {
-  //       if(doc['type'] == 'image'){
-  //         return Message(
-  //         message: doc['text'],
-  //         senderId: doc['senderId'],
-  //         senderName: doc['senderName'],
-  //         date: (doc['date'] as Timestamp).toDate(),
-  //         type: doc['type']
-  //         );
-  //       }
-  //       else{
-  //         return null;
-  //       }
-  //     }
-  //   ).toList();
-  // }
-
 
   // get messages from a stream
   // add last saved conversation date 
@@ -334,27 +313,29 @@ class DatabaseService{
      
   }
 
-
+  // this function will update the ImageUrl for all other users that have a conversation with the user who updated the image 
   updateImageUrlForOtherUsers(imageUrl) async{
     await userCollection
     .doc(uid) // uid of current user who changed the profile 
-    .collection('converstions') // he went to all his started conver
+    .collection('converstions') // all his started conversations 
     .get()
     .then((doc) => {
-      doc.docs.forEach((element) { // for each conver i want to get id of the other user
-        editImageUrl(element.get('userId'), imageUrl);
+      doc.docs.forEach((element) { // for each conversation get the other user id 
+        editImageUrl(element.get('userId'), imageUrl); // update the url for the other user id
       })
     });
   }
 
+  // this function will get the other user id and the new image to update for user 
   editImageUrl(otherUserUid, imageUrl) async {
     QuerySnapshot querySnapshot = await userCollection
     .doc(otherUserUid)
     .collection('converstions')
     .where('userId', isEqualTo: uid)
-    .get();
+    .get(); 
+    // we will look through all the conversation that this user started and try to find the one that has the user who will change his profile image
 
-      
+    // here we will update the image for this conversation 
     await userCollection
     .doc(otherUserUid)
     .collection('converstions')
@@ -364,4 +345,22 @@ class DatabaseService{
     });
   }
   
+
+  editFriendDisplayName(friendId, newName) async {
+     QuerySnapshot querySnapshot = await userCollection
+      .doc(uid)
+      .collection('converstions')
+      .where('userId', isEqualTo: friendId)
+      .get();
+
+      
+    await userCollection
+    .doc(uid)
+    .collection('converstions')
+    .doc(querySnapshot.docs[0].id)
+    .update({
+      'fullName': newName
+    });
+  }
+
 }

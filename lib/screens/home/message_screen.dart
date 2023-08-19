@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:chatapp/screens/home/friend_profile_screen.dart';
 import 'package:chatapp/screens/home/widgets/view_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -7,6 +9,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../models/conversation.dart';
 import '../../models/message.dart';
 import '../../models/user.dart';
+import '../../services/Image.dart';
 import '../../services/database.dart';
 import '../../services/storage.dart';
 import '../../shared/const.dart';
@@ -15,8 +18,9 @@ import '../../shared/const.dart';
 class MessageScreen extends StatefulWidget {
   String? chatId;
   int numberOfUnseenMessages = 0;
+  Conversation? conversation;
   DateTime? lastSavedConversationDate;
-  MessageScreen({super.key, this.chatId, required this.numberOfUnseenMessages, this.userId, this.lastSavedConversationDate});
+  MessageScreen({super.key, this.conversation,this.chatId, required this.numberOfUnseenMessages, this.userId, this.lastSavedConversationDate});
   
   // HAVE USER ID HERE 
   String? userId;
@@ -40,6 +44,8 @@ class _MessageScreentState extends State<MessageScreen> {
   bool? showitems = false;
   String? chatId;
   late final _stream;
+
+
 
   sendMessage() async {
     // if null no conversation has been created between the two 
@@ -127,24 +133,37 @@ class _MessageScreentState extends State<MessageScreen> {
       });
     }
 
-    getPreviousConversation();
+
   }
 
 
-  // get previous conversation 
-  void getPreviousConversation() async{
+  // // get previous conversation 
+  // void getPreviousConversation() async{
+  //   // i will get the previous conversation from the reciver since i will use numberOfUnseenMessages from his side to update and resent the numberOfUnseenMessages to 0 for the sender
+  //   Conversation? conversation = await DatabaseService(uid: user?.uid).getPreviousConversation(FirebaseAuth.instance.currentUser!.uid);
+
+
+  //   if (mounted) {
+  //     if(conversation != null){
+  //       setState(() {
+  //         widget.chatId = conversation.id;
+  //         widget.numberOfUnseenMessages = conversation.numberOfUnseenMessages;
+  //       });
+  //     }
+  //   }  
+  // }
+
+  void updateConversation() async{
     // i will get the previous conversation from the reciver since i will use numberOfUnseenMessages from his side to update and resent the numberOfUnseenMessages to 0 for the sender
-    Conversation? conversation = await DatabaseService(uid: user?.uid).getPreviousConversation(FirebaseAuth.instance.currentUser!.uid);
+    Conversation? conversation = await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid).getPreviousConversation(user?.uid);
 
     if (mounted) {
       if(conversation != null ){
         setState(() {
-          widget.chatId = conversation.id;
-          widget.numberOfUnseenMessages = conversation.numberOfUnseenMessages;
+          widget.conversation = conversation;
         });
       }
     }
-  
   }
 
 
@@ -152,16 +171,19 @@ class _MessageScreentState extends State<MessageScreen> {
 
   @override
   void initState() {
-    print(widget.lastSavedConversationDate);
     super.initState();
-    _stream = DatabaseService().messages(widget.chatId, widget.lastSavedConversationDate);
-    // GETUSER 
-    getUser(widget.userId);
 
+    getUser(widget.userId);
+    
+
+    _stream = DatabaseService().messages(widget.chatId, widget.lastSavedConversationDate);
+    
     // update last seem message 
     resetLastUnseenMessage();
-    
   }
+
+
+
 
   resetLastUnseenMessage(){
     setState(() {
@@ -174,19 +196,7 @@ class _MessageScreentState extends State<MessageScreen> {
 
 
    Future<bool> getFromGallery() async {
-       // Step 1: Pick image 
-      ImagePicker imagePicker =  ImagePicker();
-      XFile? file = await imagePicker.pickImage(source: ImageSource.gallery);
-
-      if(file==null) {
-        return false;
-      }
-
-      // Step 2: generate a unique name for each image 
-      String uniqueFileName = DateTime.now().millisecondsSinceEpoch.toString();
-
-      // Step 3: Upload image to Firestore Storage and return the image URL
-      String? imageUrl = await StorageService().sendImage(uniqueFileName, file.path);
+      String? imageUrl = await Images().getImageFromGallery();
      
       setState(() {
         messageText = imageUrl;
@@ -201,8 +211,12 @@ class _MessageScreentState extends State<MessageScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
       backgroundColor: Colors.black,
       appBar: AppBar(
+        shape: Border(
+          bottom: BorderSide(color: accentColor, width: 1)
+          ),
         automaticallyImplyLeading: false,
         leading: null,
         title: Row(
@@ -228,7 +242,8 @@ class _MessageScreentState extends State<MessageScreen> {
             
               TextButton(
               onPressed: () async{
-                Navigator.of(context).push(MaterialPageRoute(builder: (context) => FriendProfileScreen(user: user, chatId: widget.chatId, lastSavedConversationDate: widget.lastSavedConversationDate,))); 
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) => FriendProfileScreen(conversation: widget.conversation, user: user, chatId: widget.chatId, lastSavedConversationDate: widget.lastSavedConversationDate,))).then((value) { updateConversation(); });
+                
               },
               child: CircleAvatar(
                 backgroundColor: accentColor,
@@ -242,14 +257,14 @@ class _MessageScreentState extends State<MessageScreen> {
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text('${user?.displayName}', style:const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),), 
+                Text('${widget.conversation?.fullName}', style:const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),), 
               ],
             ),
           ],
         ), 
         centerTitle: false, 
-        backgroundColor:Colors.black, 
-        elevation: 1,
+        backgroundColor: Colors.transparent, 
+        elevation: 0,
       ),
       body: SafeArea(
       child: Column(

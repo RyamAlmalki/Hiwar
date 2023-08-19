@@ -32,13 +32,10 @@ class ConversationTile extends StatelessWidget {
                   ),
                 ),
               conversation.numberOfUnseenMessages != 0 ? CircleAvatar(
-                radius: 10,
+                radius: 12,
                 backgroundColor: primaryColor, 
-                child:  Padding(
-                  padding: const EdgeInsets.all(1.0),
-                  child:  Text('${conversation.numberOfUnseenMessages}', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold,),),
-                ),
-              ) : const CircleAvatar(backgroundColor: Colors.black, radius: 10,),
+                child:  Text('${conversation.numberOfUnseenMessages}', style: const TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold,),),
+              ) : const CircleAvatar(backgroundColor: Colors.black, radius: 0,),
             ],
           ),
         ), 
@@ -59,7 +56,7 @@ class ConversationTile extends StatelessWidget {
         onTap: (){
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) =>  MessageScreen(chatId: conversation.id, userId: conversation.userId, numberOfUnseenMessages: conversation.numberOfUnseenMessages, lastSavedConversationDate: conversation.lastSavedConversationDate,)),
+            MaterialPageRoute(builder: (context) =>  MessageScreen(conversation: conversation, chatId: conversation.id, userId: conversation.userId, numberOfUnseenMessages: conversation.numberOfUnseenMessages, lastSavedConversationDate: conversation.lastSavedConversationDate,)),
           );
         },
       ),

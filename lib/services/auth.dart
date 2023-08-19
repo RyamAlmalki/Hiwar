@@ -7,7 +7,7 @@ class AuthService{
   // This instance will allow us to communicat with Auth firebase in backend 
   // this will give us access to different property to the auth class 
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final user = FirebaseAuth.instance.currentUser;
+  //final user = FirebaseAuth.instance.currentUser;
   //late final ChatUser chatUser;
 
 
@@ -70,6 +70,22 @@ class AuthService{
     }   
   }
 
+  // make sure that owner is the one changing the passowrd 
+  Future<bool> reauthenticatePassword(password ) async {
+    final user = FirebaseAuth.instance.currentUser;
+    // you should check here that email is not empty
+    final credential = EmailAuthProvider.credential(
+        email: user!.email!,
+        password: password
+    );
+
+    try {
+      await user.reauthenticateWithCredential(credential);
+      return true;
+    } on FirebaseAuthException catch (e) {
+      return false;
+    }
+  }
 
   // sing out
   Future signout() async {
@@ -78,6 +94,33 @@ class AuthService{
     // ignore: empty_catches
     }catch(e){
       
+    }
+  }
+
+
+  // change password 
+  Future<bool> changePassword(password) async {
+     //Create an instance of the current user. 
+    final user = FirebaseAuth.instance.currentUser;
+   
+    try {
+      await user?.updatePassword(password);
+      return true;
+    } on FirebaseAuthException catch (e) {
+      return false;
+    }
+  }
+
+   // change password 
+  Future<bool> changeEmail(email) async {
+    // user must login again to update email
+    final User? user = FirebaseAuth.instance.currentUser;
+
+    try {
+      await user?.updateEmail(email);
+      return true;
+    } on FirebaseAuthException catch (e) {
+      return false;
     }
   }
 

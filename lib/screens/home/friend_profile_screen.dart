@@ -1,25 +1,66 @@
+import 'package:chatapp/models/conversation.dart';
 import 'package:chatapp/models/user.dart';
+import 'package:chatapp/screens/home/image_page.dart';
+import 'package:chatapp/screens/home/page_view.dart';
+import 'package:chatapp/screens/home/pictures_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../models/message.dart';
 import '../../services/database.dart';
 import '../../shared/const.dart';
+import 'shared_widget.dart/options.dart';
+
 
 class FriendProfileScreen extends StatefulWidget {
-  const FriendProfileScreen({super.key, this.user, this.chatId, this.lastSavedConversationDate});
+  FriendProfileScreen({this.conversation, super.key, this.user, this.chatId, this.lastSavedConversationDate});
   final String? chatId;
   final ChatUser? user;
   final DateTime? lastSavedConversationDate;
+  Conversation? conversation;
   @override
   State<FriendProfileScreen> createState() => _FriendProfileScreenState();
 }
 
 
 class _FriendProfileScreenState extends State<FriendProfileScreen> {
-   final _formKey = GlobalKey<FormState>();
-  bool _passwordVisible = false;
-  TextEditingController emailForm = TextEditingController();
+  TextEditingController nameForm = TextEditingController();
+
+   @override
+  void initState() {
+    super.initState();
+  }
+
+  List<ImagePage> pages = [
+    //...
+  ];
+
+ editDisplayName() async{
+
+  }
+   blockUser() async{
+    
+  }
+
+  updateName() async{
+    await DatabaseService(uid: FirebaseAuth.instance.currentUser?.uid).editFriendDisplayName(widget.user?.uid, nameForm.text);
+    updateConversation();
+  }
+
+
+  void updateConversation() async{
+    // i will get the previous conversation from the reciver since i will use numberOfUnseenMessages from his side to update and resent the numberOfUnseenMessages to 0 for the sender
+    Conversation? conversation = await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid).getPreviousConversation(widget.user?.uid);
+
+    if (mounted) {
+      if(conversation != null ){
+        setState(() {
+          widget.conversation = conversation;
+        });
+      }
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -27,16 +68,16 @@ class _FriendProfileScreenState extends State<FriendProfileScreen> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [  
             IconButton(
                 icon:  const Icon(
-                Icons.arrow_forward_ios,
+                Icons.arrow_back_ios,
                 color: Colors.white,
                 size: 25,
               ),
               onPressed: () async{
-                Navigator.of(context).pop();
+                Navigator.of(context).pop(true);
               },
             ),
           ],
@@ -60,13 +101,13 @@ class _FriendProfileScreenState extends State<FriendProfileScreen> {
                   backgroundColor: primaryColor,
                   radius: 95,
                   backgroundImage: NetworkImage(widget.user?.photoURL ?? '') ,
-                  child: widget.user?.photoURL == "" ? Text(widget.user!.displayName![0], style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 40),) : null,
+                  child: widget.conversation?.profilePic == "" ? Text(widget.conversation!.fullName[0], style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 40),) : null,
                 ),
               ),
 
               const SizedBox(height: 20,),
 
-              Text('${widget.user?.displayName}', style: const TextStyle(fontSize: 30 ,fontWeight: FontWeight.bold, color: Colors.white), ),
+              Text('${widget.conversation?.fullName}', style: const TextStyle(fontSize: 30 ,fontWeight: FontWeight.bold, color: Colors.white), ),
               
               const SizedBox(height: 5,),
 
@@ -86,6 +127,10 @@ class _FriendProfileScreenState extends State<FriendProfileScreen> {
                     TextButton(
                       child: Text('See All', style: TextStyle(fontSize: 18, color: primaryColor, fontWeight: FontWeight.bold),), 
                       onPressed: (){
+                         Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => PictureScreen(chatId: widget.chatId, lastSavedConversationDate: widget.lastSavedConversationDate, conversation: widget.conversation,)),
+                        );
                       },
                     ),
                   ],
@@ -104,12 +149,10 @@ class _FriendProfileScreenState extends State<FriendProfileScreen> {
                   padding: const EdgeInsets.only(top: 20, left: 10, right: 10),
                   child: Column(      
                     children: [
-                     
-                  
+
                       SingleChildScrollView(
                         child: StreamBuilder<List<Message?>?>(
                           stream: DatabaseService().messagesImage(widget.chatId, widget.lastSavedConversationDate),
-                  
                           builder: (context, snapshot){
                       
                             if(snapshot.hasData){
@@ -121,32 +164,48 @@ class _FriendProfileScreenState extends State<FriendProfileScreen> {
                               messages?.forEach((element) {
                                 if(element?.type == 'image'){
                                   imageMessages.add(element);
+                                  
                                 }
                               });
-                
+
+                              for(int i = 0; i < imageMessages.length; i++){
+                                pages.add(ImagePage(message: imageMessages.elementAt(i), conversation: widget.conversation));
+                              }
                 
                               return imageMessages.isNotEmpty ? GridView.builder(
                                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 3,
-                                    crossAxisSpacing: 2,
-                                    mainAxisSpacing: 2,
-                                    mainAxisExtent: 120,
+                                    crossAxisCount: 3, 
+                                    mainAxisExtent: 200,
+                                    mainAxisSpacing: 1,
+                                    crossAxisSpacing: 1
                                   ),
                                   primary: false,
                                   itemCount: imageMessages.length >= 6 ? 6 : imageMessages.length,
-                                  shrinkWrap: true, itemBuilder: (BuildContext context, int index) {  
-                        
+                                  shrinkWrap: true, 
+                                  itemBuilder: (BuildContext context, int index) {  
+                                    
+
                                     return Padding(
                                     padding: const EdgeInsets.only(top: 2, left: 2, right: 2),
-                                    child: Container(
-                                      width: 50.0,
-                                      decoration: BoxDecoration(
-                                        image: DecorationImage(
-                                            fit: BoxFit.cover, image: NetworkImage('${imageMessages.elementAt(index)?.message}')),
-                                        borderRadius: const BorderRadius.all(Radius.circular(8.0)),
-                                        color: accentColor,
-                                      ),
-                                    ),
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(builder: (context) =>  MainpageScreen(pages: pages, value: index, conversation: widget.conversation,)
+                                          ),
+                                        );
+                                      },
+                                      child: Container(
+                                          width: MediaQuery.of(context).size.width,
+                                            height: 250,
+                                            decoration: BoxDecoration(
+                                              image: DecorationImage(
+                                                fit: BoxFit.cover,
+                                                image: NetworkImage("${imageMessages.elementAt(index)?.message}"),
+                                              ),
+                                            ),
+                                          ),
+                                    )
                                   );
                                 }
                               ) : Padding(
@@ -171,186 +230,22 @@ class _FriendProfileScreenState extends State<FriendProfileScreen> {
               
               const SizedBox(height: 30,),
 
-              SizedBox(
-                width: MediaQuery.of(context).size.width / 1.1,
-                child: Column(
-                  children: [
-                    
-                    Row(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text('General', style: TextStyle(color: textColor, fontWeight: FontWeight.bold, fontSize: 18),),
-                        ),
-                      ],
-                    ),
-
-                    ListTile(
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(20))
-                      ),
-                      tileColor: accentColor,
-                      selectedTileColor: Colors.white,
-                      leading: CircleAvatar(
-                        backgroundColor: background,
-                        child: const Icon(Icons.person, color: Colors.white,)
-                      ),
-                      title: const Padding(
-                        padding: EdgeInsets.only(top: 20, bottom: 20),
-                        child: Text('Edit Name', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
-                      ),
-                      onTap: () async {
-                        showModalBottomSheet<void>(
-                          isScrollControlled: true,
-                          context: context, 
-                          shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(20),
-                              topRight: Radius.circular(20)
-                            )
-                          ),
-                          builder:(BuildContext context){
-                          return  FractionallySizedBox(
-                            heightFactor: 0.8,
-                            child: Container(
-                              color: Colors.black,
-                              child: Form(
-                              key: _formKey,
-                              child: SingleChildScrollView(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-
-                        
-                            
-                                  Padding(
-                                    padding: EdgeInsets.only(top: MediaQuery.of(context).size.height / 4),
-                                    child: SizedBox(
-                                      width: MediaQuery.of(context).size.width / 1.2,
-                                      child: TextFormField(
-                                          validator: (value) => value!.isEmpty ? 'value cannot be empty' : null,
-                                          style: const TextStyle(color: Colors.white),
-                                          keyboardType: TextInputType.emailAddress,
-                                          controller: emailForm,
-                                          decoration: decorationStyles.copyWith(
-                                            labelText: 'Enter Display Name', 
-                                            prefixIcon: Icon(Icons.person, color: textColor,
-                                          ),
-                                        )
-                                      ),
-                                    ),
-                                  ),
-                            
-                          
-                           
-                            
-                            const SizedBox(height: 50,),
-                            
-                            SizedBox(
-                              width: MediaQuery.of(context).size.width / 1.4,
-                              height: 50,       
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: primaryColor,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10)
-                                  )
-                                ),
-                                onPressed: () async {
-                                  
-                                }, 
-                                child: const Text('Save', style: TextStyle(fontWeight: FontWeight.bold),),
-                              )
-                            ),
-
-
-
-
-
-
-                                         ]
-                                     )
-                               
-                                ),
-                              )
-                            ) 
-                          );
-                        }
-                      );
-                       
-                      },
-                    ),
-                  ],
-                )
+              Options(
+                optionsName: const ['Edit Name'], 
+                icons: const [Icons.person],
+                optionsFunctions: [editDisplayName()],
+                title: 'General',
               ),
               
               const SizedBox(height: 30,),
               
-              SizedBox(
-                width: MediaQuery.of(context).size.width / 1.1,
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text('Danger Zone', style: TextStyle(color: textColor, fontWeight: FontWeight.bold, fontSize: 18),),
-                        ),
-                      ],
-                    ),
-
-                    ListTile(
-                      shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(20),
-                        topRight: Radius.circular(20),
-                      )
-                    ),
-                    tileColor: accentColor,
-                    selectedTileColor: Colors.white,
-                      leading: CircleAvatar(
-                        backgroundColor: background,
-                        child: const Icon(Icons.clear, color: Colors.white,)
-                      ),
-                      title: const Padding(
-                        padding: EdgeInsets.only(top: 20, bottom: 20),
-                        child: Text('Clear Chat', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),),
-                      ),
-                      onTap: () async {
-                        
-                        Navigator.of(context).pushReplacementNamed('homeScreen');
-                        // update lastSavedConversationDate to be 
-                        await DatabaseService(uid: FirebaseAuth.instance.currentUser?.uid).clearChat(widget.chatId);
-                       
-                      },
-                    ),
-                  
-
-                    ListTile(
-                      shape: const RoundedRectangleBorder(
-                         borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(20),
-                          bottomRight: Radius.circular(20),
-                      )
-                      ),
-                      tileColor: accentColor,
-                      selectedTileColor: Colors.white,
-                      leading: CircleAvatar(
-                        backgroundColor: background,
-                        child: const Icon(Icons.block, color: Colors.white),
-                      ),
-                      title: const Padding(
-                        padding: EdgeInsets.only(top: 20, bottom: 20),
-                        child: Text('Block Account', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),),
-                      ),
-                      onTap: () async {
-                       
-                      },
-                    )
-                  ],
-                )
+              Options(
+                optionsName: const ['Clear Chat', 'Block Account'], 
+                icons: const [Icons.clear, Icons.block],
+                optionsFunctions: [blockUser(), blockUser()],
+                title: 'Danger Zone',
               ),
-            
+
               const SizedBox(height: 30,),
             ]
           ),
@@ -359,3 +254,127 @@ class _FriendProfileScreenState extends State<FriendProfileScreen> {
     );
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+////////////////////////////////////
+
+// clear chat function 
+// Navigator.of(context).pushReplacementNamed('homeScreen');
+// // update lastSavedConversationDate to be 
+// await DatabaseService(uid: FirebaseAuth.instance.currentUser?.uid).clearChat(widget.chatId);
+
+
+
+
+
+// edit name function 
+// return showDialog(
+//   context: context, 
+//   builder: (BuildContext context) {
+//       return AlertDialog(
+//         backgroundColor: accentColor,
+//         content: Container(
+//         width: MediaQuery.of(context).size.width ,
+//         color: accentColor,
+//         child: Form(
+//         key: _formKey,
+//         child: SingleChildScrollView(
+//           child: Column(
+//             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//             children: [
+//                   const Padding(
+//                     padding:  EdgeInsets.only(top: 50),
+//                     child:  Text('Edit Name', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 30),),
+//                   ),
+
+//                   const SizedBox(height: 30,),
+
+//                   SizedBox(
+//                     width: MediaQuery.of(context).size.width / 1.2,
+//                     child: TextFormField(
+//                         validator: (value) => value!.isEmpty ? 'value cannot be empty' : null,
+//                         style: const TextStyle(color: Colors.white),
+//                         keyboardType: TextInputType.name,
+//                         controller: nameForm,
+//                         decoration: decorationStyles.copyWith(
+//                           fillColor: Colors.black,
+//                           labelText: 'New Name', 
+//                           prefixIcon: Icon(Icons.person, color: textColor,
+                          
+//                         ),
+//                       )
+//                     ),
+//                   ),
+          
+//                   const SizedBox(height: 50,),
+                  
+//                   SizedBox(
+//                     width: MediaQuery.of(context).size.width / 1.5,
+//                     height: 50,       
+//                     child: ElevatedButton(
+//                       style: ElevatedButton.styleFrom(
+//                         backgroundColor: primaryColor,
+//                         shape: RoundedRectangleBorder(
+//                           borderRadius: BorderRadius.circular(10)
+//                         )
+//                       ),
+//                       onPressed: () async {
+//                         updateName();
+                        
+//                         Navigator.of(context).pop();
+//                       }, 
+//                       child: const Text('Save', style: TextStyle(fontWeight: FontWeight.bold),),
+//                     )
+//                   ),
+
+//                   const SizedBox(height: 5,),
+
+//                   SizedBox(
+//                     width: MediaQuery.of(context).size.width / 1.5,
+//                     height: 50,       
+//                     child: ElevatedButton(
+//                       style: ElevatedButton.styleFrom(
+//                         backgroundColor: accentColor,
+//                         shape: RoundedRectangleBorder(
+//                           borderRadius: BorderRadius.circular(10)
+//                         )
+//                       ),
+//                       onPressed: () async {                                              
+//                         Navigator.of(context).pop();
+//                       }, 
+//                       child: const Text('Cancle', style: TextStyle(fontWeight: FontWeight.bold),),
+//                     )
+//                   ),
+
+
+//                 ]
+//               )
+//             ),
+//           )
+//         ) ,
+//       );
+//     }
+//   );

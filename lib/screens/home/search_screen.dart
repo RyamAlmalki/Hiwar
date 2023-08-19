@@ -130,7 +130,8 @@ class SearchScreenState extends State<SearchScreen> {
                       itemBuilder: (context, index) {
                         ChatUser user = users.elementAt(index);
 
-                        return SearchTile(user: user);
+                        print(user);
+                        return SearchsTile(user: user);
                       }, separatorBuilder: (BuildContext context, int index) { 
                          return const Divider(
                             height: 15,

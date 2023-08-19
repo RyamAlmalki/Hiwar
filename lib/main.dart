@@ -3,7 +3,7 @@ import 'package:chatapp/screens/authenticate/upload_image_screen.dart';
 import 'package:chatapp/screens/home/home_screen.dart';
 import 'package:chatapp/screens/authenticate/login_screen.dart';
 import 'package:chatapp/screens/authenticate/register_screen.dart';
-import 'package:chatapp/screens/home/profile_screen.dart';
+import 'package:chatapp/screens/home/profile/profile_page.dart';
 import 'package:chatapp/screens/home/search_screen.dart';
 import 'package:chatapp/screens/spalsh_screen.dart';
 import 'package:firebase_core/firebase_core.dart';

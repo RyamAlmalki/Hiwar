@@ -1,6 +1,6 @@
 import 'package:chatapp/models/conversation.dart';
 
-import 'package:chatapp/screens/home/image_page.dart';
+import 'package:chatapp/pages/home/message/image_page.dart';
 import 'package:flutter/material.dart';
 
 

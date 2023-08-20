@@ -1,6 +1,6 @@
 import 'package:chatapp/models/conversation.dart';
 import 'package:chatapp/shared/const.dart';
-import 'package:chatapp/screens/home/widgets/conversation_tile.dart';
+import 'package:chatapp/pages/home/home_widget/conversation_tile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../../services/database.dart';
@@ -20,7 +20,6 @@ class _HomeScreenState extends State<HomeScreen> {
     super.deactivate();
   }
   
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,16 +48,14 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),  
               
-
             const Text(
-              'Messages', 
-              style: TextStyle(
-                fontWeight: 
-                FontWeight.bold, 
-                fontSize: 20),
-              ),
+            'Messages', 
+            style: TextStyle(
+              fontWeight: 
+              FontWeight.bold, 
+              fontSize: 20),
+            ),
 
-            
             SizedBox(
               width: 60,
               child: CircleAvatar(
@@ -106,7 +103,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         }, separatorBuilder: (BuildContext context, int index) {  
                           return  Divider(
                             height: 15,
-                            thickness: 0.2,
+                            thickness: 0.5,
                             indent: 1,
                             endIndent: 0,
                             color: accentColor,
@@ -120,8 +117,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   }
                 }
               ),
-
-              
             ],   
           ),
         ),

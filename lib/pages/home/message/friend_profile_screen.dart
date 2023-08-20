@@ -1,15 +1,15 @@
 import 'package:chatapp/models/conversation.dart';
 import 'package:chatapp/models/user.dart';
-import 'package:chatapp/screens/home/image_page.dart';
-import 'package:chatapp/screens/home/page_view.dart';
-import 'package:chatapp/screens/home/pictures_screen.dart';
+import 'package:chatapp/pages/home/message/image_page.dart';
+import 'package:chatapp/pages/home/message/page_view.dart';
+import 'package:chatapp/pages/home/message/pictures_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../../models/message.dart';
-import '../../services/database.dart';
-import '../../shared/const.dart';
-import 'shared_widget.dart/options.dart';
+import '../../../models/message.dart';
+import '../../../services/database.dart';
+import '../../../shared/const.dart';
+import '../home_widget/options.dart';
 
 
 class FriendProfileScreen extends StatefulWidget {
@@ -233,7 +233,7 @@ class _FriendProfileScreenState extends State<FriendProfileScreen> {
               Options(
                 optionsName: const ['Edit Name'], 
                 icons: const [Icons.person],
-                optionsFunctions: [editDisplayName()],
+                optionsFunctions: [editDisplayName],
                 title: 'General',
               ),
               
@@ -242,7 +242,7 @@ class _FriendProfileScreenState extends State<FriendProfileScreen> {
               Options(
                 optionsName: const ['Clear Chat', 'Block Account'], 
                 icons: const [Icons.clear, Icons.block],
-                optionsFunctions: [blockUser(), blockUser()],
+                optionsFunctions: [blockUser, blockUser],
                 title: 'Danger Zone',
               ),
 

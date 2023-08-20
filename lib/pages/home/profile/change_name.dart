@@ -3,18 +3,18 @@ import 'package:flutter/material.dart';
 import '../../../services/auth.dart';
 import '../../../shared/const.dart';
 
-class ChangeEmailPage extends StatefulWidget {
-  const ChangeEmailPage({super.key});
+class ChangeNamePage extends StatefulWidget {
+  const ChangeNamePage({super.key});
 
   @override
-  State<ChangeEmailPage> createState() => _ChangeEmailPageState();
+  State<ChangeNamePage> createState() => _ChangeNamePageState();
 }
 
-class _ChangeEmailPageState extends State<ChangeEmailPage> {
-   final _formKey = GlobalKey<FormState>();
-  TextEditingController emailForm = TextEditingController();
+class _ChangeNamePageState extends State<ChangeNamePage> {
+  final _formKey = GlobalKey<FormState>();
+  TextEditingController nameForm = TextEditingController();
 
-  changeEmail() async {
+  changeName() async {
      // loading CircularProgress 
     showDialog(
       context: context, 
@@ -23,37 +23,38 @@ class _ChangeEmailPageState extends State<ChangeEmailPage> {
        }
     );
     
-    dynamic result = await AuthService().changeEmail(emailForm.text);
+    dynamic result = await AuthService().changeName(nameForm.text);
 
     // pop the loading circle 
     // ignore: use_build_context_synchronously
     Navigator.of(context).pop();
     
     if(result == false){
-      emailForm.clear();
+      nameForm.clear();
       // ignore: use_build_context_synchronously
       showDialog(
       context: context,
       builder: (BuildContext context) {
         return const AlertDialog(
-          title: Text('Email Change failed'),
+          title: Text('Name Change failed'),
           content: Text('Could not change with new email'),
           );
         }
       );
     }else{
-      emailForm.clear();
+      nameForm.clear();
       // ignore: use_build_context_synchronously
       showDialog(
       context: context,
       builder: (BuildContext context) {
         return const AlertDialog(
-          title: Text('Email Change Successful'),
+          title: Text('Name Change Successful'),
           );
         }
       );
     }
   } 
+
 
   @override
   Widget build(BuildContext context) {
@@ -74,11 +75,11 @@ class _ChangeEmailPageState extends State<ChangeEmailPage> {
                 size: 30,
               ),
               onPressed: () async{
-                Navigator.of(context).pop();
+                Navigator.of(context).pushNamed('profileScreen');
               },
             ),
 
-            const Text('Change Email', style: TextStyle(fontSize: 20 ,fontWeight: FontWeight.bold, color: Colors.white), ),
+            const Text('Change Name', style: TextStyle(fontSize: 20 ,fontWeight: FontWeight.bold, color: Colors.white), ),
 
             const SizedBox(
               width: 60,
@@ -110,11 +111,11 @@ class _ChangeEmailPageState extends State<ChangeEmailPage> {
                         child: TextFormField(
                             validator: (value) => value!.isEmpty ? 'value cannot be empty' : null,
                             style: const TextStyle(color: Colors.white),
-                            keyboardType: TextInputType.emailAddress,
-                            controller: emailForm,
+                            keyboardType: TextInputType.name,
+                            controller: nameForm,
                             decoration: decorationStyles.copyWith(
-                              labelText: 'New Email', 
-                              prefixIcon: Icon(Icons.email, color: textColor,
+                              labelText: 'New Name', 
+                              prefixIcon: Icon(Icons.person, color: textColor,
                             ),
                           )
                         ),
@@ -133,7 +134,7 @@ class _ChangeEmailPageState extends State<ChangeEmailPage> {
                           )
                         ),
                         onPressed: () async {
-                          await changeEmail();
+                          changeName();
                         }, 
                         child: const Text('Save', style: TextStyle(fontWeight: FontWeight.bold),),
                       )

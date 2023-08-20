@@ -1,18 +1,18 @@
 import 'dart:async';
 
-import 'package:chatapp/screens/home/friend_profile_screen.dart';
-import 'package:chatapp/screens/home/widgets/view_image.dart';
+import 'package:chatapp/pages/home/message/friend_profile_screen.dart';
+import 'package:chatapp/pages/home/message/view_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../../models/conversation.dart';
-import '../../models/message.dart';
-import '../../models/user.dart';
-import '../../services/Image.dart';
-import '../../services/database.dart';
-import '../../services/storage.dart';
-import '../../shared/const.dart';
+import '../../../models/conversation.dart';
+import '../../../models/message.dart';
+import '../../../models/user.dart';
+import '../../../services/Image.dart';
+import '../../../services/database.dart';
+import '../../../services/storage.dart';
+import '../../../shared/const.dart';
 
 
 class MessageScreen extends StatefulWidget {

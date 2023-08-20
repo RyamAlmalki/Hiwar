@@ -345,6 +345,21 @@ class DatabaseService{
     });
   }
   
+  updateEmail(newEmail) async {
+    await userCollection
+    .doc(uid)
+    .update({
+      'email': newEmail
+    });
+  }
+
+  updateName(newName) async {
+    await userCollection
+    .doc(uid)
+    .update({
+      'fullName': newName
+    });
+  }
 
   editFriendDisplayName(friendId, newName) async {
      QuerySnapshot querySnapshot = await userCollection

@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 
 import '../../../shared/const.dart';
@@ -31,7 +29,29 @@ class Options extends StatelessWidget {
           ),
 
           // Top Tile  
-          ListTile(
+          optionsName.length == 1 ? ListTile(
+            shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+              bottomLeft: Radius.circular(20),
+              bottomRight: Radius.circular(20),
+              )
+            ),
+            tileColor: accentColor,
+            selectedTileColor: Colors.white,
+              leading: CircleAvatar(
+                backgroundColor: background,
+                child: Icon(icons[0], color: Colors.white,)
+              ),
+            title: Padding(
+              padding: const EdgeInsets.only(top: 20, bottom: 20),
+              child: Text(optionsName[0], style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
+            ),
+            onTap: () {
+              optionsFunctions[0]();
+            },
+          ) : ListTile(
             shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(20),
@@ -53,7 +73,7 @@ class Options extends StatelessWidget {
             },
           ),
 
-          // Middle Tile 
+          // Middle Tiles
           ListView.builder(
             physics: const NeverScrollableScrollPhysics(),
             padding: const EdgeInsets.all(0),

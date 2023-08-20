@@ -1,6 +1,8 @@
-import 'package:chatapp/screens/home/profile/change_email_page.dart';
-import 'package:chatapp/screens/home/profile/reauthenticate_password_page.dart';
-import 'package:chatapp/screens/home/shared_widget.dart/options.dart';
+import 'package:chatapp/pages/home/profile/blocked_page.dart';
+import 'package:chatapp/pages/home/profile/change_email_page.dart';
+import 'package:chatapp/pages/home/profile/change_name.dart';
+import 'package:chatapp/pages/home/profile/reauthenticate_password_page.dart';
+import 'package:chatapp/pages/home/home_widget/options.dart';
 import 'package:chatapp/services/Image.dart';
 import 'package:chatapp/services/database.dart';
 import 'package:chatapp/shared/const.dart';
@@ -18,9 +20,11 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProlfieScreenState extends State<ProfileScreen> {
+
   // Signout method 
   singout() async {
-    AuthService().signout();
+    await AuthService().signout();
+    // ignore: use_build_context_synchronously
     Navigator.of(context).pushReplacementNamed('loginScreen');
   }
 
@@ -43,13 +47,19 @@ class _ProlfieScreenState extends State<ProfileScreen> {
   }
 
   // edit display name method
-   editDisplayName() async{
-
+  editDisplayName() async{
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const ChangeNamePage()),
+    );
   } 
 
   // view blocked method 
   viewBlockedUsers() async {
-
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const BlockedPage()),
+    );
   }
   
   // change password method 
@@ -139,7 +149,7 @@ class _ProlfieScreenState extends State<ProfileScreen> {
               Options(
                 optionsName: const ['Edit Name', 'Change Email', 'Blocked', 'Change Pasword'], 
                 icons: const [Icons.person, Icons.email, Icons.block, Icons.password],
-                optionsFunctions: [singout, changeEmail, viewBlockedUsers, changePassword],
+                optionsFunctions: [editDisplayName, changeEmail, viewBlockedUsers, changePassword],
                 title: 'General',
               ),
 

@@ -1,5 +1,5 @@
 import 'package:chatapp/shared/const.dart';
-import 'package:chatapp/screens/authenticate/auth_widget/background.dart';
+import 'package:chatapp/pages/authenticate/auth_widget/background.dart';
 import 'package:flutter/material.dart';
 
 import '../../services/auth.dart';

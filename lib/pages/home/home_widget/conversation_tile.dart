@@ -1,7 +1,7 @@
 import 'package:chatapp/models/conversation.dart';
 import 'package:flutter/material.dart';
 import '../../../shared/const.dart';
-import 'package:chatapp/screens/home/message_screen.dart';
+import 'package:chatapp/pages/home/message/message_screen.dart';
 import 'package:intl/intl.dart';
 
 

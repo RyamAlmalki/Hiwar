@@ -111,17 +111,31 @@ class AuthService{
     }
   }
 
-   // change password 
+   // change email 
   Future<bool> changeEmail(email) async {
     // user must login again to update email
-    final User? user = FirebaseAuth.instance.currentUser;
+    final user = FirebaseAuth.instance.currentUser;
 
     try {
       await user?.updateEmail(email);
+      DatabaseService(uid: user?.uid).updateEmail(email);
       return true;
     } on FirebaseAuthException catch (e) {
       return false;
     }
   }
 
+  // change name 
+  Future<bool> changeName(name) async {
+    // user must login again to update email
+    final User? user = FirebaseAuth.instance.currentUser;
+
+    try {
+      await user?.updateDisplayName(name);
+      DatabaseService(uid: user?.uid).updateName(name);
+      return true;
+    } on FirebaseAuthException catch (e) {
+      return false;
+    }
+  }
 }

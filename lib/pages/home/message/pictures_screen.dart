@@ -1,11 +1,11 @@
 import 'package:chatapp/models/conversation.dart';
-import 'package:chatapp/screens/home/page_view.dart';
-import 'package:chatapp/screens/home/widgets/view_image.dart';
+import 'package:chatapp/pages/home/message/page_view.dart';
+import 'package:chatapp/pages/home/message/view_image.dart';
 import 'package:flutter/material.dart';
 
-import '../../models/message.dart';
-import '../../services/database.dart';
-import '../../shared/const.dart';
+import '../../../models/message.dart';
+import '../../../services/database.dart';
+import '../../../shared/const.dart';
 import 'image_page.dart';
 
 class PictureScreen extends StatefulWidget {

@@ -1,4 +1,4 @@
-import 'package:chatapp/models/user.dart';
+import 'package:chatapp/pages/home/search/search_widget/friend_tile.dart';
 import 'package:chatapp/pages/home/search/search_widget/search_tile.dart';
 import 'package:chatapp/services/database.dart';
 import 'package:chatapp/shared/const.dart';
@@ -6,10 +6,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../../models/conversation.dart';
+import '../../../models/user.dart';
 
 
 class SearchScreen extends StatefulWidget {
-  const SearchScreen({super.key});
+  const SearchScreen({super.key, required this.names});
+  final List<String>? names;
 
   @override
   State<SearchScreen> createState() => SearchScreenState();
@@ -18,14 +20,45 @@ class SearchScreen extends StatefulWidget {
 class SearchScreenState extends State<SearchScreen> {
   final searchController = TextEditingController();
   String? searchResult;
-  
+  late final _stream;
+  List<Conversation>? conversations;
+  List<Conversation>? searchConversationsItems = [];
+
+  List<ChatUser>? users;
+  List<ChatUser>? searchUserItems = [];
+
+
+  @override
+  void initState() {
+    _stream = DatabaseService(uid: FirebaseAuth.instance.currentUser?.uid).conversations?.distinct();
+    super.initState();
+  }
+
   @override
   void dispose() {
     searchController.dispose();
     super.dispose();
   }
 
+   void filterSearchConversationsResults(String query) {
+    setState(() {
+      searchConversationsItems = conversations
+        ?.where((item) => item.email.toLowerCase().contains(query.toLowerCase()))
+        .toList();
+    });
+  }
 
+ 
+  void filterSearchUsersResults(String query) {
+    setState(() {
+      searchUserItems = users
+        ?.where((item) => item.email!.toLowerCase().contains(query.toLowerCase()))
+        .toList();
+    });
+  }
+
+ 
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -63,7 +96,7 @@ class SearchScreenState extends State<SearchScreen> {
                     const Padding(
                       padding:  EdgeInsets.only(top: 50),
                       child:  Text(
-                        'Add Friends', 
+                        'Chat', 
                         style: TextStyle(
                           fontWeight: 
                           FontWeight.bold, 
@@ -91,13 +124,17 @@ class SearchScreenState extends State<SearchScreen> {
                   color: accentColor, borderRadius: BorderRadius.circular(40)),
                 child: Center(
                   child: TextField(
+                    style: const TextStyle(color: Colors.white),
                     onChanged: (value) {
                       setState(() {
                         searchResult = value;
+                        filterSearchConversationsResults(searchResult!);
+                        filterSearchUsersResults(searchResult!);
                       });
                     },
                     controller: searchController,
                     decoration: InputDecoration(
+      
                       prefixIcon: const Icon(Icons.search, color: Colors.white,),
                       suffixIcon: IconButton(
                         icon: const Icon(Icons.clear, color: Colors.white,),
@@ -119,61 +156,84 @@ class SearchScreenState extends State<SearchScreen> {
       body: SafeArea(
         child: Column(
           children: [
+                    StreamBuilder<List<Conversation>?>(
+                    stream: _stream,
+                    builder: (context, snapshot) {
+                      
+                      if(snapshot.hasData){
+                      conversations = snapshot.data?.reversed.toList();
+                  
+                      if(searchResult == '' || searchResult == null){
+                        searchConversationsItems = conversations;
+                      }
 
-            // search stream builder 
-            // StreamBuilder<List<ChatUser>?>(
-            //   stream: DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid).users(searchResult),
-            //   builder: (context, snapshot) {
-            //     if(snapshot.hasData){
-            //       List<ChatUser>? users = snapshot.data;
+                      return Center(
+                        child: Column(
+                          children: [
+                            // Title 
+                              const Row(
+                                children: [
+                                  Padding(
+                                    padding:EdgeInsets.all(10.0),
+                                    child: Text('Friends', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),),
+                                  ),
+                                ],
+                              ),
+                        
+                        
+                            Container(
+                              decoration: ShapeDecoration(
+                                  color: accentColor,
+                                  shape: const RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.all(Radius.circular(20))
+                                    )
+                                  ),
+                                  width: MediaQuery.of(context).size.width / 1.05,
+                                  child: ListView.builder(
+                                  shrinkWrap: true,
+                                  itemCount: searchConversationsItems?.length,
+                                  itemBuilder: (context, index) {
+                                  Conversation conversation = searchConversationsItems!.elementAt(index);
+                                  
+                                  return FriendTile(conversation: conversation);
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }else{
+                      // return loading page 
+                      return Expanded(child: Container());
+                    }
+                  }
+                ),
 
-            //       return Expanded(
-            //           child: ListView.separated(
-            //           itemCount: users!.length,
-            //           itemBuilder: (context, index) {
-            //             ChatUser user = users.elementAt(index);
-
-            //             print(user);
-            //             return SearchsTile(user: user);
-            //           }, separatorBuilder: (BuildContext context, int index) { 
-            //              return const Divider(
-            //                 height: 15,
-            //                 thickness: 1,
-            //                 indent: 1,
-            //                 endIndent: 0,
-            //                 color: Colors.black26,
-            //               );
-            //            },
-            //         ),
-            //       );
-            //     }else{
-            //       return const CircularProgressIndicator();
-            //     }
-            //   },
-            // )
-
-
-                StreamBuilder<List<Conversation>?>(
-                stream: DatabaseService(uid: FirebaseAuth.instance.currentUser?.uid).conversations?.distinct(),
+                StreamBuilder<List<ChatUser>?>(
+                stream: DatabaseService(uid: FirebaseAuth.instance.currentUser?.uid).users(widget.names),
                 builder: (context, snapshot) {
                   
                   if(snapshot.hasData){
-                  List<Conversation>? conversations = snapshot.data?.reversed.toList();
+                  users = snapshot.data;
+                  
+                  if(searchResult == '' || searchResult == null){
+                    searchUserItems = [];
+                  }
 
                   return Center(
                     child: Column(
                       children: [
                         // Title 
-                          Row(
+                          searchResult == '' || searchResult == null ? Container() : const Row(
                             children: [
                               Padding(
-                                padding: const EdgeInsets.all(10.0),
-                                child: Text('Friends', style: TextStyle(color: textColor, fontWeight: FontWeight.bold, fontSize: 18),),
+                                padding: EdgeInsets.all(10.0),
+                                child: Text('Message', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),),
                               ),
                             ],
                           ),
-
-
+                    
+                        
                         Container(
                           decoration: ShapeDecoration(
                               color: accentColor,
@@ -184,16 +244,15 @@ class SearchScreenState extends State<SearchScreen> {
                               width: MediaQuery.of(context).size.width / 1.05,
                               child: ListView.builder(
                               shrinkWrap: true,
-                              
-                              itemCount: conversations!.length,
+                              itemCount: searchUserItems?.length,
                               itemBuilder: (context, index) {
-                              Conversation conversation = conversations.elementAt(index);
+                              ChatUser user = searchUserItems!.elementAt(index);
                               
-                              return FriendTile(conversation: conversation);
-                            
+                              return SearchTile(user: user);
                             },
                           ),
                         ),
+
                       ],
                     ),
                   );

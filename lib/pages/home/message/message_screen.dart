@@ -1,17 +1,16 @@
 import 'dart:async';
-
 import 'package:chatapp/pages/home/message/friend_profile_screen.dart';
 import 'package:chatapp/pages/home/message/view_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+
 
 import '../../../models/conversation.dart';
 import '../../../models/message.dart';
 import '../../../models/user.dart';
 import '../../../services/Image.dart';
 import '../../../services/database.dart';
-import '../../../services/storage.dart';
+
 import '../../../shared/const.dart';
 
 
@@ -20,10 +19,12 @@ class MessageScreen extends StatefulWidget {
   int numberOfUnseenMessages = 0;
   Conversation? conversation;
   DateTime? lastSavedConversationDate;
-  MessageScreen({super.key, this.conversation,this.chatId, required this.numberOfUnseenMessages, this.userId, this.lastSavedConversationDate});
+  bool? newUser;
+  MessageScreen({super.key, this.newconversation, this.newUser ,this.conversation,this.chatId, required this.numberOfUnseenMessages, this.userId, this.lastSavedConversationDate});
   
   // HAVE USER ID HERE 
   String? userId;
+  bool? newconversation;
 
   @override
   State<MessageScreen> createState() => _MessageScreentState();
@@ -44,28 +45,22 @@ class _MessageScreentState extends State<MessageScreen> {
   bool? showitems = false;
   String? chatId;
   late final _stream;
-
+  bool newCon = true;
 
 
   sendMessage() async {
-    // if null no conversation has been created between the two 
-    if(widget.chatId == null){
-      // create a conversation 
-      String newConversationId = await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid).createConveration(user!.uid);
-      widget.chatId = newConversationId;
+    
+    if(widget.newconversation == true){
 
-      // set the chatId to this conversation 
-      if (mounted) {
-        setState(() {
-           widget.chatId = newConversationId;
-        });
-      }
+      setState(() {
+        widget.newconversation = false;
+      });
       
       // add the new conversation to sender 
-      DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid).createUserConversation(widget.chatId, user?.photoURL, user?.displayName , messageText, user?.uid);
+      DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid).createUserConversation(widget.chatId, user?.photoURL, user?.displayName , messageText, user?.uid, user?.email);
 
       // add the new conversation to the reciver 
-      DatabaseService(uid: user!.uid).createUserConversation(widget.chatId, FirebaseAuth.instance.currentUser?.photoURL, FirebaseAuth.instance.currentUser?.displayName, messageText, FirebaseAuth.instance.currentUser?.uid);
+      DatabaseService(uid: user!.uid).createUserConversation(widget.chatId, FirebaseAuth.instance.currentUser?.photoURL, FirebaseAuth.instance.currentUser?.displayName, messageText, FirebaseAuth.instance.currentUser?.uid, FirebaseAuth.instance.currentUser?.email);
 
       // update message
       DatabaseService(uid:FirebaseAuth.instance.currentUser!.uid).addMessage(widget.chatId, messageText, FirebaseAuth.instance.currentUser?.displayName, messageTextType);
@@ -111,6 +106,7 @@ class _MessageScreentState extends State<MessageScreen> {
   }
 
   updateLastUnseenMessage(){
+
     setState(() {
         widget.numberOfUnseenMessages += 1;
       });
@@ -153,6 +149,7 @@ class _MessageScreentState extends State<MessageScreen> {
   //   }  
   // }
 
+
   void updateConversation() async{
     // i will get the previous conversation from the reciver since i will use numberOfUnseenMessages from his side to update and resent the numberOfUnseenMessages to 0 for the sender
     Conversation? conversation = await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid).getPreviousConversation(user?.uid);
@@ -174,7 +171,7 @@ class _MessageScreentState extends State<MessageScreen> {
     super.initState();
 
     getUser(widget.userId);
-    
+    print(widget.chatId);
 
     _stream = DatabaseService().messages(widget.chatId, widget.lastSavedConversationDate);
     
@@ -257,7 +254,7 @@ class _MessageScreentState extends State<MessageScreen> {
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text('${widget.conversation?.fullName}', style:const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),), 
+                Text('${ widget.conversation == null? user?.displayName : widget.conversation?.fullName}', style:const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),), 
               ],
             ),
           ],

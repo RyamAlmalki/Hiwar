@@ -56,7 +56,7 @@ class ConversationTile extends StatelessWidget {
         onTap: (){
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) =>  MessageScreen(conversation: conversation, chatId: conversation.id, userId: conversation.userId, numberOfUnseenMessages: conversation.numberOfUnseenMessages, lastSavedConversationDate: conversation.lastSavedConversationDate,)),
+            MaterialPageRoute(builder: (context) =>  MessageScreen(conversation: conversation, newUser: false, chatId: conversation.id, userId: conversation.userId, numberOfUnseenMessages: conversation.numberOfUnseenMessages, lastSavedConversationDate: conversation.lastSavedConversationDate,)),
           );
         },
       ),

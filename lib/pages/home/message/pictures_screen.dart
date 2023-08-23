@@ -1,18 +1,19 @@
 import 'package:chatapp/models/conversation.dart';
 import 'package:chatapp/pages/home/message/page_view.dart';
-import 'package:chatapp/pages/home/message/view_image.dart';
 import 'package:flutter/material.dart';
 
 import '../../../models/message.dart';
+import '../../../models/user.dart';
 import '../../../services/database.dart';
 import '../../../shared/const.dart';
 import 'image_page.dart';
 
 class PictureScreen extends StatefulWidget {
-  const PictureScreen({super.key, this.chatId, this.lastSavedConversationDate, this.conversation});
+  const PictureScreen({super.key, this.user, this.chatId, this.lastSavedConversationDate, this.conversation});
   final String? chatId;
   final DateTime? lastSavedConversationDate;
   final Conversation? conversation;
+  final ChatUser? user;
 
   @override
   State<PictureScreen> createState() => _PictureScreenState();
@@ -46,7 +47,7 @@ class _PictureScreenState extends State<PictureScreen> {
               },
             ),
 
-            Text('${widget.conversation?.fullName}', style: const TextStyle(fontSize: 20 ,fontWeight: FontWeight.bold, color: Colors.white), ),
+            Text('${widget.conversation == null? widget.user?.displayName : widget.conversation?.fullName}', style: const TextStyle(fontSize: 20 ,fontWeight: FontWeight.bold, color: Colors.white), ),
 
             const SizedBox(
               width: 50,

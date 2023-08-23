@@ -1,4 +1,5 @@
 import 'package:chatapp/models/conversation.dart';
+import 'package:chatapp/pages/home/search/search_page.dart';
 import 'package:chatapp/shared/const.dart';
 import 'package:chatapp/pages/home/home_widget/conversation_tile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -14,6 +15,18 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+
+  List<String>? names = [];
+
+  getNames() async {
+    names = await DatabaseService(uid: FirebaseAuth.instance.currentUser?.uid).getConversationUserName();
+  }
+
+  @override
+  void initState() {
+    getNames();
+    super.initState();
+  }
 
   @override
   void deactivate() {
@@ -69,7 +82,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     weight: 10,
                   ),
                   onPressed: () async{
-                    Navigator.of(context).pushReplacementNamed('searchScreen');
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => SearchScreen(names: names)),
+                    );
                   },
                 ),
               ),

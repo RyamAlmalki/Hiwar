@@ -41,7 +41,6 @@ class MyApp extends StatelessWidget {
         'registerScreen':(context) => const RegisterScreen(),
         'loginScreen':(context) => const LoginScreen(),
         'profileScreen':(context) => const ProfileScreen(),
-        'searchScreen':(context) => const SearchScreen(),
         'uploadImageScreen':(context) => const UploadImageScreen(),
       },
     );

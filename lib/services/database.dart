@@ -64,33 +64,48 @@ class DatabaseService{
     .doc(userId)
     .get()
     .then((DocumentSnapshot documentSnapshot) {
-      user = ChatUser(uid: documentSnapshot.get('uid'), displayName: documentSnapshot.get('fullName'), email: documentSnapshot.get('email'), photoURL: documentSnapshot.get('profilePic'));
+      user = ChatUser(uid: documentSnapshot.get('uid'), displayName: documentSnapshot.get('fullName'), email: documentSnapshot.get('email'), photoURL: documentSnapshot.get('profilePic'),);
     });
 
     return user;
   }
 
 
+  Future<List<String>?> getConversationUserName() async {
+    return userCollection
+    .doc(uid)
+    .collection('converstions')
+    .get()
+    .then((value) {
+      List<String>? usersName = [];
+      usersName.add(FirebaseAuth.instance.currentUser!.uid);
+      
+       for (var element in value.docs) {
+        usersName.add(element['userId']);
+       }
+
+       return usersName;
+    });
+  }
+
   // get users from a stream
-  Stream<List<ChatUser>?>? users(search){
-    if(search == null){
+    Stream<List<ChatUser>?>?  users(names) {
+    
+    if(names.isNotEmpty){
       return userCollection
-      .where('email', isNotEqualTo: FirebaseAuth.instance.currentUser!.email)
+      .where('uid', whereNotIn: names)
       .snapshots()
       .map((snapshot){
         return _searchUserListFromSnapshot(snapshot);
       });
     }
 
-    if(search != null){
-      return userCollection
-      .where('email', whereIn: [search])
+    return userCollection
       .snapshots()
       .map((snapshot){
         return _searchUserListFromSnapshot(snapshot);
       });
-    }
-    return null;
+  
   }
   
 
@@ -106,7 +121,8 @@ class DatabaseService{
           profilePic: doc['profilePic'] ?? '',
           numberOfUnseenMessages: doc['numberOfUnseenMessages'],
           date:(doc['date'] as Timestamp).toDate(),
-          lastSavedConversationDate: (doc['lastSavedConversationDate'] as Timestamp).toDate()
+          lastSavedConversationDate: (doc['lastSavedConversationDate'] as Timestamp).toDate(),
+          email: doc['email'] ?? '',
         );
       }
     ).toList();
@@ -246,7 +262,7 @@ class DatabaseService{
 
 
   // create user started conversation 
-  createUserConversation(conversationId, photoURL, displayName, lastMessage, userId){
+  createUserConversation(conversationId, photoURL, displayName, lastMessage, userId, email){
     userCollection
     .doc(uid)
     .collection('converstions')
@@ -258,6 +274,7 @@ class DatabaseService{
         'numberOfUnseenMessages': 1,
         'profilePic': photoURL ?? '',
         'date': DateTime.now(),
+        'email': email,
         'lastSavedConversationDate': DateTime.now()
       }
     );
@@ -298,6 +315,7 @@ class DatabaseService{
       dynamic doc =  querySnapshot.docs.first.data();
       Conversation conversation = Conversation(
           userId: doc['userId'],
+          email: doc['email'] ?? '',
           id: doc['conversationId'] ?? '',
           fullName: doc['fullName'] ?? '', 
           lastMessage: doc['lastMessage'] ?? '', 

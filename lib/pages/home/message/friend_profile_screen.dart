@@ -107,7 +107,7 @@ class _FriendProfileScreenState extends State<FriendProfileScreen> {
 
               const SizedBox(height: 20,),
 
-              Text('${widget.conversation?.fullName}', style: const TextStyle(fontSize: 30 ,fontWeight: FontWeight.bold, color: Colors.white), ),
+              Text('${widget.conversation == null ? widget.user?.displayName : widget.conversation?.fullName}', style: const TextStyle(fontSize: 30 ,fontWeight: FontWeight.bold, color: Colors.white), ),
               
               const SizedBox(height: 5,),
 
@@ -129,7 +129,7 @@ class _FriendProfileScreenState extends State<FriendProfileScreen> {
                       onPressed: (){
                          Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => PictureScreen(chatId: widget.chatId, lastSavedConversationDate: widget.lastSavedConversationDate, conversation: widget.conversation,)),
+                          MaterialPageRoute(builder: (context) => PictureScreen(chatId: widget.chatId, user: widget.user,lastSavedConversationDate: widget.lastSavedConversationDate, conversation: widget.conversation,)),
                         );
                       },
                     ),

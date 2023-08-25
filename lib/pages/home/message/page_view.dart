@@ -1,9 +1,7 @@
 import 'package:chatapp/models/conversation.dart';
 
-import 'package:chatapp/pages/home/message/image_page.dart';
+import 'package:chatapp/pages/home/message/message_widget/image_page.dart';
 import 'package:flutter/material.dart';
-
-
 
 
 class MainpageScreen extends StatefulWidget {

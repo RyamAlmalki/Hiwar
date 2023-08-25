@@ -1,8 +1,9 @@
 import 'package:chatapp/models/conversation.dart';
 import 'package:chatapp/models/user.dart';
-import 'package:chatapp/pages/home/message/image_page.dart';
+import 'package:chatapp/pages/home/message/message_widget/image_page.dart';
 import 'package:chatapp/pages/home/message/page_view.dart';
 import 'package:chatapp/pages/home/message/pictures_screen.dart';
+import 'package:chatapp/pages/home/message/update_name.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -35,18 +36,21 @@ class _FriendProfileScreenState extends State<FriendProfileScreen> {
     //...
   ];
 
- editDisplayName() async{
-
-  }
-   blockUser() async{
+ 
+  updateName() async{
+   Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ChangeFriendNamePage(userid: widget.user!.uid,)),
+    ).then((value) => updateConversation());
     
   }
 
-  updateName() async{
-    await DatabaseService(uid: FirebaseAuth.instance.currentUser?.uid).editFriendDisplayName(widget.user?.uid, nameForm.text);
-    updateConversation();
+  clearChat() async {
+    // clear chat function 
+    Navigator.of(context).pushReplacementNamed('homeScreen');
+    // update lastSavedConversationDate to be 
+    await DatabaseService(uid: FirebaseAuth.instance.currentUser?.uid).clearChat(widget.chatId);
   }
-
 
   void updateConversation() async{
     // i will get the previous conversation from the reciver since i will use numberOfUnseenMessages from his side to update and resent the numberOfUnseenMessages to 0 for the sender
@@ -98,10 +102,11 @@ class _FriendProfileScreenState extends State<FriendProfileScreen> {
                 radius: 100,
                 backgroundColor: primaryColor,
                 child: CircleAvatar(
-                  backgroundColor: primaryColor,
-                  radius: 95,
-                  backgroundImage: NetworkImage(widget.user?.photoURL ?? '') ,
-                  child: widget.conversation?.profilePic == "" ? Text(widget.conversation!.fullName[0], style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 40),) : null,
+                  backgroundColor: accentColor,
+                  radius: 97,
+                  backgroundImage: NetworkImage( widget.conversation == null ? widget.user?.photoURL ?? '' : widget.conversation!.profilePic) ,
+                  child: widget.conversation == null? widget.user!.photoURL!.isEmpty ? Text('${widget.user?.displayName![0].toUpperCase()}', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 40),) : null 
+                  :widget.conversation!.profilePic.isEmpty ? Text('${widget.conversation?.fullName[0].toUpperCase()}', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 40),) : null
                 ),
               ),
 
@@ -111,7 +116,7 @@ class _FriendProfileScreenState extends State<FriendProfileScreen> {
               
               const SizedBox(height: 5,),
 
-              Text('${widget.user?.email}', style: TextStyle(fontSize: 18 ,fontWeight: FontWeight.normal, color: textColor), ),
+              Text('${widget.user?.username}', style: TextStyle(fontSize: 18 ,fontWeight: FontWeight.normal, color: textColor), ),
 
               const SizedBox(height: 40),
 
@@ -233,16 +238,16 @@ class _FriendProfileScreenState extends State<FriendProfileScreen> {
               Options(
                 optionsName: const ['Edit Name'], 
                 icons: const [Icons.person],
-                optionsFunctions: [editDisplayName],
+                optionsFunctions: [updateName],
                 title: 'General',
               ),
               
               const SizedBox(height: 30,),
               
               Options(
-                optionsName: const ['Clear Chat', 'Block Account'], 
-                icons: const [Icons.clear, Icons.block],
-                optionsFunctions: [blockUser, blockUser],
+                optionsName: const ['Clear Chat'], 
+                icons: const [Icons.clear],
+                optionsFunctions: [clearChat],
                 title: 'Danger Zone',
               ),
 

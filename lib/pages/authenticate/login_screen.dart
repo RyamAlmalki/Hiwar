@@ -14,13 +14,13 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   bool _passwordVisible = false;
-  TextEditingController emailForm = TextEditingController();
+  TextEditingController usernameForm = TextEditingController();
   TextEditingController passwordForm = TextEditingController();
   final AuthService _auth = AuthService(); // instance of the AuthService class 
 
   @override
   void dispose() {
-    emailForm.dispose();
+    usernameForm.dispose();
     passwordForm.dispose();
     super.dispose();
   }
@@ -34,14 +34,14 @@ class _LoginScreenState extends State<LoginScreen> {
        }
     );
 
-    dynamic result = await _auth.login(emailForm, passwordForm); // dynamic because result can be null or User
+    dynamic result = await _auth.login(usernameForm, passwordForm); // dynamic because result can be null or User
     
     // pop the loading circle 
     // ignore: use_build_context_synchronously
     Navigator.of(context).pop();
 
     if(result == null){
-      emailForm.clear();
+      usernameForm.clear();
       passwordForm.clear();
       // ignore: use_build_context_synchronously
       showDialog(
@@ -99,9 +99,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                 validator: (value) => value!.isEmpty ? 'value cannot be empty' : null,
                                 style: const TextStyle(color: Colors.white),
                                 keyboardType: TextInputType.emailAddress,
-                                controller: emailForm,
+                                controller: usernameForm,
                                 decoration: decorationStyles.copyWith(
-                                  labelText: 'Enter Email', 
+                                  labelText: 'Enter Username', 
                                   prefixIcon: Icon(Icons.email, color: textColor,
                                 ),
                               )
@@ -118,7 +118,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             keyboardType: TextInputType.text,
                             controller: passwordForm,
                             obscureText: !_passwordVisible,
-                            decoration: decorationStyles.copyWith( labelText: 'Enter Password', prefixIcon: Icon(Icons.lock, color: textColor,), 
+                            decoration: decorationStyles.copyWith(labelText: 'Enter Password', prefixIcon: Icon(Icons.lock, color: textColor,), 
                             suffixIcon: IconButton(
                                 icon: Icon(
                                   _passwordVisible

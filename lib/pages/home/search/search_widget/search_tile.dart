@@ -26,7 +26,7 @@ class SearchTile extends StatelessWidget {
       child: ListTile(
         subtitle: Padding(
           padding: const EdgeInsets.only(top: 5.0),
-          child: Text('${user?.email}', style: TextStyle(color: textColor, fontWeight: FontWeight.normal, fontSize: 15),),
+          child: Text('${user?.username}', style: TextStyle(color: textColor, fontWeight: FontWeight.normal, fontSize: 15),),
         ),
         leading: CircleAvatar(
           backgroundColor: primaryColor,

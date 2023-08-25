@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:chatapp/models/message.dart';
 import 'package:chatapp/models/user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -16,19 +18,55 @@ class DatabaseService{
 
 
   // updating the userdata 
-  Future updateUserData(String fullName, String email) async{
-    FirebaseAuth.instance.currentUser!.updateDisplayName(fullName);
+  Future updateUserData(String email, String username) async{
+    //FirebaseAuth.instance.currentUser!.updateDisplayName(fullName);
     FirebaseAuth.instance.currentUser!.updatePhotoURL("");
     
     await userCollection.doc(uid).set(
       {
-        "fullName": fullName,
         "email": email,
+        "fullName": ' ',
         "profilePic": "",
         "uid": uid,
+        "username": username,
       }
     );
   }
+
+  Future<String> getEmail(id) async{
+    String email = '';
+
+    await userCollection
+    .doc(id)
+    .get()
+    .then((value){
+      email = value.get('email');
+    });
+    
+    return email;
+  }
+
+
+  // check username 
+  Future<String?> checkUsername(username) async {
+    String? id;
+
+    await userCollection
+    .where('username', isEqualTo: username)
+    .get()
+    .then((snapshot){
+      if(snapshot.docs.isEmpty){
+        id = null;
+      }else{
+        id = snapshot.docs.first.id;
+      }
+    });
+    
+    return id;
+  }
+
+
+
 
 
   // update user image 
@@ -46,6 +84,7 @@ class DatabaseService{
       return snapshot.docs
       .map((doc) {
         return ChatUser(
+          username: doc['username'] ?? '',
           uid: doc['uid'] ?? '',
           displayName: doc['fullName'] ?? '', 
           email: doc['email'] ?? '', 
@@ -64,14 +103,14 @@ class DatabaseService{
     .doc(userId)
     .get()
     .then((DocumentSnapshot documentSnapshot) {
-      user = ChatUser(uid: documentSnapshot.get('uid'), displayName: documentSnapshot.get('fullName'), email: documentSnapshot.get('email'), photoURL: documentSnapshot.get('profilePic'),);
+      user = ChatUser(uid: documentSnapshot.get('uid'), username: documentSnapshot.get('username'), displayName: documentSnapshot.get('fullName'), email: documentSnapshot.get('email'), photoURL: documentSnapshot.get('profilePic'),);
     });
 
     return user;
   }
 
 
-  Future<List<String>?> getConversationUserName() async {
+  Future<List<String>?> getConversationUserId() async {
     return userCollection
     .doc(uid)
     .collection('converstions')
@@ -114,6 +153,7 @@ class DatabaseService{
       return snapshot.docs
       .map((doc) {
         return Conversation(
+          username: doc['username'],
           userId: doc['userId'],
           id: doc['conversationId'] ?? '',
           fullName: doc['fullName'] ?? '', 
@@ -128,6 +168,34 @@ class DatabaseService{
     ).toList();
   }
 
+  Future<Conversation?> getConversation(conversationId) async {
+    Conversation? conversation;
+    
+    await userCollection
+    .doc(uid)
+    .collection('converstions')
+    .where('conversationId', isEqualTo: conversationId)
+    .get()
+    .then((QuerySnapshot querySnapshot) {
+            if(querySnapshot.docs.isNotEmpty){
+            conversation = Conversation(
+            username: querySnapshot.docs[0]['username'],
+            userId: querySnapshot.docs[0]['userId'],
+            id: querySnapshot.docs[0]['conversationId'] ?? '',
+            fullName: querySnapshot.docs[0]['fullName'] ?? '', 
+            lastMessage: querySnapshot.docs[0]['lastMessage'] ?? '', 
+            profilePic: querySnapshot.docs[0]['profilePic'] ?? '',
+            numberOfUnseenMessages: querySnapshot.docs[0]['numberOfUnseenMessages'],
+            date:(querySnapshot.docs[0]['date'] as Timestamp).toDate(),
+            lastSavedConversationDate: (querySnapshot.docs[0]['lastSavedConversationDate'] as Timestamp).toDate(),
+            email: querySnapshot.docs[0]['email'] ?? '',
+          );
+        }
+      }
+    );
+
+    return conversation;
+  }
 
   // get conversations from a strea,
   Stream<List<Conversation>?>? get conversations{
@@ -141,15 +209,14 @@ class DatabaseService{
 
 
   // updateLastUnseenMessage
-  updateLastUnseenMessage(conversationId, id, numberOfUnseenMessages){
+  updateLastUnseenMessage(conversationId, numberOfUnseenMessages){
     userCollection
-    .doc(id) // each user id 
+    .doc(uid)
     .collection('converstions') 
     .where('conversationId', isEqualTo: conversationId)
     .get()
     .then((QuerySnapshot querySnapshot){
         if(querySnapshot.docs.isNotEmpty){
-          
           querySnapshot.docs[0].reference.update(
             {
               'numberOfUnseenMessages': numberOfUnseenMessages
@@ -201,17 +268,19 @@ class DatabaseService{
     .get();
 
 
-    await userCollection
-    .doc(uid) // the user id who wants to clear chat
-    .collection('converstions') // his conv collection 
-    .doc(querySnapshot.docs[0].id) // the doc id 
-    .update({
-      'lastSavedConversationDate': DateTime.now(),
-      'lastMessage': ''
-    });
+    if(querySnapshot.docs.isNotEmpty){
+      await userCollection
+      .doc(uid) // the user id who wants to clear chat
+      .collection('converstions') // his conv collection 
+      .doc(querySnapshot.docs[0].id) // the doc id 
+      .update({
+        'lastSavedConversationDate': DateTime.now(),
+        'lastMessage': ''
+      });
+    }
   }
 
-
+  
   // get messages from a stream
   Stream<List<Message?>?>? messagesImage(conversationId, lastSavedConversationDate){
     return conversationsCollection
@@ -262,7 +331,7 @@ class DatabaseService{
 
 
   // create user started conversation 
-  createUserConversation(conversationId, photoURL, displayName, lastMessage, userId, email){
+  createUserConversation(conversationId, photoURL, displayName, lastMessage, userId, email, username){
     userCollection
     .doc(uid)
     .collection('converstions')
@@ -275,11 +344,23 @@ class DatabaseService{
         'profilePic': photoURL ?? '',
         'date': DateTime.now(),
         'email': email,
+        'username': username,
         'lastSavedConversationDate': DateTime.now()
       }
     );
   }
 
+  Future<String?> getUsername() async {
+    String? username;
+    await userCollection
+    .doc(uid)
+    .get()
+    .then((value){
+      username = value.get('username');
+    });
+
+    return username;
+  }
 
   // create a conversation 
   Future<String> createConveration(String reciverUid) async {
@@ -314,6 +395,7 @@ class DatabaseService{
     if(querySnapshot.size != 0){
       dynamic doc =  querySnapshot.docs.first.data();
       Conversation conversation = Conversation(
+          username: doc['username'],
           userId: doc['userId'],
           email: doc['email'] ?? '',
           id: doc['conversationId'] ?? '',
@@ -363,13 +445,6 @@ class DatabaseService{
     });
   }
   
-  updateEmail(newEmail) async {
-    await userCollection
-    .doc(uid)
-    .update({
-      'email': newEmail
-    });
-  }
 
   updateName(newName) async {
     await userCollection
@@ -379,21 +454,106 @@ class DatabaseService{
     });
   }
 
-  editFriendDisplayName(friendId, newName) async {
+  Future<bool> editFriendDisplayName(friendId, newName) async {
+    bool isFriend = false;
+
      QuerySnapshot querySnapshot = await userCollection
       .doc(uid)
       .collection('converstions')
       .where('userId', isEqualTo: friendId)
       .get();
 
-      
+    if(querySnapshot.docs.isNotEmpty){
+      isFriend = true;
+      await userCollection
+      .doc(uid)
+      .collection('converstions')
+      .doc(querySnapshot.docs[0].id)
+      .update({
+        'fullName': newName
+      });
+    }
+
+    return isFriend;
+  }
+
+  deleteAccount() async {
     await userCollection
     .doc(uid)
     .collection('converstions')
-    .doc(querySnapshot.docs[0].id)
-    .update({
-      'fullName': newName
+    .get()
+    .then((value) {
+        value.docs.forEach((element) async{
+        await userCollection
+        .doc(uid)
+        .collection('converstions')
+        .doc(element.id)
+        .delete();
+      });
+    });
+
+    await userCollection
+    .doc(uid)
+    .delete();
+  }
+
+
+  deleteConversations() async {
+    await userCollection
+    .doc(uid)
+    .collection('converstions')
+    .get()
+    .then((value) {
+      for (var element in value.docs) {
+        delete(element.get('userId'), uid);
+      }
     });
   }
 
+  delete(userId, uid)  async {
+     await userCollection
+    .doc(userId)
+    .collection('converstions')
+    .where('userId', isEqualTo: uid)
+    .get()
+    .then((value) async{
+        await userCollection
+        .doc(userId)
+        .collection('converstions')
+        .doc(value.docs.first.id)
+        .delete();
+    });
+  }
+
+  deleteConversationMessages() async{
+    await userCollection
+    .doc(uid)
+    .collection('converstions')
+    .get()
+    .then((value) {
+      for (var element in value.docs) {
+        deleteMessages(element.get('conversationId'));
+      }
+    });
+  }
+
+  deleteMessages(id)async{
+    await conversationsCollection
+    .doc(id)
+    .collection('messages')
+    .get()
+     .then((value) {
+        value.docs.forEach((element) async {
+        await conversationsCollection
+        .doc(id)
+        .collection('messages')
+        .doc(element.id)
+        .delete();
+      });
+    });
+
+    await conversationsCollection
+    .doc(id)
+    .delete();
+  }
 }

@@ -1,5 +1,6 @@
 import 'package:chatapp/services/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 
 // This class defines the different methods that will interact with firebase Auth service 
 class AuthService{
@@ -22,18 +23,33 @@ class AuthService{
   
   // When we call this method from the login screen,
   // it will try to login, and if it succeeds, it will return a user object to the login widget.
-  Future login(final emailForm, final passwordForm) async{
+  Future login(final usernameForm, final passwordForm) async{
+  
     try{
-      // A UserCredential is returned from authentication requests such as [createUserWithEmailAndPassword].
-      final UserCredential authResult = await _auth.signInWithEmailAndPassword(
-      email: emailForm.text.trim(), 
-      password: passwordForm.text.trim()
-      );
 
-      final User? user = authResult.user;
-      // chatUser = _userFromFirebaseUser(user!)!;
-      // print(chatUser.displayName);
-      return user;
+      print(usernameForm.text);
+
+      String? isExist = await DatabaseService().checkUsername(usernameForm.text);
+
+      print(isExist);
+
+      if(isExist != null){
+         String email = await DatabaseService().getEmail(isExist);
+
+        // A UserCredential is returned from authentication requests such as [createUserWithEmailAndPassword].
+        final UserCredential authResult = await _auth.signInWithEmailAndPassword(
+        email: email, 
+        password: passwordForm.text.trim()
+        );
+
+        final User? user = authResult.user;
+        // chatUser = _userFromFirebaseUser(user!)!;
+        // print(chatUser.displayName);
+
+        return user;
+      }
+    
+      return null;
       
     }catch(e){
       // ignore: avoid_print
@@ -42,6 +58,11 @@ class AuthService{
     }
   }
  
+  deleteAccount() async{
+    final user = FirebaseAuth.instance.currentUser;
+    user?.delete();
+  }
+
 
   // register with email and password 
   Future register(final email, final password, final fullName) async{
@@ -49,18 +70,27 @@ class AuthService{
       final UserCredential authResult = await _auth.createUserWithEmailAndPassword(email: email.text.trim(), password: password.text.trim());
       final User? user = authResult.user;
       
-      // create a new document for the user with the uid 
       if(user!=null){
-        DatabaseService(uid: user.uid).updateUserData(fullName.text, email.text);
+        String? isExist = await DatabaseService().checkUsername(fullName.text);
+    
+        if(isExist == null){
+          // create a new document for the user with the uid 
+          DatabaseService(uid: user.uid).updateUserData(email.text, fullName.text);
+
+          return user.uid;
+        }else{
+          user.delete();
+          return 'usernameTaken';
+        }
       }
 
-      return user!;
     }catch(e){
       // ignore: avoid_print
       print(e.toString());
       return null;
     }
   }
+
 
   Future fetchUser(final email) async {
     try{
@@ -105,20 +135,6 @@ class AuthService{
    
     try {
       await user?.updatePassword(password);
-      return true;
-    } on FirebaseAuthException catch (e) {
-      return false;
-    }
-  }
-
-   // change email 
-  Future<bool> changeEmail(email) async {
-    // user must login again to update email
-    final user = FirebaseAuth.instance.currentUser;
-
-    try {
-      await user?.updateEmail(email);
-      DatabaseService(uid: user?.uid).updateEmail(email);
       return true;
     } on FirebaseAuthException catch (e) {
       return false;

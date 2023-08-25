@@ -1,5 +1,4 @@
-import 'package:chatapp/pages/home/profile/blocked_page.dart';
-import 'package:chatapp/pages/home/profile/change_email_page.dart';
+import 'package:chatapp/pages/authenticate/login_screen.dart';
 import 'package:chatapp/pages/home/profile/change_name.dart';
 import 'package:chatapp/pages/home/profile/reauthenticate_password_page.dart';
 import 'package:chatapp/pages/home/home_widget/options.dart';
@@ -20,6 +19,8 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProlfieScreenState extends State<ProfileScreen> {
+  dynamic profileImage = FirebaseAuth.instance.currentUser?.photoURL;
+
 
   // Signout method 
   singout() async {
@@ -34,16 +35,13 @@ class _ProlfieScreenState extends State<ProfileScreen> {
     String? imageUrl = await Images().getImageFromGallery();
 
     if(imageUrl != null){
+      FirebaseAuth.instance.currentUser?.updatePhotoURL(imageUrl);
       DatabaseService(uid: FirebaseAuth.instance.currentUser?.uid).updateImageUrlForOtherUsers(imageUrl);
     }
-  }
 
-  // edit email method 
-  changeEmail() async{
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const ChangeEmailPage()),
-    );
+    setState(() {
+      profileImage = imageUrl;
+    });
   }
 
   // edit display name method
@@ -53,14 +51,6 @@ class _ProlfieScreenState extends State<ProfileScreen> {
       MaterialPageRoute(builder: (context) => const ChangeNamePage()),
     );
   } 
-
-  // view blocked method 
-  viewBlockedUsers() async {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const BlockedPage()),
-    );
-  }
   
   // change password method 
   changePassword() async {
@@ -72,8 +62,27 @@ class _ProlfieScreenState extends State<ProfileScreen> {
 
   // delete account method 
   deleteAccount() async{
-
+    await DatabaseService(uid: FirebaseAuth.instance.currentUser?.uid).deleteConversationMessages();
+    await DatabaseService(uid: FirebaseAuth.instance.currentUser?.uid).deleteConversations();
+    await DatabaseService(uid: FirebaseAuth.instance.currentUser?.uid).deleteAccount();
+    await AuthService().deleteAccount();
+     // ignore: use_build_context_synchronously
+     Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginScreen()),
+    );
   }
+
+  // remove image method 
+  removeImage() async{
+    setState(() {
+      profileImage = '';
+    });
+    FirebaseAuth.instance.currentUser?.updatePhotoURL('');
+    DatabaseService(uid: FirebaseAuth.instance.currentUser?.uid).updateUserProfileImage('');
+    DatabaseService(uid: FirebaseAuth.instance.currentUser?.uid).updateImageUrlForOtherUsers('');
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -112,12 +121,18 @@ class _ProlfieScreenState extends State<ProfileScreen> {
                 radius: 100,
                 backgroundColor: primaryColor,
                 child: CircleAvatar(
-                  backgroundColor: primaryColor,
-                  radius: 95,
-                  backgroundImage: NetworkImage(FirebaseAuth.instance.currentUser?.photoURL ?? '') ,
+                  backgroundColor: accentColor,
+                  radius: 97,
+                  backgroundImage: NetworkImage(profileImage ?? '') ,
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
+                      profileImage == '' || profileImage == null ? const SizedBox(
+                        height: 50,
+                      ) : const SizedBox(),
+
+                     profileImage == ''  || profileImage == null? Text('${FirebaseAuth.instance.currentUser?.displayName![0].toUpperCase()}', style: const TextStyle(fontSize: 50, color: Colors.white, fontWeight: FontWeight.bold),) : const SizedBox(),
+                     
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
@@ -142,14 +157,14 @@ class _ProlfieScreenState extends State<ProfileScreen> {
               
               // Profile Display Name 
               Text('${FirebaseAuth.instance.currentUser?.displayName}', style: const TextStyle(fontSize: 30 ,fontWeight: FontWeight.bold, color: Colors.white), ),
-              
+
               const SizedBox(height: 40),
 
               // General options
               Options(
-                optionsName: const ['Edit Name', 'Change Email', 'Blocked', 'Change Pasword'], 
-                icons: const [Icons.person, Icons.email, Icons.block, Icons.password],
-                optionsFunctions: [editDisplayName, changeEmail, viewBlockedUsers, changePassword],
+                optionsName: const ['Edit Name', 'Change Pasword', 'Remove Image'], 
+                icons: const [Icons.person, Icons.password, Icons.remove_circle],
+                optionsFunctions: [editDisplayName, changePassword, removeImage],
                 title: 'General',
               ),
 

@@ -16,10 +16,10 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
 
-  List<String>? names = [];
+  List<String>? ids = [];
 
   getNames() async {
-    names = await DatabaseService(uid: FirebaseAuth.instance.currentUser?.uid).getConversationUserName();
+    ids = await DatabaseService(uid: FirebaseAuth.instance.currentUser?.uid).getConversationUserId();
   }
 
   @override
@@ -38,6 +38,9 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
+        shape: Border(
+          bottom: BorderSide(color: accentColor, width: 1)
+        ),
         automaticallyImplyLeading: false,
         leading: null,
         title: Row(
@@ -84,7 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   onPressed: () async{
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => SearchScreen(names: names)),
+                      MaterialPageRoute(builder: (context) => SearchScreen(names: ids)),
                     );
                   },
                 ),

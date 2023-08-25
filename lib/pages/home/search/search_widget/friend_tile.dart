@@ -18,7 +18,7 @@ class FriendTile extends StatelessWidget {
       child: ListTile(
         subtitle: Padding(
           padding: const EdgeInsets.only(top: 5.0),
-          child: Text('${conversation?.email}', style: TextStyle(color: textColor, fontWeight: FontWeight.normal, fontSize: 15),),
+          child: Text('${conversation?.username}', style: TextStyle(color: textColor, fontWeight: FontWeight.normal, fontSize: 15),),
         ),
         leading: CircleAvatar(
           backgroundColor: primaryColor,

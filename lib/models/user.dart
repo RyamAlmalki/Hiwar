@@ -3,8 +3,9 @@ class ChatUser{
   String? displayName;
   String? photoURL;
   String? email;
+  String username;
 
-  ChatUser({required this.uid, required this.displayName, required this.email, required this.photoURL});
+  ChatUser({required this.username, required this.uid, required this.displayName, required this.email, required this.photoURL});
   
 }
 

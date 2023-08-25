@@ -1,10 +1,8 @@
 import 'package:chatapp/firebase_options.dart';
-import 'package:chatapp/pages/authenticate/upload_image_screen.dart';
 import 'package:chatapp/pages/home/home_page.dart';
 import 'package:chatapp/pages/authenticate/login_screen.dart';
 import 'package:chatapp/pages/authenticate/register_screen.dart';
 import 'package:chatapp/pages/home/profile/profile_page.dart';
-import 'package:chatapp/pages/home/search/search_page.dart';
 import 'package:chatapp/pages/spalsh_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -41,7 +39,6 @@ class MyApp extends StatelessWidget {
         'registerScreen':(context) => const RegisterScreen(),
         'loginScreen':(context) => const LoginScreen(),
         'profileScreen':(context) => const ProfileScreen(),
-        'uploadImageScreen':(context) => const UploadImageScreen(),
       },
     );
   }

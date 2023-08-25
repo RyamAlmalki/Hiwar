@@ -34,17 +34,17 @@ class ConversationTile extends StatelessWidget {
               conversation.numberOfUnseenMessages != 0 ? CircleAvatar(
                 radius: 12,
                 backgroundColor: primaryColor, 
-                child:  Text('${conversation.numberOfUnseenMessages}', style: const TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold,),),
+                child:  Text('${conversation.numberOfUnseenMessages}', style: const TextStyle(fontSize: 15, color: Colors.white, fontWeight: FontWeight.bold,),),
               ) : const CircleAvatar(backgroundColor: Colors.black, radius: 0,),
             ],
           ),
         ), 
         tileColor: Colors.black,
         leading: CircleAvatar(
-          backgroundColor: accentColor,
+          backgroundColor: primaryColor,
           radius: 30,
           backgroundImage: NetworkImage(conversation.profilePic) ,
-          child: conversation.profilePic == "" ? Text(conversation.fullName[0], style:  TextStyle(color: textColor, fontWeight: FontWeight.bold, fontSize: 20),) : null,
+          child: conversation.profilePic == "" ? Text(conversation.fullName[0].toUpperCase(), style:  TextStyle(color: textColor, fontWeight: FontWeight.bold, fontSize: 20),) : null,
         ),
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,

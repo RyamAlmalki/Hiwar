@@ -14,8 +14,14 @@ class _ChangeNamePageState extends State<ChangeNamePage> {
   final _formKey = GlobalKey<FormState>();
   TextEditingController nameForm = TextEditingController();
 
+
+  bool isStringOnlyLetters(String str) {
+    return str.trim().isNotEmpty && str.split('').every((char) => RegExp(r'^[a-zA-Z]+$').hasMatch(char));
+  }
+
+
   changeName() async {
-     // loading CircularProgress 
+    // loading CircularProgress 
     showDialog(
       context: context, 
        builder: (context){
@@ -23,32 +29,55 @@ class _ChangeNamePageState extends State<ChangeNamePage> {
        }
     );
     
-    dynamic result = await AuthService().changeName(nameForm.text);
+    // check if display name follows the rules 
+    if(nameForm.text.isNotEmpty && isStringOnlyLetters(nameForm.text) && nameForm.text.length <= 20){
+      dynamic result = await AuthService().changeName(nameForm.text);
 
-    // pop the loading circle 
-    // ignore: use_build_context_synchronously
-    Navigator.of(context).pop();
-    
-    if(result == false){
-      nameForm.clear();
+      // pop the loading circle 
       // ignore: use_build_context_synchronously
-      showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return const AlertDialog(
-          title: Text('Name Change failed'),
-          content: Text('Could not change with new email'),
-          );
-        }
-      );
+      Navigator.of(context).pop();
+      
+      if(result == false){
+        nameForm.clear();
+        // ignore: use_build_context_synchronously
+        showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return const AlertDialog(
+            title: Text('Name Change failed'),
+            );
+          }
+        );
+      }else{
+        nameForm.clear();
+        // ignore: use_build_context_synchronously
+        showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return const AlertDialog(
+            title: Text('Name Change Successful'),
+            );
+          }
+        );
+      }
     }else{
       nameForm.clear();
-      // ignore: use_build_context_synchronously
+      Navigator.of(context).pop();
       showDialog(
-      context: context,
-      builder: (BuildContext context) {
+        context: context,
+        builder: (BuildContext context) {
         return const AlertDialog(
-          title: Text('Name Change Successful'),
+          title: Text('Display Name Warning'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('Make sure your display name is'),
+                Text('Not empty'),
+                Text('Only letters'),
+                Text('No space'),
+                Text('Not more than 20 char'),
+              ],
+            ),
           );
         }
       );

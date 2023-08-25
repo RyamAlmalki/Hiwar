@@ -1,21 +1,30 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../../../services/auth.dart';
+
+import '../../../services/database.dart';
 import '../../../shared/const.dart';
 
-class ChangeEmailPage extends StatefulWidget {
-  const ChangeEmailPage({super.key});
+class ChangeFriendNamePage extends StatefulWidget {
+  const ChangeFriendNamePage({super.key, required this.userid});
+  final String userid;
 
   @override
-  State<ChangeEmailPage> createState() => _ChangeEmailPageState();
+  State<ChangeFriendNamePage> createState() => _ChangeNamePageState();
 }
 
-class _ChangeEmailPageState extends State<ChangeEmailPage> {
+class _ChangeNamePageState extends State<ChangeFriendNamePage> {
   final _formKey = GlobalKey<FormState>();
-  TextEditingController emailForm = TextEditingController();
+  TextEditingController nameForm = TextEditingController();
 
-  changeEmail() async {
-     // loading CircularProgress 
+
+  bool isStringOnlyLetters(String str) {
+    return str.trim().isNotEmpty && str.split('').every((char) => RegExp(r'^[a-zA-Z]+$').hasMatch(char));
+  }
+
+
+  changeName() async {
+    // loading CircularProgress 
     showDialog(
       context: context, 
        builder: (context){
@@ -23,37 +32,62 @@ class _ChangeEmailPageState extends State<ChangeEmailPage> {
        }
     );
     
-    dynamic result = await AuthService().changeEmail(emailForm.text);
+    // check if display name follows the rules 
+    if(nameForm.text.isNotEmpty && isStringOnlyLetters(nameForm.text) && nameForm.text.length <= 20){
+      dynamic result = await DatabaseService(uid: FirebaseAuth.instance.currentUser?.uid).editFriendDisplayName(widget.userid, nameForm.text);
 
-    // pop the loading circle 
-    // ignore: use_build_context_synchronously
-    Navigator.of(context).pop();
-    
-    if(result == false){
-      emailForm.clear();
+      // pop the loading circle 
       // ignore: use_build_context_synchronously
-      showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return const AlertDialog(
-          title: Text('Email Change failed'),
-          content: Text('Could not change with new email'),
-          );
-        }
-      );
+      Navigator.of(context).pop();
+      
+      if(result == false){
+        nameForm.clear();
+        // ignore: use_build_context_synchronously
+        showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return const AlertDialog(
+            title: Text('Name Change failed'),
+            content: Text('Make sure you have a conversation started'),
+            );
+          }
+        );
+      }else{
+        nameForm.clear();
+        // ignore: use_build_context_synchronously
+        showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return const AlertDialog(
+            title: Text('Name Change Successful'),
+            );
+          }
+        );
+      }
     }else{
-      emailForm.clear();
-      // ignore: use_build_context_synchronously
+      nameForm.clear();
+      Navigator.of(context).pop(true);
       showDialog(
-      context: context,
-      builder: (BuildContext context) {
+        context: context,
+        builder: (BuildContext context) {
         return const AlertDialog(
-          title: Text('Email Change Successful'),
+          title: Text('Display Name Warning'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('Make sure your display name is'),
+                Text('Not empty'),
+                Text('Only letters'),
+                Text('No space'),
+                Text('Not more than 20 char'),
+              ],
+            ),
           );
         }
       );
     }
   } 
+
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +112,7 @@ class _ChangeEmailPageState extends State<ChangeEmailPage> {
               },
             ),
 
-            const Text('Change Email', style: TextStyle(fontSize: 20 ,fontWeight: FontWeight.bold, color: Colors.white), ),
+            const Text('Change Name', style: TextStyle(fontSize: 20 ,fontWeight: FontWeight.bold, color: Colors.white), ),
 
             const SizedBox(
               width: 60,
@@ -110,11 +144,11 @@ class _ChangeEmailPageState extends State<ChangeEmailPage> {
                         child: TextFormField(
                             validator: (value) => value!.isEmpty ? 'value cannot be empty' : null,
                             style: const TextStyle(color: Colors.white),
-                            keyboardType: TextInputType.emailAddress,
-                            controller: emailForm,
+                            keyboardType: TextInputType.name,
+                            controller: nameForm,
                             decoration: decorationStyles.copyWith(
-                              labelText: 'New Email', 
-                              prefixIcon: Icon(Icons.email, color: textColor,
+                              labelText: 'New Name', 
+                              prefixIcon: Icon(Icons.person, color: textColor,
                             ),
                           )
                         ),
@@ -133,7 +167,7 @@ class _ChangeEmailPageState extends State<ChangeEmailPage> {
                           )
                         ),
                         onPressed: () async {
-                          await changeEmail();
+                          changeName();
                         }, 
                         child: const Text('Save', style: TextStyle(fontWeight: FontWeight.bold),),
                       )

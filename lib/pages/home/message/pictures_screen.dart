@@ -6,7 +6,7 @@ import '../../../models/message.dart';
 import '../../../models/user.dart';
 import '../../../services/database.dart';
 import '../../../shared/const.dart';
-import 'image_page.dart';
+import 'message_widget/image_page.dart';
 
 class PictureScreen extends StatefulWidget {
   const PictureScreen({super.key, this.user, this.chatId, this.lastSavedConversationDate, this.conversation});
@@ -119,7 +119,7 @@ class _PictureScreenState extends State<PictureScreen> {
                     ) : Padding(
                     padding: const EdgeInsets.only(bottom: 35, top: 15),
                     child: Center(child:Text('All Saved Media Will Show Here', style: TextStyle(fontSize: 15, color: textColor, fontWeight: FontWeight.bold),), ),
-                                    );
+                  );
             
                 }else{
                   return  Padding(

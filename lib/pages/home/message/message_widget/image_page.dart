@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../../../shared/const.dart';
+import '../../../../shared/const.dart';
 
 
 class ImagePage extends StatelessWidget {
@@ -32,7 +32,7 @@ class ImagePage extends StatelessWidget {
           Positioned(
             top: MediaQuery.of(context).size.height / 14,
             left: 20,
-            child: Container(
+            child: SizedBox(
               height: 50,
               width: MediaQuery.of(context).size.width,
               child: Row(

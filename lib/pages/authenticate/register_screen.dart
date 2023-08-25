@@ -1,3 +1,4 @@
+import 'package:chatapp/pages/authenticate/upload_image_screen.dart';
 import 'package:chatapp/shared/const.dart';
 import 'package:chatapp/pages/authenticate/auth_widget/background.dart';
 import 'package:flutter/material.dart';
@@ -17,10 +18,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _passwordVisible = false;
   TextEditingController emailForm = TextEditingController();
   TextEditingController passwordForm = TextEditingController();
-  TextEditingController fullNameForm = TextEditingController();
+  TextEditingController usernameForm = TextEditingController();
   final AuthService _auth = AuthService(); // instance of the AuthService class 
   
- 
+    bool isStringOnlyLetters(String str) {
+    return str.trim().isNotEmpty && str.split('').every((char) => RegExp(r'^[a-zA-Z]+$').hasMatch(char));
+    }
+
+
    Future signUp() async{
      // loading circle 
     showDialog(
@@ -30,28 +35,75 @@ class _RegisterScreenState extends State<RegisterScreen> {
        }
     );
 
-    dynamic result = await _auth.register(emailForm, passwordForm, fullNameForm); // dynamic because result can be null or User
+    if(usernameForm.text.isNotEmpty && isStringOnlyLetters(usernameForm.text) && usernameForm.text.length <= 20){
+      dynamic result = await _auth.register(emailForm, passwordForm, usernameForm); // dynamic because result can be null or User
     
-    Navigator.of(context).pop();
-
-    if(result == null){
+      // ignore: use_build_context_synchronously
+      Navigator.of(context).pop();
       emailForm.clear();
       passwordForm.clear();
-      // ignore: use_build_context_synchronously
+      usernameForm.clear();
+
+      if(result == 'usernameTaken'){
+        // ignore: use_build_context_synchronously
+        showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return const AlertDialog(
+              title: Text('Register failed'),
+              content: Text('Username is Taken'),
+            );
+          }
+        );
+      }else if(result == null){
+        // ignore: use_build_context_synchronously
+        showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return const AlertDialog(
+              title: Text('Register failed'),
+              content: Text('Invalid Email'),
+            );
+          }
+        );
+      }
+      else{
+        
+        // ignore: use_build_context_synchronously
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) =>  UploadImageScreen(userId: result,)),
+        );
+      }
+    }else{
+      usernameForm.clear();
+      Navigator.of(context).pop();
       showDialog(
-      context: context,
-      builder: (BuildContext context) {
+        context: context,
+        builder: (BuildContext context) {
         return const AlertDialog(
-          title: Text('Register failed'),
-          content: Text('please supply a valid email'),
+          title: Text('Display Name Warning'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('Make sure your display name is'),
+                Text('Not empty'),
+                Text('Only letters'),
+                Text('No space'),
+                Text('Not more than 20 char'),
+              ],
+            ),
           );
         }
       );
-    }else{
-      
-      // ignore: use_build_context_synchronously
-      Navigator.of(context).pushReplacementNamed('uploadImageScreen');
+
+
+
+
+
+
     }
+   
   }
 
 
@@ -59,7 +111,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void dispose() {
     emailForm.dispose();
     passwordForm.dispose();
-    fullNameForm.dispose();
+    usernameForm.dispose();
     super.dispose();
   }
 
@@ -101,9 +153,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         child: TextFormField(
                             style: const TextStyle(color: Colors.white),
                             keyboardType: TextInputType.text,
-                            controller: fullNameForm,
+                            controller: usernameForm,
                             decoration: decorationStyles.copyWith(
-                              labelText: 'Enter Full Name', 
+                              labelText: 'Enter Username', 
                               prefixIcon: Icon(Icons.person, color: textColor,
                             ),
                           )

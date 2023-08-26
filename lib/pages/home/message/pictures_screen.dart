@@ -101,7 +101,7 @@ class _PictureScreenState extends State<PictureScreen> {
                           onTap: () {
                               Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) =>  MainpageScreen(pages: pages, value: index, conversation: widget.conversation,)
+                              MaterialPageRoute(builder: (context) =>  PageViewScreen(pages: pages, value: index, conversation: widget.conversation,)
                               ),
                             );
                           },

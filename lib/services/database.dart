@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:chatapp/models/message.dart';
 import 'package:chatapp/models/user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -17,11 +15,9 @@ class DatabaseService{
   final CollectionReference conversationsCollection = FirebaseFirestore.instance.collection('conversations');
 
 
-  // updating the userdata 
+  // Updating the userdata 
   Future updateUserData(String email, String username) async{
-    //FirebaseAuth.instance.currentUser!.updateDisplayName(fullName);
     FirebaseAuth.instance.currentUser!.updatePhotoURL("");
-    
     await userCollection.doc(uid).set(
       {
         "email": email,
@@ -33,7 +29,8 @@ class DatabaseService{
     );
   }
 
-  Future<String> getEmail(id) async{
+  // Get the users email by a given id
+  Future<String> getUserEmail(id) async{
     String email = '';
 
     await userCollection
@@ -47,8 +44,8 @@ class DatabaseService{
   }
 
 
-  // check username 
-  Future<String?> checkUsername(username) async {
+  // Check Username is available and return its user id  
+  Future<String?> usernameAvailable(username) async {
     String? id;
 
     await userCollection
@@ -64,9 +61,6 @@ class DatabaseService{
     
     return id;
   }
-
-
-
 
 
   // update user image 
@@ -556,4 +550,5 @@ class DatabaseService{
     .doc(id)
     .delete();
   }
+
 }

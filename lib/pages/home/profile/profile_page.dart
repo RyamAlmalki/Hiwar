@@ -20,13 +20,27 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProlfieScreenState extends State<ProfileScreen> {
   dynamic profileImage = FirebaseAuth.instance.currentUser?.photoURL;
+  String? username = '';
 
+  getUsername() async {
+    String? result = await DatabaseService(uid: FirebaseAuth.instance.currentUser?.uid).getUsername();
+    setState(() {
+      username = result;
+    });
+  }
 
+  @override
+  void initState() {
+    getUsername();
+    super.initState();
+  }
+  
   // Signout method 
   singout() async {
     await AuthService().signout();
-    // ignore: use_build_context_synchronously
-    Navigator.of(context).pushReplacementNamed('loginScreen');
+    if (context.mounted) {
+      Navigator.of(context).pushReplacementNamed('loginScreen');
+    }
   }
 
   // Change profile image method 
@@ -66,11 +80,12 @@ class _ProlfieScreenState extends State<ProfileScreen> {
     await DatabaseService(uid: FirebaseAuth.instance.currentUser?.uid).deleteConversations();
     await DatabaseService(uid: FirebaseAuth.instance.currentUser?.uid).deleteAccount();
     await AuthService().deleteAccount();
-     // ignore: use_build_context_synchronously
-     Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const LoginScreen()),
-    );
+     if (context.mounted) {
+       Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
+      );
+     }
   }
 
   // remove image method 
@@ -157,6 +172,11 @@ class _ProlfieScreenState extends State<ProfileScreen> {
               
               // Profile Display Name 
               Text('${FirebaseAuth.instance.currentUser?.displayName}', style: const TextStyle(fontSize: 30 ,fontWeight: FontWeight.bold, color: Colors.white), ),
+
+              const SizedBox(height: 5,),
+
+              Text(username!, style: TextStyle(fontSize: 18 ,fontWeight: FontWeight.normal, color: textColor), ),
+
 
               const SizedBox(height: 40),
 

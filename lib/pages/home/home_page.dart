@@ -15,16 +15,16 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  List<String>? myFriendsids = [];
 
-  List<String>? ids = [];
-
-  getNames() async {
-    ids = await DatabaseService(uid: FirebaseAuth.instance.currentUser?.uid).getConversationUserId();
+  // We will get ids of everyone who have started conversation with this user 
+  getFriendsIds() async {
+    myFriendsids = await DatabaseService(uid: FirebaseAuth.instance.currentUser?.uid).getConversationUserId();
   }
 
   @override
   void initState() {
-    getNames();
+    getFriendsIds();
     super.initState();
   }
 
@@ -85,9 +85,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     weight: 10,
                   ),
                   onPressed: () async{
+                    // ids will be passed to search screen 
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => SearchScreen(names: ids)),
+                      MaterialPageRoute(builder: (context) => SearchScreen(names: myFriendsids)),
                     );
                   },
                 ),
@@ -121,8 +122,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           
                         }, separatorBuilder: (BuildContext context, int index) {  
                           return  Divider(
-                            height: 15,
-                            thickness: 0.5,
+                            height: 20,
+                            thickness: 1,
                             indent: 1,
                             endIndent: 0,
                             color: accentColor,

@@ -18,10 +18,16 @@ class _ChangeNamePageState extends State<ChangeFriendNamePage> {
   TextEditingController nameForm = TextEditingController();
 
 
-  bool isStringOnlyLetters(String str) {
-    return str.trim().isNotEmpty && str.split('').every((char) => RegExp(r'^[a-zA-Z]+$').hasMatch(char));
+   bool nameValidation(String str) {
+    RegExp rex = RegExp(r"[a-zA-Z][a-zA-Z ]+[a-zA-Z]$");
+     
+    if (rex.hasMatch(str)) {
+      return true;
+    } else {
+      return false;
+    }
   }
-
+  
 
   changeName() async {
     // loading CircularProgress 
@@ -33,36 +39,37 @@ class _ChangeNamePageState extends State<ChangeFriendNamePage> {
     );
     
     // check if display name follows the rules 
-    if(nameForm.text.isNotEmpty && isStringOnlyLetters(nameForm.text) && nameForm.text.length <= 20){
+    if(nameForm.text.isNotEmpty && nameValidation(nameForm.text) && nameForm.text.length <= 20){
       dynamic result = await DatabaseService(uid: FirebaseAuth.instance.currentUser?.uid).editFriendDisplayName(widget.userid, nameForm.text);
 
-      // pop the loading circle 
-      // ignore: use_build_context_synchronously
-      Navigator.of(context).pop();
+  
+      if (context.mounted )Navigator.of(context).pop();
       
       if(result == false){
         nameForm.clear();
-        // ignore: use_build_context_synchronously
-        showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const AlertDialog(
-            title: Text('Name Change failed'),
+        if (context.mounted) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return const AlertDialog(
+                title: Text('Name Change failed'),
             content: Text('Make sure you have a conversation started'),
             );
           }
         );
+        }
       }else{
         nameForm.clear();
-        // ignore: use_build_context_synchronously
-        showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const AlertDialog(
+        if (context.mounted) {
+          showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return const AlertDialog(
             title: Text('Name Change Successful'),
             );
           }
         );
+        }
       }
     }else{
       nameForm.clear();

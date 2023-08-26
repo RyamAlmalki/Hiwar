@@ -1,5 +1,3 @@
-import 'dart:async';
-import 'package:chatapp/pages/home/home_widget/options.dart';
 import 'package:chatapp/pages/home/message/friend_profile_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -34,24 +32,16 @@ class MessageScreen extends StatefulWidget {
 
 class _MessageScreentState extends State<MessageScreen> {
   int numberOfMessages = 0;
-  final DatabaseService database = DatabaseService();
   final messageTextConroller = TextEditingController();
   String? messageText;
   bool forBool = false;
   bool hasText = false;
-  // HAVE USER HERE
   ChatUser? user;
   String? messageTextType;
-  Conversation? previousConversation;
-  String? chatId;
   late final _messageStream;
-  bool newCon = true;
-  int frinedlastmessage = 0;
-  String? hintMessage = 'Send message...';
-  bool isEnabled = true;
+
 
   sendMessage() async {
-    
     if(widget.newconversation == true){
 
       setState(() {
@@ -107,7 +97,6 @@ class _MessageScreentState extends State<MessageScreen> {
     }
   }
 
-
   void getUser(userId) async{
     ChatUser? currentUser = await DatabaseService().getConversationUser(userId); 
     
@@ -121,9 +110,9 @@ class _MessageScreentState extends State<MessageScreen> {
     getLastUnseenMessage();
   }
 
+
   void getLastUnseenMessage() async{
     Conversation? conversation = await DatabaseService(uid: user!.uid).getConversation(widget.chatId);
-
 
     if (mounted) {
       if(conversation != null){
@@ -164,7 +153,6 @@ class _MessageScreentState extends State<MessageScreen> {
   }
 
 
-
   // Reset unseen messages for current user who opended the chat 
   resetLastUnseenMessage(){
     setState(() {
@@ -174,8 +162,6 @@ class _MessageScreentState extends State<MessageScreen> {
     // update user last message + last message day + add to number of last seen message 
     DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid).updateLastUnseenMessage(widget.chatId, 0);
   }
-
-
 
 
   // update unseen messages for both users 
@@ -210,179 +196,182 @@ class _MessageScreentState extends State<MessageScreen> {
   }
   
 
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        shape: Border(
-          bottom: BorderSide(color: accentColor, width: 1)
-          ),
-        automaticallyImplyLeading: false,
-        leading: null,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            IconButton(
-              icon: Icon(
-                Icons.arrow_back_ios,
-                color: textColor,
-                size: 30,
+    return GestureDetector(
+      onTap: () {
+        FocusManager.instance.primaryFocus?.unfocus();
+      },
+      child: Scaffold(
+        extendBodyBehindAppBar: true,
+        backgroundColor: Colors.black,
+        appBar: AppBar(
+          shape: Border(
+            bottom: BorderSide(color: accentColor, width: 1)
+            ),
+          automaticallyImplyLeading: false,
+          leading: null,
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              IconButton(
+                icon: Icon(
+                  Icons.arrow_back_ios,
+                  color: textColor,
+                  size: 30,
+                ),
+                onPressed: () async{
+                  // Before going to the homescreen we have to clear current user unseenMessages
+                  // Because both users can be opening the chat at the same time 
+    
+                  await resetLastUnseenMessage();
+                  // ignore: use_build_context_synchronously
+                  Navigator.of(context).pushReplacementNamed('homeScreen');
+                },
               ),
-              onPressed: () async{
-                // Before going to the homescreen we have to clear current user unseenMessages
-                // Because both users can be opening the chat at the same time 
-
-                await resetLastUnseenMessage();
-                // ignore: use_build_context_synchronously
-                Navigator.of(context).pushReplacementNamed('homeScreen');
-              },
-            ),
-            
-            TextButton(
-              onPressed: () async{
-                Navigator.of(context).push(MaterialPageRoute(builder: (context) => FriendProfileScreen(conversation: widget.conversation, user: user, chatId: widget.chatId, lastSavedConversationDate: widget.lastSavedConversationDate,))).then((value) { 
-                  // here we update the conversation to get any new update done 
-                  updateConversation(); 
-                });
-              },
-              child: CircleAvatar(
-                backgroundColor: primaryColor,
-                radius: 20,
-                backgroundImage: NetworkImage(user?.photoURL ?? '') ,
-                child: widget.conversation == null ? user?.photoURL == "" ? Text(user!.displayName![0], style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),) : null :  widget.conversation!.profilePic.isNotEmpty ?  null : Text(widget.conversation!.fullName[0], style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),) , 
-                // should show the user image
-              ),
-            ),
-
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text('${ widget.conversation == null? user?.displayName : widget.conversation?.fullName}', style:const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),), 
-              ],
-            ),
-          ],
-        ), 
-        centerTitle: false, 
-        backgroundColor: Colors.transparent, 
-        elevation: 0,
-      ),
-      body: SafeArea(
-      child: Column(
-        children: [
-            // middle section  
-            StreamBuilder<List<Message>?>(
-              stream: _messageStream,
-              builder: (context, snapshot){
-
-                if(snapshot.hasData){
-                  List<Message>? messages = snapshot.data?.reversed.toList();
-
-                  return Expanded(
-                      child: ListView.builder(
-                      reverse: true,
-                      itemCount: messages?.length,
-                      itemBuilder: (context, index) {
-                        Message message = messages!.elementAt(index);
-  
-                        return MessageBubble(message: message, isMe: message.senderId == FirebaseAuth.instance.currentUser!.uid, conversation: widget.conversation,); 
-                      },
-                    ),
-                  );
-                }else{
-                  return Expanded(child: Container(color: Colors.black,));
-                }
-              }
-            ),
-            
-            // Bottom section 
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: SizedBox(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        enabled: isEnabled,
-                        onChanged: (value) {
-                          value.isNotEmpty ? setState(() => hasText = true) : setState(() => hasText = false);
-                        },
-                        minLines: 1,
-                        maxLines: 5,
-                        textInputAction: TextInputAction.newline,
-                        keyboardType: TextInputType.multiline,
-                        controller: messageTextConroller,
-                        style: TextStyle(color:textColor),  
-                        decoration: InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                           borderRadius: BorderRadius.circular(20),
-                            borderSide:  const BorderSide(
-                              color: Colors.black , 
-                              width: 0.5
-                            )
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: const BorderSide(color: Colors.transparent)
-                          ),
-                          hintText: forBool ? null : hintMessage,
-                          hintStyle: TextStyle(color: textColor),
-                          filled: true,
-                          fillColor: accentColor, 
-                          suffixIcon: hasText ? 
-                          IconButton(
-                            splashColor: Colors.transparent,
-                            highlightColor: Colors.transparent,  
-                            icon: Icon(
-                              Icons.send,
-                              color: primaryColor
-                            ),
-                            onPressed: () async {
-                              if(messageTextConroller.text.trim().isNotEmpty){
-                                 setState(() {
-                                  messageText = messageTextConroller.text;
-                                  messageTextType = 'text';
-                                });
-                                          
-                                messageTextConroller.clear(); 
-                                hasText = false;
-                                await sendMessage();
-                              }
-                             
-                            },
-                          ): Icon(Icons.send, color: textColor,)
-                        ),
-                      ),
-                    ),
               
-                     Padding(
-                      padding: const EdgeInsets.only(left: 5),
-                      child: SizedBox(
-                        width: 60,
-                        height: 60,
-                        child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: accentColor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(100)
-                          )
-                        ),
-                        onPressed: (){
-                          getFromGallery();
-                        }, 
-                        child: const Icon(Icons.camera_alt)
-                        ),
-                      ),
-                    ),
-                  ]
+              TextButton(
+                onPressed: () async{
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => FriendProfileScreen(conversation: widget.conversation, user: user, chatId: widget.chatId, lastSavedConversationDate: widget.lastSavedConversationDate,))).then((value) { 
+                    // here we update the conversation to get any new update done 
+                    updateConversation(); 
+                  });
+                },
+                child: CircleAvatar(
+                  backgroundColor: primaryColor,
+                  radius: 20,
+                  backgroundImage: NetworkImage(user?.photoURL ?? '') ,
+                  child: widget.conversation == null ? user?.photoURL == "" ? Text(user!.displayName![0], style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),) : null :  widget.conversation!.profilePic.isNotEmpty ?  null : Text(widget.conversation!.fullName[0], style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),) , 
+                  // should show the user image
                 ),
               ),
-            ),
-          ],
-        )
+    
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('${ widget.conversation == null? user?.displayName : widget.conversation?.fullName}', style:const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),), 
+                ],
+              ),
+            ],
+          ), 
+          centerTitle: false, 
+          backgroundColor: Colors.transparent, 
+          elevation: 0,
+        ),
+        body: SafeArea(
+        child: Column(
+          children: [
+              // middle section  
+              StreamBuilder<List<Message>?>(
+                stream: _messageStream,
+                builder: (context, snapshot){
+    
+                  if(snapshot.hasData){
+                    List<Message>? messages = snapshot.data?.reversed.toList();
+    
+                    return Expanded(
+                        child: ListView.builder(
+                        reverse: true,
+                        itemCount: messages?.length,
+                        itemBuilder: (context, index) {
+                          Message message = messages!.elementAt(index);
+      
+                          return MessageBubble(message: message, isMe: message.senderId == FirebaseAuth.instance.currentUser!.uid, conversation: widget.conversation,); 
+                        },
+                      ),
+                    );
+                  }else{
+                    return Expanded(child: Container(color: Colors.black,));
+                  }
+                }
+              ),
+              
+              // Bottom section 
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: SizedBox(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          onChanged: (value) {
+                            value.isNotEmpty ? setState(() => hasText = true) : setState(() => hasText = false);
+                          },
+                          minLines: 1,
+                          maxLines: 5,
+                          textInputAction: TextInputAction.newline,
+                          keyboardType: TextInputType.multiline,
+                          controller: messageTextConroller,
+                          style: TextStyle(color:textColor),  
+                          decoration: InputDecoration(
+                            focusedBorder: OutlineInputBorder(
+                             borderRadius: BorderRadius.circular(20),
+                              borderSide:  const BorderSide(
+                                color: Colors.black , 
+                                width: 0.5
+                              )
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              borderSide: const BorderSide(color: Colors.transparent)
+                            ),
+                            hintText: forBool ? null : 'Send message...',
+                            hintStyle: TextStyle(color: textColor),
+                            filled: true,
+                            fillColor: accentColor, 
+                            suffixIcon: hasText ? 
+                            IconButton(
+                              splashColor: Colors.transparent,
+                              highlightColor: Colors.transparent,  
+                              icon: Icon(
+                                Icons.send,
+                                color: primaryColor
+                              ),
+                              onPressed: () async {
+                                if(messageTextConroller.text.trim().isNotEmpty){
+                                   setState(() {
+                                    messageText = messageTextConroller.text;
+                                    messageTextType = 'text';
+                                  });
+                                            
+                                  messageTextConroller.clear(); 
+                                  hasText = false;
+                                  await sendMessage();
+                                }
+                               
+                              },
+                            ): Icon(Icons.send, color: textColor,)
+                          ),
+                        ),
+                      ),
+                
+                       Padding(
+                        padding: const EdgeInsets.only(left: 5),
+                        child: SizedBox(
+                          width: 60,
+                          height: 60,
+                          child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: accentColor,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(100)
+                            )
+                          ),
+                          onPressed: (){
+                            getFromGallery();
+                          }, 
+                          child: const Icon(Icons.camera_alt)
+                          ),
+                        ),
+                      ),
+                    ]
+                  ),
+                ),
+              ),
+            ],
+          )
+        ),
       ),
     );
   }

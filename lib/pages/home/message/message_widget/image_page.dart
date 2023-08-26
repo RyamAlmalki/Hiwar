@@ -27,8 +27,7 @@ class ImagePage extends StatelessWidget {
             ),
           ),
     
-    
-    
+  
           Positioned(
             top: MediaQuery.of(context).size.height / 14,
             left: 20,

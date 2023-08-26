@@ -31,12 +31,19 @@ class _FriendProfileScreenState extends State<FriendProfileScreen> {
   void initState() {
     super.initState();
   }
+  
+  @override
+  void dispose() {
+    nameForm.dispose();
+    super.dispose();
+  }
+
 
   List<ImagePage> pages = [
     //...
   ];
 
- 
+  // update user name 
   updateName() async{
    Navigator.push(
       context,
@@ -45,6 +52,7 @@ class _FriendProfileScreenState extends State<FriendProfileScreen> {
     
   }
 
+  // clear chat 
   clearChat() async {
     // clear chat function 
     Navigator.of(context).pushReplacementNamed('homeScreen');
@@ -52,6 +60,7 @@ class _FriendProfileScreenState extends State<FriendProfileScreen> {
     await DatabaseService(uid: FirebaseAuth.instance.currentUser?.uid).clearChat(widget.chatId);
   }
 
+  // update conversation to show latest changes done 
   void updateConversation() async{
     // i will get the previous conversation from the reciver since i will use numberOfUnseenMessages from his side to update and resent the numberOfUnseenMessages to 0 for the sender
     Conversation? conversation = await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid).getPreviousConversation(widget.user?.uid);
@@ -196,7 +205,7 @@ class _FriendProfileScreenState extends State<FriendProfileScreen> {
                                       onTap: () {
                                         Navigator.push(
                                           context,
-                                          MaterialPageRoute(builder: (context) =>  MainpageScreen(pages: pages, value: index, conversation: widget.conversation,)
+                                          MaterialPageRoute(builder: (context) =>  PageViewScreen(pages: pages, value: index, conversation: widget.conversation,)
                                           ),
                                         );
                                       },

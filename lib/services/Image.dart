@@ -4,7 +4,6 @@ import 'package:image_picker/image_picker.dart';
 
 class Images{
 
-
   // get image 
   Future<String?> getImageFromGallery() async {
     // Step 1: Pick image 
@@ -21,13 +20,6 @@ class Images{
 
     return imageUrl;
   }
-
-
-
-
-
-
-
 
 
 }

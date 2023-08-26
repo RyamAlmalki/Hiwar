@@ -1,6 +1,6 @@
 import 'package:chatapp/services/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
+
 
 // This class defines the different methods that will interact with firebase Auth service 
 class AuthService{
@@ -8,52 +8,32 @@ class AuthService{
   // This instance will allow us to communicat with Auth firebase in backend 
   // this will give us access to different property to the auth class 
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  //final user = FirebaseAuth.instance.currentUser;
-  //late final ChatUser chatUser;
 
 
-  // create user object based on FirebaseUser but with only specific fileds 
-  // ChatUser? _userFromFirebaseUser(User userAuth){
-  //   return userAuth != null ? ChatUser(
-  //     uid: userAuth.uid,
-  //     displayName: userAuth.displayName,
-  //     ) : null;
-  //   }
 
-  
   // When we call this method from the login screen,
   // it will try to login, and if it succeeds, it will return a user object to the login widget.
   Future login(final usernameForm, final passwordForm) async{
   
     try{
+      // Before we can login we must first check that username that the user provided exist
+      String? isExist = await DatabaseService().usernameAvailable(usernameForm.text);
 
-      print(usernameForm.text);
-
-      String? isExist = await DatabaseService().checkUsername(usernameForm.text);
-
-      print(isExist);
-
+      // if the username exist we will retrive the email with that username
       if(isExist != null){
-         String email = await DatabaseService().getEmail(isExist);
+         String email = await DatabaseService().getUserEmail(isExist);
 
         // A UserCredential is returned from authentication requests such as [createUserWithEmailAndPassword].
         final UserCredential authResult = await _auth.signInWithEmailAndPassword(
-        email: email, 
-        password: passwordForm.text.trim()
+          email: email, 
+          password: passwordForm.text.trim()
         );
 
         final User? user = authResult.user;
-        // chatUser = _userFromFirebaseUser(user!)!;
-        // print(chatUser.displayName);
-
         return user;
       }
-    
       return null;
-      
     }catch(e){
-      // ignore: avoid_print
-      print(e.toString());
       return null;
     }
   }
@@ -65,28 +45,31 @@ class AuthService{
 
 
   // register with email and password 
-  Future register(final email, final password, final fullName) async{
+  Future register(final email, final password, final username) async{
     try{
+      // create a user object with given email and password 
       final UserCredential authResult = await _auth.createUserWithEmailAndPassword(email: email.text.trim(), password: password.text.trim());
       final User? user = authResult.user;
       
       if(user!=null){
-        String? isExist = await DatabaseService().checkUsername(fullName.text);
-    
+        // Before we can register we must first check that username that the user provided exist
+        String? isExist = await DatabaseService().usernameAvailable(username.text);
+
+        // if no one has this username then add this user
         if(isExist == null){
           // create a new document for the user with the uid 
-          DatabaseService(uid: user.uid).updateUserData(email.text, fullName.text);
+          DatabaseService(uid: user.uid).updateUserData(email.text, username.text);
 
           return user.uid;
         }else{
+          // if username is taken remove the user created 
           user.delete();
           return 'usernameTaken';
         }
       }
 
     }catch(e){
-      // ignore: avoid_print
-      print(e.toString());
+      // return null if anything happens with _auth.createUserWithEmailAndPassword
       return null;
     }
   }
@@ -126,7 +109,6 @@ class AuthService{
       
     }
   }
-
 
   // change password 
   Future<bool> changePassword(password) async {

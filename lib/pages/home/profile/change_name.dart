@@ -15,10 +15,15 @@ class _ChangeNamePageState extends State<ChangeNamePage> {
   TextEditingController nameForm = TextEditingController();
 
 
-  bool isStringOnlyLetters(String str) {
-    return str.trim().isNotEmpty && str.split('').every((char) => RegExp(r'^[a-zA-Z]+$').hasMatch(char));
+    bool nameValidation(String str) {
+    RegExp rex = RegExp(r"[a-zA-Z][a-zA-Z ]+[a-zA-Z]$");
+     
+    if (rex.hasMatch(str)) {
+      return true;
+    } else {
+      return false;
+    }
   }
-
 
   changeName() async {
     // loading CircularProgress 
@@ -30,28 +35,27 @@ class _ChangeNamePageState extends State<ChangeNamePage> {
     );
     
     // check if display name follows the rules 
-    if(nameForm.text.isNotEmpty && isStringOnlyLetters(nameForm.text) && nameForm.text.length <= 20){
+    if(nameForm.text.isNotEmpty && nameValidation(nameForm.text) && nameForm.text.length <= 20){
       dynamic result = await AuthService().changeName(nameForm.text);
 
-      // pop the loading circle 
-      // ignore: use_build_context_synchronously
-      Navigator.of(context).pop();
+      if (context.mounted) Navigator.of(context).pop();
       
       if(result == false){
         nameForm.clear();
-        // ignore: use_build_context_synchronously
-        showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const AlertDialog(
-            title: Text('Name Change failed'),
+        if (context.mounted) {
+          showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return const AlertDialog(
+              title: Text('Name Change failed'),
             );
           }
         );
+        }
       }else{
         nameForm.clear();
-        // ignore: use_build_context_synchronously
-        showDialog(
+        if (context.mounted) {
+          showDialog(
         context: context,
         builder: (BuildContext context) {
           return const AlertDialog(
@@ -59,6 +63,7 @@ class _ChangeNamePageState extends State<ChangeNamePage> {
             );
           }
         );
+        }
       }
     }else{
       nameForm.clear();
@@ -70,10 +75,10 @@ class _ChangeNamePageState extends State<ChangeNamePage> {
           title: Text('Display Name Warning'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Text('Make sure your display name is'),
                 Text('Not empty'),
-                Text('Only letters'),
                 Text('No space'),
                 Text('Not more than 20 char'),
               ],

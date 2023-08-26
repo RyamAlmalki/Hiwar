@@ -4,9 +4,9 @@ import 'package:chatapp/pages/home/message/message_widget/image_page.dart';
 import 'package:flutter/material.dart';
 
 
-class MainpageScreen extends StatefulWidget {
+class PageViewScreen extends StatefulWidget {
 
-  MainpageScreen({super.key, required this.pages, required this.value, required this.conversation});
+  PageViewScreen({super.key, required this.pages, required this.value, required this.conversation});
 
   Conversation? conversation;
 
@@ -25,12 +25,11 @@ class MainpageScreen extends StatefulWidget {
   }
 
   @override
-  _MainpageScreenState createState() => _MainpageScreenState();
+  State<PageViewScreen> createState() => _PageViewScreenState();
 }
 
 
-class _MainpageScreenState extends State<MainpageScreen> {
-
+class _PageViewScreenState extends State<PageViewScreen> {
   late final PageController controller;
 
 
@@ -52,7 +51,7 @@ class _MainpageScreenState extends State<MainpageScreen> {
     return Dismissible(
     direction: DismissDirection.vertical,
     key: const Key('key'),
-    background: Scaffold(backgroundColor: Colors.amber),
+    background: const Scaffold(backgroundColor: Colors.amber),
     onDismissed: (_) => Navigator.of(context).pop(),
       child: Scaffold(
         backgroundColor: Colors.black,
@@ -63,7 +62,7 @@ class _MainpageScreenState extends State<MainpageScreen> {
             setState(() {
               widget.setPage(index);
               controller.animateToPage(index,
-              duration: Duration(milliseconds: 300), curve: Curves.ease);
+              duration: const Duration(milliseconds: 300), curve: Curves.ease);
             });
           },
           itemBuilder: (context, index) => widget.pages[index],

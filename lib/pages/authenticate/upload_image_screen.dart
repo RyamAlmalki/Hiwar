@@ -1,4 +1,3 @@
-import 'package:chatapp/pages/authenticate/auth_widget/background.dart';
 import 'package:chatapp/pages/home/home_page.dart';
 import 'package:chatapp/shared/const.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -21,6 +20,21 @@ class _UploadImageScreenState extends State<UploadImageScreen> {
   final _formKey = GlobalKey<FormState>();
   TextEditingController fullNameForm = TextEditingController();
 
+  bool nameValidation(String str) {
+    RegExp rex = RegExp(r"[a-zA-Z][a-zA-Z ]+[a-zA-Z]$");
+     
+    if (rex.hasMatch(str)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  @override
+  void dispose() {
+    fullNameForm.dispose();
+    super.dispose();
+  }
 
   uploadImage() async {
     // Here we will get the imageUrl after adding it to firebase storage 
@@ -31,11 +45,13 @@ class _UploadImageScreenState extends State<UploadImageScreen> {
         profileImage = imageUrl;
       });
       FirebaseAuth.instance.currentUser?.updatePhotoURL(imageUrl);
+      //update in the database
       DatabaseService(uid: FirebaseAuth.instance.currentUser?.uid).updateUserProfileImage(imageUrl);
     }
   }
 
-  updateName()async{
+  // update the user display name 
+  updateName() async {
     // loading circle 
     showDialog(
       context: context, 
@@ -44,150 +60,150 @@ class _UploadImageScreenState extends State<UploadImageScreen> {
        }
     );
     
-
-    if(fullNameForm.text.isNotEmpty){
+    if(fullNameForm.text.isNotEmpty &&  fullNameForm.text.length <= 20){
       await FirebaseAuth.instance.currentUser?.updateDisplayName(fullNameForm.text);
       await DatabaseService(uid: widget.userId).updateName(fullNameForm.text);
-       // pop the loading circle 
-        // ignore: use_build_context_synchronously
-        Navigator.of(context).pop();
 
-       Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) =>  HomeScreen()),
-      );
+     
+      if (context.mounted) Navigator.of(context).pop();
+
+       if (context.mounted) {
+          Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) =>  const HomeScreen()),
+        );
+       }
     }else{
-      // pop the loading circle 
-      // ignore: use_build_context_synchronously
-      Navigator.of(context).pop();
-      // ignore: use_build_context_synchronously
-      showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return const AlertDialog(
-            title: Text('Name Missing'),
-            content: Text('Please include a display name'),
-          );
-        }
-      );
+      if (context.mounted) Navigator.of(context).pop();
+      
+      if (context.mounted) {
+        showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return const AlertDialog(
+              title: Text('Name Missing'),
+              content: Text('Please include a display name'),
+            );
+          }
+       );
+      }
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       backgroundColor: Colors.black,
-      body: Center(
-        child: Stack(
-          children: [
-            const AuthBackground(),
-
-            Positioned(
-            top: MediaQuery.of(context).size.height / 5.5,
-            left: MediaQuery.of(context).size.width / 10,
-              child: Form(
-                  key: _formKey,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
+      body: Align(
+        alignment: Alignment.topCenter,
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              SizedBox(
+                height: MediaQuery.of(context).size.height / 5.5,
+              ),
+              
+              Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Hero(
+                      tag: "logo",
+                        child: SizedBox(
+                          width: MediaQuery.of(context).size.width / 1.2,
+                          height: 60,
+                          child: Center(child: Image.asset('assets/images/big_logo.png'),),
+                      )
+                    ),
                       
-                      Hero(
-                        tag: "logo",
-                          child: SizedBox(
-                            width: MediaQuery.of(context).size.width / 1.2,
-                            height: 60,
-                            child: Center(child: Image.asset('assets/images/big_logo.png'),),
-                        )
-                      ),
-                        
-                    
-                      const SizedBox(height: 40,),
-
-                       Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                              CircleAvatar(
-                              backgroundColor: primaryColor,
-                              radius: 100,
-                                child: CircleAvatar(
-                                backgroundColor: accentColor,
-                                radius: 97,
-                                backgroundImage: NetworkImage(profileImage ?? '') ,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    const SizedBox(height: 40,),
+    
+                    Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                            CircleAvatar(
+                            backgroundColor: primaryColor,
+                            radius: 100,
+                              child: CircleAvatar(
+                              backgroundColor: accentColor,
+                              radius: 97,
+                              backgroundImage: NetworkImage(profileImage ?? '') ,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                profileImage == '' || profileImage == null ? const SizedBox(
+                                  height: 50,
+                                ) : const SizedBox(),
+    
+                                profileImage == ''  || profileImage == null? const Icon(Icons.person_2_outlined, color: Colors.white, size: 70,) : const SizedBox(),
+    
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
-                                  profileImage == '' || profileImage == null ? const SizedBox(
-                                    height: 50,
-                                  ) : const SizedBox(),
-
-                                  profileImage == ''  || profileImage == null? const Icon(Icons.person_2_outlined, color: Colors.white, size: 70,) : const SizedBox(),
-
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                       
-                                        CircleAvatar(
-                                          radius: 20,
-                                          backgroundColor: primaryColor,
-                                          child: IconButton(
-                                          icon: const Icon(Icons.add, color: Colors.white,),
-                                          onPressed: () async{
-                                              await uploadImage();
-                                            },
-                                          )
+                                      CircleAvatar(
+                                        radius: 20,
+                                        backgroundColor: primaryColor,
+                                        child: IconButton(
+                                        icon: const Icon(Icons.add, color: Colors.white,),
+                                        onPressed: () async{
+                                            await uploadImage();
+                                          },
                                         )
-                                      ],
-                                    ),
-                                  ],
-                                ),
+                                      )
+                                    ],
+                                  ),
+                                ],
                               ),
                             ),
-                          ]
-                        ),
-                      ), 
-
-                      const SizedBox(height: 60,),
-
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width / 1.2,
-                        child: TextFormField(
-                            style: const TextStyle(color: Colors.white),
-                            keyboardType: TextInputType.text,
-                            controller: fullNameForm,
-                            decoration: decorationStyles.copyWith(
-                              labelText: 'Enter Display Name', 
-                              prefixIcon: Icon(Icons.person, color: textColor,
-                            ),
-                          )
-                        ),
+                          ),
+                        ]
                       ),
-
-                    const SizedBox(height: 100,),
-                     
-                    
+                    ), 
+    
+                    const SizedBox(height: 60,),
+    
                     SizedBox(
-                      width: MediaQuery.of(context).size.width / 1.4,
-                      height: 50,       
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: primaryColor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10)
-                          )
-                        ),
-                        onPressed: () async {
-                          updateName();
-                        }, 
-                        child: const Text('Continue', style: TextStyle(fontWeight: FontWeight.bold),),
+                      width: MediaQuery.of(context).size.width / 1.2,
+                      child: TextFormField(
+                          style: const TextStyle(color: Colors.white),
+                          keyboardType: TextInputType.text,
+                          controller: fullNameForm,
+                          decoration: decorationStyles.copyWith(
+                            labelText: 'Enter Display Name', 
+                            prefixIcon: Icon(Icons.person, color: textColor,
+                          ),
+                        )
+                      ),
+                    ),
+    
+                  const SizedBox(height: 70,),
+                    
+                  
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width / 1.4,
+                    height: 50,       
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: primaryColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)
+                        )
+                      ),
+                      onPressed: () async {
+                        updateName();
+                      }, 
+                      child: const Text('Start Chatting', style: TextStyle(fontWeight: FontWeight.bold),),
                       )
                     ),
                   ],
                 )
-              ),
-            )
-        
-          ],
+              )
+            ],
+          ),
         ),
       ),
     );

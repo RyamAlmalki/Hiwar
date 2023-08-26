@@ -1,11 +1,11 @@
 import 'package:chatapp/models/conversation.dart';
 import 'package:chatapp/pages/home/message/message_widget/image_page.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+
 
 import '../../../../models/message.dart';
 import '../../../../shared/const.dart';
-import '../view_image.dart';
+
 
 class MessageBubble extends StatelessWidget {
   const MessageBubble({super.key, required this.message, required this.isMe, required this.conversation});
@@ -52,10 +52,6 @@ class MessageBubble extends StatelessWidget {
                             );
                           },
                         );
-                        //  Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(builder: (context) => ImagePage(message: message, conversation: conversation)),
-                        // );
                       },
                       child: Container(
                       width: MediaQuery.of(context).size.width,

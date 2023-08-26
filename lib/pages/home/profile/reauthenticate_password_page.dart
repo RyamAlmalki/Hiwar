@@ -27,29 +27,30 @@ class _ReauthenticatePasswordPageState extends State<ReauthenticatePasswordPage>
     
     dynamic result = await AuthService().reauthenticatePassword(passwordForm.text);
 
-    // pop the loading circle 
-    // ignore: use_build_context_synchronously
-    Navigator.of(context).pop();
+   
+    if (context.mounted) Navigator.of(context).pop();
     
     if(result == false){
       passwordForm.clear();
-      // ignore: use_build_context_synchronously
-      showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return const AlertDialog(
-          title: Text('Password failed'),
+      if (context.mounted) {
+        showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return const AlertDialog(
+            title: Text('Password failed'),
           content: Text('Could not sign in with those credentials'),
           );
         }
       );
+    }
     }else{
-      // ignore: use_build_context_synchronously
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const ChangePasswordPage()
-        ),
-      );
+      if (context.mounted) {
+          Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const ChangePasswordPage()
+         ),
+        );
+      }
     }
   } 
 

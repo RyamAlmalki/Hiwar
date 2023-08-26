@@ -28,40 +28,40 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     if(newPasswordForm.text == confirmPasswordForm.text) {
       dynamic result = await AuthService().changePassword(newPasswordForm.text);
 
-      // pop the loading circle 
-      // ignore: use_build_context_synchronously
-      Navigator.of(context).pop();
+      if (context.mounted) Navigator.of(context).pop();
       
       if(result == false){
         newPasswordForm.clear();
         confirmPasswordForm.clear();
-        // ignore: use_build_context_synchronously
-        showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const AlertDialog(
-            title: Text('Password failed to Update'),
+        if (context.mounted) {
+          showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return const AlertDialog(
+              title: Text('Password failed to Update'),
             content: Text('Could not sign in with those credentials'),
             );
           }
         );
+        }
       }else{
-        // ignore: use_build_context_synchronously
-        showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const AlertDialog(
-            title: Text('Password Change Successful'),
+        if (context.mounted) {
+          showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return const AlertDialog(
+              title: Text('Password Change Successful'),
             );
           }
         );
+        }
       }
     }else{
       showDialog(
       context: context,
       builder: (BuildContext context) {
         return const AlertDialog(
-          title: Text('Password Dont Match'),
+          title: Text('Password Mismatch'),
           content: Text('Please try again'),
           );
         }

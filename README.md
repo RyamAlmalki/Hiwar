@@ -1,5 +1,5 @@
 <p align="center">
-    <img width="1200" src="[https://github.com/RyamAlmalki/Befit/blob/master/befit_banner.png](https://github.com/RyamAlmalki/chat_app/blob/master/Hiwar_banner.png?raw=true)" alt="Material Bread logo">
+    <img width="1200" src="https://github.com/RyamAlmalki/chat_app/blob/master/Hiwar_banner.png?raw=true" alt="Material Bread logo">
 </p>
 
 

@@ -4,12 +4,12 @@
 
 
 <h1 align="left">Hiwar</h1>
-<p>User-Friendly BMI calculator. The app will keep track of the user's BMI and provide a visual graph to view its changes to maintain a healthy body.</p>
+<p>A cross-platform chat application aimed at facilitating seamless communication among users.</p>
 
 <h1 align="left">Features</h1>
 <ul>
-  <li>Track BMI</li>
-  <li>Visual graph</li>
-  <li>User-Friendly Navigation</li>
+  <li>User Authentication: Implemented user login and registration functionality using Firebase Authentication Services to ensure secure access to the app.</li>
+  <li>Native Camera Integration: Integrated native device camera functionality to enable users to share images effortlessly within the app, enhancing the user experience.</li>
+  <li>Real-time Messaging: Utilized Firebase Realtime Database to create a robust messaging system, securely storing and managing all user messages, thereby enabling efficient real-time communication.</li>
 </ul>
 

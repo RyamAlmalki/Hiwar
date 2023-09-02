@@ -11,7 +11,6 @@
   <li>User Authentication</li>
   <li>Native Camera Integration</li>
   <li>Real-time Messaging</li>
-<li>UI/UX Design</li>
 </ul>
 <h1 align="left">Demo</h1>
 

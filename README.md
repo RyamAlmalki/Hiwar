@@ -1,16 +1,15 @@
-# chatapp
+<p align="center">
+    <img width="1200" src="https://github.com/RyamAlmalki/Befit/blob/master/befit_banner.png" alt="Material Bread logo">
+</p>
 
-A new Flutter project.
 
-## Getting Started
+<h1 align="left">Hiwar</h1>
+<p>User-Friendly BMI calculator. The app will keep track of the user's BMI and provide a visual graph to view its changes to maintain a healthy body.</p>
 
-This project is a starting point for a Flutter application.
+<h1 align="left">Features</h1>
+<ul>
+  <li>Track BMI</li>
+  <li>Visual graph</li>
+  <li>User-Friendly Navigation</li>
+</ul>
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
